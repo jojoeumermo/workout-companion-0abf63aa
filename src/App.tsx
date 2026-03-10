@@ -1,22 +1,34 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import BottomNav from "@/components/BottomNav";
+import Dashboard from "./pages/Dashboard";
+import Workouts from "./pages/Workouts";
+import Exercises from "./pages/Exercises";
+import ExerciseDetail from "./pages/ExerciseDetail";
+import History from "./pages/History";
+import WorkoutDetail from "./pages/WorkoutDetail";
+import Progress from "./pages/Progress";
+import ActiveWorkoutPage from "./pages/ActiveWorkout";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/" element={<><Dashboard /><BottomNav /></>} />
+          <Route path="/treinos" element={<><Workouts /><BottomNav /></>} />
+          <Route path="/exercicios" element={<><Exercises /><BottomNav /></>} />
+          <Route path="/exercicio/:id" element={<ExerciseDetail />} />
+          <Route path="/historico" element={<><History /><BottomNav /></>} />
+          <Route path="/historico/:id" element={<WorkoutDetail />} />
+          <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
+          <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
