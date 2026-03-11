@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import PageShell from '@/components/PageShell';
 import { useHistory, usePersonalRecords, useTemplates } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
-import { supabase } from '@/integrations/supabase/client';
+
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
