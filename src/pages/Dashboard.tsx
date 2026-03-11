@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals } from '@/hooks/useStorage';
