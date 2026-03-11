@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, SkipForward, ChevronRight, ChevronLeft, Timer, Copy, Square } from 'lucide-react';
+import { ArrowLeft, Check, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useActiveWorkout, useHistory, usePersonalRecords } from '@/hooks/useStorage';
-import { getExerciseById } from '@/data/exercises';
-import { CompletedWorkout, CompletedExercise } from '@/types/workout';
+import { getExerciseById, exercises as allExercises, muscleGroups } from '@/data/exercises';
+import { CompletedWorkout, CompletedExercise, ActiveSet } from '@/types/workout';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function ActiveWorkoutPage() {
   const navigate = useNavigate();
@@ -17,7 +18,20 @@ export default function ActiveWorkoutPage() {
   const [showRest, setShowRest] = useState(false);
   const [flashIndex, setFlashIndex] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [showNotes, setShowNotes] = useState(false);
+  const [workoutNotes, setWorkoutNotes] = useState('');
+  const [showAddExercise, setShowAddExercise] = useState(false);
+  const [showReplaceExercise, setShowReplaceExercise] = useState(false);
+  const [exerciseSearch, setExerciseSearch] = useState('');
+  const [muscleFilter, setMuscleFilter] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  // Redirect if no active workout (useEffect to avoid render-time navigate)
+  useEffect(() => {
+    if (!activeWorkout) {
+      navigate('/treinos', { replace: true });
+    }
+  }, [activeWorkout, navigate]);
 
   // Elapsed timer
   useEffect(() => {
@@ -41,13 +55,22 @@ export default function ActiveWorkoutPage() {
     return () => clearInterval(id);
   }, [showRest, restTimer]);
 
-  if (!activeWorkout) {
-    navigate('/treinos');
-    return null;
-  }
+  if (!activeWorkout) return null;
 
   const currentEx = activeWorkout.exercises[activeWorkout.currentExerciseIndex];
   const exercise = getExerciseById(currentEx?.exerciseId || '');
+  const totalExercises = activeWorkout.exercises.length;
+  const currentIndex = activeWorkout.currentExerciseIndex;
+
+  // Get previous workout data for this exercise
+  const getPreviousData = (exerciseId: string) => {
+    for (let i = history.length - 1; i >= 0; i--) {
+      const ex = history[i].exercises.find(e => e.exerciseId === exerciseId);
+      if (ex) return ex.sets.filter(s => s.completed);
+    }
+    return null;
+  };
+  const previousSets = getPreviousData(currentEx?.exerciseId || '');
 
   const updateSet = (setIndex: number, field: 'weight' | 'reps', value: number) => {
     setActiveWorkout(prev => {
@@ -69,7 +92,6 @@ export default function ActiveWorkoutPage() {
       const exercises = [...prev.exercises];
       const sets = [...exercises[prev.currentExerciseIndex].sets];
       sets[setIndex] = { ...sets[setIndex], completed: true };
-      // Auto-fill next set
       if (setIndex + 1 < sets.length && !sets[setIndex + 1].completed) {
         sets[setIndex + 1] = {
           ...sets[setIndex + 1],
@@ -83,7 +105,6 @@ export default function ActiveWorkoutPage() {
       return { ...prev, exercises };
     });
 
-    // Start rest timer
     const restTime = currentEx.restTime || 90;
     setRestTotal(restTime);
     setRestTimer(restTime);
@@ -91,9 +112,95 @@ export default function ActiveWorkoutPage() {
   };
 
   const copyPrevWeight = (setIndex: number) => {
-    if (setIndex === 0) return;
-    const prevSet = currentEx.sets[setIndex - 1];
-    updateSet(setIndex, 'weight', prevSet.weight);
+    if (setIndex === 0 && previousSets && previousSets[0]) {
+      updateSet(0, 'weight', previousSets[0].weight);
+      return;
+    }
+    if (setIndex > 0) {
+      const prevSet = currentEx.sets[setIndex - 1];
+      updateSet(setIndex, 'weight', prevSet.weight);
+    }
+  };
+
+  const addSet = () => {
+    setActiveWorkout(prev => {
+      if (!prev) return prev;
+      const exercises = [...prev.exercises];
+      const currentSets = exercises[prev.currentExerciseIndex].sets;
+      const lastSet = currentSets[currentSets.length - 1];
+      const newSet: ActiveSet = {
+        weight: lastSet?.weight || 0,
+        reps: 0,
+        targetReps: lastSet?.targetReps || 10,
+        completed: false,
+      };
+      exercises[prev.currentExerciseIndex] = {
+        ...exercises[prev.currentExerciseIndex],
+        sets: [...currentSets, newSet],
+      };
+      return { ...prev, exercises };
+    });
+  };
+
+  const removeSet = (setIndex: number) => {
+    setActiveWorkout(prev => {
+      if (!prev) return prev;
+      const exercises = [...prev.exercises];
+      const sets = exercises[prev.currentExerciseIndex].sets;
+      if (sets.length <= 1) return prev;
+      exercises[prev.currentExerciseIndex] = {
+        ...exercises[prev.currentExerciseIndex],
+        sets: sets.filter((_, i) => i !== setIndex),
+      };
+      return { ...prev, exercises };
+    });
+  };
+
+  const removeExercise = () => {
+    setActiveWorkout(prev => {
+      if (!prev || prev.exercises.length <= 1) return prev;
+      const exercises = prev.exercises.filter((_, i) => i !== prev.currentExerciseIndex);
+      const newIndex = Math.min(prev.currentExerciseIndex, exercises.length - 1);
+      return { ...prev, exercises, currentExerciseIndex: newIndex };
+    });
+  };
+
+  const addExerciseToWorkout = (exerciseId: string) => {
+    setActiveWorkout(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        exercises: [
+          ...prev.exercises,
+          {
+            exerciseId,
+            restTime: 90,
+            sets: [
+              { weight: 0, reps: 0, targetReps: 10, completed: false },
+              { weight: 0, reps: 0, targetReps: 10, completed: false },
+              { weight: 0, reps: 0, targetReps: 10, completed: false },
+            ],
+          },
+        ],
+      };
+    });
+    setShowAddExercise(false);
+    setExerciseSearch('');
+  };
+
+  const replaceExercise = (exerciseId: string) => {
+    setActiveWorkout(prev => {
+      if (!prev) return prev;
+      const exercises = [...prev.exercises];
+      exercises[prev.currentExerciseIndex] = {
+        ...exercises[prev.currentExerciseIndex],
+        exerciseId,
+        sets: exercises[prev.currentExerciseIndex].sets.map(s => ({ ...s, completed: false, weight: 0, reps: 0 })),
+      };
+      return { ...prev, exercises };
+    });
+    setShowReplaceExercise(false);
+    setExerciseSearch('');
   };
 
   const goToExercise = (index: number) => {
@@ -126,9 +233,9 @@ export default function ActiveWorkoutPage() {
       completedAt: new Date().toISOString(),
       duration: elapsed,
       totalVolume,
+      notes: workoutNotes || undefined,
     };
 
-    // Update PRs
     completedExercises.forEach(ex => {
       ex.sets.filter(s => s.completed).forEach(s => {
         updateRecord(ex.exerciseId, s.weight, s.reps);
@@ -143,168 +250,302 @@ export default function ActiveWorkoutPage() {
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 
   const allCompleted = activeWorkout.exercises.every(ex => ex.sets.every(s => s.completed));
-  const isLastExercise = activeWorkout.currentExerciseIndex === activeWorkout.exercises.length - 1;
+  const isLastExercise = currentIndex === totalExercises - 1;
+
+  const filteredExercises = allExercises.filter(e => {
+    if (exerciseSearch && !e.name.toLowerCase().includes(exerciseSearch.toLowerCase())) return false;
+    if (muscleFilter && e.muscleGroup !== muscleFilter) return false;
+    return true;
+  });
+
+  const ExercisePickerContent = ({ onSelect }: { onSelect: (id: string) => void }) => (
+    <div className="space-y-3 mt-4">
+      <div className="relative">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Buscar exercício..."
+          value={exerciseSearch}
+          onChange={e => setExerciseSearch(e.target.value)}
+          className="w-full bg-secondary rounded-xl pl-9 pr-4 py-2.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body text-sm"
+        />
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        <button onClick={() => setMuscleFilter('')} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+          Todos
+        </button>
+        {muscleGroups.map(mg => (
+          <button key={mg} onClick={() => setMuscleFilter(mg)} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+            {mg}
+          </button>
+        ))}
+      </div>
+      <div className="space-y-1 max-h-[50vh] overflow-y-auto">
+        {filteredExercises.map(ex => (
+          <button key={ex.id} onClick={() => onSelect(ex.id)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors text-left">
+            <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-primary text-sm font-bold">
+              {ex.name.charAt(0)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{ex.name}</p>
+              <p className="text-xs text-muted-foreground font-body">{ex.muscleGroup}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="px-5 pt-14 pb-3 flex items-center justify-between">
-        <button onClick={() => { setActiveWorkout(null); navigate('/treinos'); }} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center">
-          <ArrowLeft size={20} />
-        </button>
-        <div className="text-center">
-          <p className="text-sm font-semibold">{activeWorkout.name}</p>
-          <p className="text-xs text-primary font-mono">{formatTime(elapsed)}</p>
+      <header className="px-5 pt-14 pb-3">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <button onClick={() => { setActiveWorkout(null); navigate('/treinos'); }} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center">
+            <ArrowLeft size={20} />
+          </button>
+          <div className="text-center">
+            <p className="text-sm font-semibold">{activeWorkout.name}</p>
+            <p className="text-xs text-primary font-mono">{formatTime(elapsed)}</p>
+          </div>
+          <button
+            onClick={finishWorkout}
+            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
+          >
+            Finalizar
+          </button>
         </div>
-        <button
-          onClick={finishWorkout}
-          className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
-        >
-          Finalizar
-        </button>
       </header>
 
-      {/* Exercise indicator */}
-      <div className="px-5 pb-3 flex items-center gap-2">
-        {activeWorkout.exercises.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goToExercise(i)}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${
-              i === activeWorkout.currentExerciseIndex ? 'bg-primary' :
-              activeWorkout.exercises[i].sets.every(s => s.completed) ? 'bg-primary/40' : 'bg-secondary'
-            }`}
-          />
-        ))}
+      {/* Exercise Progress Indicator */}
+      <div className="px-5 pb-2">
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-muted-foreground font-body">
+              Exercício {currentIndex + 1} de {totalExercises}
+            </span>
+            <div className="flex gap-1">
+              <button onClick={() => setShowNotes(true)} className="w-8 h-8 rounded-lg bg-card flex items-center justify-center text-muted-foreground">
+                <MessageSquare size={14} />
+              </button>
+              <button onClick={() => setShowAddExercise(true)} className="w-8 h-8 rounded-lg bg-card flex items-center justify-center text-muted-foreground">
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {activeWorkout.exercises.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goToExercise(i)}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  i === currentIndex ? 'bg-primary' :
+                  activeWorkout.exercises[i].sets.every(s => s.completed) ? 'bg-primary/40' : 'bg-secondary'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Exercise Content */}
       <div className="flex-1 px-5 pb-32">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeWorkout.currentExerciseIndex}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-5"
-          >
-            {/* Exercise name & image */}
-            <div className="space-y-3">
-              <div className="w-full h-40 bg-card rounded-2xl flex items-center justify-center">
-                <span className="text-5xl font-bold text-muted-foreground/10">
-                  {exercise?.name.charAt(0)}
-                </span>
+        <div className="max-w-lg mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-4"
+            >
+              {/* Exercise name & actions */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <h2 className="text-xl font-bold">{exercise?.name}</h2>
+                  <p className="text-sm text-muted-foreground font-body">{exercise?.muscleGroup} • {exercise?.equipment}</p>
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => setShowReplaceExercise(true)} className="w-9 h-9 rounded-xl bg-card flex items-center justify-center text-muted-foreground" title="Substituir">
+                    <Replace size={14} />
+                  </button>
+                  <button onClick={removeExercise} className="w-9 h-9 rounded-xl bg-card flex items-center justify-center text-destructive" title="Remover">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-bold">{exercise?.name}</h2>
-                <p className="text-sm text-muted-foreground font-body">{exercise?.muscleGroup} • {exercise?.equipment}</p>
-              </div>
-            </div>
 
-            {/* Sets */}
-            <div className="space-y-2">
-              <div className="grid grid-cols-[40px_1fr_1fr_48px_40px] gap-2 px-2 text-xs text-muted-foreground font-body">
-                <span>Série</span>
-                <span className="text-center">Peso (kg)</span>
-                <span className="text-center">Reps</span>
-                <span></span>
-                <span></span>
-              </div>
-              {currentEx.sets.map((set, i) => (
-                <motion.div
-                  key={i}
-                  className={`grid grid-cols-[40px_1fr_1fr_48px_40px] gap-2 items-center rounded-xl px-2 py-2.5 transition-all ${
-                    set.completed ? 'opacity-60' : 'bg-card'
-                  } ${flashIndex === i ? 'animate-set-flash' : ''}`}
-                >
-                  <span className="text-sm font-semibold text-center text-muted-foreground">{i + 1}</span>
-                  <div className="relative">
+              {/* Previous workout data */}
+              {previousSets && previousSets.length > 0 && (
+                <div className="bg-card/50 rounded-xl px-4 py-3 space-y-1">
+                  <p className="text-xs text-muted-foreground font-body font-medium">Treino anterior</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+                    {previousSets.map((s, i) => (
+                      <span key={i} className="text-xs text-secondary-foreground font-body">
+                        S{i + 1}: {s.weight}kg × {s.reps}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sets */}
+              <div className="space-y-2">
+                <div className="grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 px-2 text-xs text-muted-foreground font-body">
+                  <span>Série</span>
+                  <span className="text-center">Peso (kg)</span>
+                  <span className="text-center">Reps</span>
+                  <span></span>
+                  <span></span>
+                </div>
+                {currentEx.sets.map((set, i) => (
+                  <motion.div
+                    key={i}
+                    layout
+                    className={`grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 items-center rounded-xl px-2 py-2 transition-all ${
+                      set.completed ? 'opacity-50' : 'bg-card'
+                    } ${flashIndex === i ? 'animate-set-flash' : ''}`}
+                  >
+                    <span className="text-sm font-semibold text-center text-muted-foreground">{i + 1}</span>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={set.weight || ''}
+                        onChange={e => updateSet(i, 'weight', parseFloat(e.target.value) || 0)}
+                        disabled={set.completed}
+                        placeholder={previousSets?.[i] ? `${previousSets[i].weight}` : '0'}
+                        className="w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                      />
+                      {!set.completed && (
+                        <button onClick={() => copyPrevWeight(i)} className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground">
+                          <Copy size={11} />
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="number"
-                      inputMode="decimal"
-                      value={set.weight || ''}
-                      onChange={e => updateSet(i, 'weight', parseFloat(e.target.value) || 0)}
+                      inputMode="numeric"
+                      value={set.reps || ''}
+                      onChange={e => updateSet(i, 'reps', parseInt(e.target.value) || 0)}
                       disabled={set.completed}
-                      placeholder="0"
+                      placeholder={`${set.targetReps}`}
                       className="w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     />
-                    {i > 0 && !set.completed && (
-                      <button onClick={() => copyPrevWeight(i)} className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground">
-                        <Copy size={12} />
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={set.reps || ''}
-                    onChange={e => updateSet(i, 'reps', parseInt(e.target.value) || 0)}
-                    disabled={set.completed}
-                    placeholder={`${set.targetReps}`}
-                    className="w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
-                  />
-                  <span className="text-xs text-muted-foreground text-center font-body">{set.targetReps}r</span>
-                  <button
-                    onClick={() => !set.completed && completeSet(i)}
-                    disabled={set.completed}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                      set.completed ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground'
-                    }`}
-                  >
-                    <Check size={18} />
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </AnimatePresence>
+                    <button
+                      onClick={() => !set.completed && completeSet(i)}
+                      disabled={set.completed}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        set.completed ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground'
+                      }`}
+                    >
+                      <Check size={18} />
+                    </button>
+                    <button
+                      onClick={() => removeSet(i)}
+                      disabled={set.completed}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive disabled:opacity-30"
+                    >
+                      <X size={14} />
+                    </button>
+                  </motion.div>
+                ))}
+
+                {/* Add Set Button */}
+                <button
+                  onClick={addSet}
+                  className="w-full border border-dashed border-border rounded-xl py-2.5 text-muted-foreground text-xs font-body flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary transition-colors"
+                >
+                  <Plus size={14} /> Adicionar Série
+                </button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border px-5 py-4 safe-bottom">
-        {showRest ? (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold flex items-center gap-2">
-                <Timer size={16} className="text-primary" /> Descanso
-              </span>
-              <span className="text-2xl font-bold font-mono text-primary">{formatTime(restTimer)}</span>
-              <button onClick={() => setShowRest(false)} className="px-4 py-2 bg-secondary rounded-xl text-sm font-medium">
-                Pular
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border safe-bottom">
+        <div className="max-w-lg mx-auto px-5 py-4">
+          {showRest ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold flex items-center gap-2">
+                  <Timer size={16} className="text-primary" /> Descanso
+                </span>
+                <span className="text-2xl font-bold font-mono text-primary">{formatTime(restTimer)}</span>
+                <button onClick={() => setShowRest(false)} className="px-4 py-2 bg-secondary rounded-xl text-sm font-medium">
+                  Pular
+                </button>
+              </div>
+              <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-1000 ease-linear"
+                  style={{ width: `${(restTimer / restTotal) * 100}%` }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-3">
+              <button
+                onClick={() => goToExercise(currentIndex - 1)}
+                disabled={currentIndex === 0}
+                className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-30"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={() => {
+                  if (isLastExercise && allCompleted) finishWorkout();
+                  else goToExercise(currentIndex + 1);
+                }}
+                className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 font-semibold flex items-center justify-center gap-2"
+              >
+                {isLastExercise ? (
+                  allCompleted ? 'Finalizar Treino' : 'Próximo'
+                ) : (
+                  <>Próximo <ChevronRight size={18} /></>
+                )}
               </button>
             </div>
-            <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-1000 ease-linear"
-                style={{ width: `${(restTimer / restTotal) * 100}%` }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between gap-3">
-            <button
-              onClick={() => goToExercise(activeWorkout.currentExerciseIndex - 1)}
-              disabled={activeWorkout.currentExerciseIndex === 0}
-              className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-30"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={() => {
-                if (isLastExercise && allCompleted) finishWorkout();
-                else goToExercise(activeWorkout.currentExerciseIndex + 1);
-              }}
-              className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 font-semibold flex items-center justify-center gap-2"
-            >
-              {isLastExercise ? (
-                allCompleted ? 'Finalizar Treino' : 'Próximo'
-              ) : (
-                <>Próximo <ChevronRight size={18} /></>
-              )}
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {/* Notes Dialog */}
+      <Dialog open={showNotes} onOpenChange={setShowNotes}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>Notas do Treino</DialogTitle>
+          </DialogHeader>
+          <textarea
+            value={workoutNotes}
+            onChange={e => setWorkoutNotes(e.target.value)}
+            placeholder="Ex: treino pesado hoje, aumentar peso semana que vem..."
+            className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body text-sm min-h-[120px] resize-none"
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Exercise Dialog */}
+      <Dialog open={showAddExercise} onOpenChange={v => { setShowAddExercise(v); if (!v) { setExerciseSearch(''); setMuscleFilter(''); } }}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Adicionar Exercício</DialogTitle>
+          </DialogHeader>
+          <ExercisePickerContent onSelect={addExerciseToWorkout} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Replace Exercise Dialog */}
+      <Dialog open={showReplaceExercise} onOpenChange={v => { setShowReplaceExercise(v); if (!v) { setExerciseSearch(''); setMuscleFilter(''); } }}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Substituir Exercício</DialogTitle>
+          </DialogHeader>
+          <ExercisePickerContent onSelect={replaceExercise} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
