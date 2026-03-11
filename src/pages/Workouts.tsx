@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus } from 'lucide-react';
+import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
