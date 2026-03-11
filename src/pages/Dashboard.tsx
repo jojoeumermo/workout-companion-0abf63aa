@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals } from '@/hooks/useStorage';
@@ -86,6 +86,26 @@ export default function Dashboard() {
             <Zap size={22} className="text-primary" />
           </button>
         </motion.div>
+
+        {/* AI Coach Quick Access */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.07 }}
+          onClick={() => navigate('/ai-coach')}
+          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-primary/20"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Bot size={18} className="text-primary" />
+            </div>
+            <div className="text-left">
+              <span className="font-semibold text-sm block">FitAI Coach</span>
+              <span className="text-xs text-muted-foreground font-body">Assistente inteligente de treino</span>
+            </div>
+          </div>
+          <ChevronRight size={18} className="text-primary" />
+        </motion.button>
 
         {/* Weekly Goal */}
         {goalProgress !== null && weeklyGoal && (
