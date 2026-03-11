@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Play, Trash2, Edit3, ChevronRight } from 'lucide-react';
+import { Plus, Play, Trash2, Edit3, ChevronRight, FolderOpen, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useTemplates, useActiveWorkout } from '@/hooks/useStorage';
-import { WorkoutTemplate, WorkoutExercise, ActiveWorkout, ActiveSet } from '@/types/workout';
+import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
+import { WorkoutTemplate, WorkoutExercise, ActiveWorkout } from '@/types/workout';
 import { exercises as allExercises, getExerciseById, muscleGroups } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -12,13 +12,16 @@ export default function Workouts() {
   const navigate = useNavigate();
   const [templates, setTemplates] = useTemplates();
   const [, setActiveWorkout] = useActiveWorkout();
+  const [folders] = useFolders();
   const [showCreate, setShowCreate] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null);
   const [name, setName] = useState('');
   const [selectedExercises, setSelectedExercises] = useState<WorkoutExercise[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState('');
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [muscleFilter, setMuscleFilter] = useState('');
   const [search, setSearch] = useState('');
+  const [activeFolder, setActiveFolder] = useState('');
 
   const startWorkout = (template: WorkoutTemplate) => {
     const active: ActiveWorkout = {
@@ -41,9 +44,21 @@ export default function Workouts() {
     navigate('/treino-ativo');
   };
 
+  const startFreeWorkout = () => {
+    const active: ActiveWorkout = {
+      name: 'Treino Livre',
+      startedAt: new Date().toISOString(),
+      currentExerciseIndex: 0,
+      exercises: [],
+    };
+    setActiveWorkout(active);
+    navigate('/treino-ativo');
+  };
+
   const openCreate = () => {
     setName('');
     setSelectedExercises([]);
+    setSelectedFolder('');
     setEditingTemplate(null);
     setShowCreate(true);
   };
@@ -51,6 +66,7 @@ export default function Workouts() {
   const openEdit = (t: WorkoutTemplate) => {
     setName(t.name);
     setSelectedExercises([...t.exercises]);
+    setSelectedFolder(t.folder || '');
     setEditingTemplate(t);
     setShowCreate(true);
   };
@@ -58,13 +74,14 @@ export default function Workouts() {
   const saveTemplate = () => {
     if (!name.trim() || selectedExercises.length === 0) return;
     if (editingTemplate) {
-      setTemplates(prev => prev.map(t => t.id === editingTemplate.id ? { ...t, name, exercises: selectedExercises } : t));
+      setTemplates(prev => prev.map(t => t.id === editingTemplate.id ? { ...t, name, exercises: selectedExercises, folder: selectedFolder || undefined } : t));
     } else {
       const template: WorkoutTemplate = {
         id: `tmpl-${Date.now()}`,
         name,
         exercises: selectedExercises,
         createdAt: new Date().toISOString(),
+        folder: selectedFolder || undefined,
       };
       setTemplates(prev => [...prev, template]);
     }
@@ -93,15 +110,62 @@ export default function Workouts() {
     return true;
   });
 
+  // Group templates by folder
+  const usedFolders = [...new Set(templates.map(t => t.folder || 'Sem Pasta').filter(Boolean))];
+  const displayTemplates = activeFolder
+    ? templates.filter(t => (t.folder || 'Sem Pasta') === activeFolder)
+    : templates;
+
   return (
     <PageShell title="Treinos" rightAction={
       <button onClick={openCreate} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
         <Plus size={20} />
       </button>
     }>
-      <div className="space-y-4">
+      <div className="space-y-4 max-w-lg mx-auto">
+        {/* Free Workout */}
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={startFreeWorkout}
+          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-dashed border-border"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Zap size={18} className="text-primary" />
+            </div>
+            <div className="text-left">
+              <span className="font-semibold text-sm block">Treino Livre</span>
+              <span className="text-xs text-muted-foreground font-body">Adicione exercícios na hora</span>
+            </div>
+          </div>
+          <ChevronRight size={18} className="text-muted-foreground" />
+        </motion.button>
+
+        {/* Folder Tabs */}
+        {usedFolders.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              onClick={() => setActiveFolder('')}
+              className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!activeFolder ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+            >
+              Todos
+            </button>
+            {usedFolders.map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFolder(activeFolder === f ? '' : f)}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${activeFolder === f ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+              >
+                <FolderOpen size={12} /> {f}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Templates */}
         <AnimatePresence>
-          {templates.map((t, i) => (
+          {displayTemplates.map((t, i) => (
             <motion.div
               key={t.id}
               initial={{ opacity: 0, y: 10 }}
@@ -112,7 +176,10 @@ export default function Workouts() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-bold text-lg">{t.name}</h3>
-                  <p className="text-sm text-muted-foreground font-body mt-1">{t.exercises.length} exercícios</p>
+                  <p className="text-sm text-muted-foreground font-body mt-1">
+                    {t.exercises.length} exercícios
+                    {t.folder && <span className="ml-2 text-xs">• {t.folder}</span>}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => openEdit(t)} className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground">
@@ -177,6 +244,14 @@ export default function Workouts() {
               value={name}
               onChange={e => setName(e.target.value)}
               className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body"
+            />
+
+            <input
+              type="text"
+              placeholder="Pasta (opcional: Hipertrofia, Força...)"
+              value={selectedFolder}
+              onChange={e => setSelectedFolder(e.target.value)}
+              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body text-sm"
             />
 
             <div className="space-y-2">

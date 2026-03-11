@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { WorkoutTemplate, CompletedWorkout, ActiveWorkout, PersonalRecord } from '@/types/workout';
+import { WorkoutTemplate, CompletedWorkout, ActiveWorkout, PersonalRecord, Goal } from '@/types/workout';
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -75,4 +75,22 @@ export function usePersonalRecords() {
   const getRecord = useCallback((exerciseId: string) => records.find(r => r.exerciseId === exerciseId), [records]);
 
   return { records, updateRecord, getRecord };
+}
+
+export function useGoals() {
+  const [goals, setGoals] = useLocalStorage<Goal[]>('workout-goals', []);
+
+  const addGoal = useCallback((goal: Omit<Goal, 'id' | 'createdAt'>) => {
+    setGoals(prev => [...prev, { ...goal, id: `goal-${Date.now()}`, createdAt: new Date().toISOString() }]);
+  }, [setGoals]);
+
+  const removeGoal = useCallback((id: string) => {
+    setGoals(prev => prev.filter(g => g.id !== id));
+  }, [setGoals]);
+
+  return { goals, addGoal, removeGoal };
+}
+
+export function useFolders() {
+  return useLocalStorage<string[]>('workout-folders', ['Treinos Atuais']);
 }

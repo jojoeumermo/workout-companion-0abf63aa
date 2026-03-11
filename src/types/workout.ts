@@ -21,7 +21,7 @@ export type Equipment =
 export interface WorkoutExercise {
   exerciseId: string;
   sets: SetConfig[];
-  restTime: number; // seconds
+  restTime: number;
   notes?: string;
 }
 
@@ -35,6 +35,7 @@ export interface WorkoutTemplate {
   name: string;
   exercises: WorkoutExercise[];
   createdAt: string;
+  folder?: string;
 }
 
 export interface CompletedSet {
@@ -56,8 +57,9 @@ export interface CompletedWorkout {
   exercises: CompletedExercise[];
   startedAt: string;
   completedAt: string;
-  duration: number; // seconds
+  duration: number;
   totalVolume: number;
+  notes?: string;
 }
 
 export interface ActiveWorkout {
@@ -87,4 +89,12 @@ export interface PersonalRecord {
   maxReps: number;
   maxVolume: number;
   date: string;
+}
+
+export interface Goal {
+  id: string;
+  type: 'weekly_frequency' | 'weight_target' | 'volume_target';
+  target: number;
+  exerciseId?: string;
+  createdAt: string;
 }

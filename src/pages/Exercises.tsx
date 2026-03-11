@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Heart, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { exercises, muscleGroups, equipmentList, getExercisesByMuscle } from '@/data/exercises';
+import { exercises, muscleGroups, equipmentList } from '@/data/exercises';
 import { useFavorites } from '@/hooks/useStorage';
 import { MuscleGroup, Equipment, Exercise } from '@/types/workout';
 
@@ -23,7 +23,6 @@ export default function Exercises() {
     return true;
   });
 
-  // Group by muscle
   const grouped = muscleFilter
     ? { [muscleFilter]: filtered }
     : filtered.reduce<Record<string, Exercise[]>>((acc, e) => {
@@ -33,7 +32,7 @@ export default function Exercises() {
 
   return (
     <PageShell title="Exercícios">
-      <div className="space-y-4">
+      <div className="space-y-4 max-w-lg mx-auto">
         {/* Search */}
         <div className="relative">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -84,7 +83,10 @@ export default function Exercises() {
           </div>
         </div>
 
-        {/* Exercise List */}
+        {/* Count */}
+        <p className="text-xs text-muted-foreground font-body">{filtered.length} exercícios encontrados</p>
+
+        {/* List */}
         {Object.entries(grouped).map(([group, exs]) => (
           <div key={group} className="space-y-2">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{group}</h3>
@@ -100,7 +102,7 @@ export default function Exercises() {
                     onClick={() => navigate(`/exercicio/${ex.id}`)}
                     className="w-full bg-card rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-primary text-lg font-bold">
+                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-primary text-lg font-bold shrink-0">
                       {ex.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -109,11 +111,11 @@ export default function Exercises() {
                     </div>
                     <button
                       onClick={e => { e.stopPropagation(); toggleFavorite(ex.id); }}
-                      className="p-2"
+                      className="p-2 shrink-0"
                     >
                       <Heart size={16} className={isFavorite(ex.id) ? 'text-primary fill-primary' : 'text-muted-foreground'} />
                     </button>
-                    <ChevronRight size={16} className="text-muted-foreground" />
+                    <ChevronRight size={16} className="text-muted-foreground shrink-0" />
                   </button>
                 </motion.div>
               ))}
