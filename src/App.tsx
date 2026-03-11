@@ -11,6 +11,7 @@ import History from "./pages/History";
 import WorkoutDetail from "./pages/WorkoutDetail";
 import Progress from "./pages/Progress";
 import ActiveWorkoutPage from "./pages/ActiveWorkout";
+import AICoach from "./pages/AICoach";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/historico/:id" element={<WorkoutDetail />} />
           <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
           <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
+          <Route path="/ai-coach" element={<><AICoach /><BottomNav /></>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
