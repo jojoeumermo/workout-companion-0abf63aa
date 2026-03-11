@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Play, Trash2, Edit3, ChevronRight, FolderOpen, Zap } from 'lucide-react';
+import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
-import { WorkoutTemplate, WorkoutExercise, ActiveWorkout } from '@/types/workout';
+import { WorkoutTemplate, WorkoutExercise, ActiveWorkout, SetConfig } from '@/types/workout';
 import { exercises as allExercises, getExerciseById, muscleGroups } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -22,6 +22,7 @@ export default function Workouts() {
   const [muscleFilter, setMuscleFilter] = useState('');
   const [search, setSearch] = useState('');
   const [activeFolder, setActiveFolder] = useState('');
+  const [expandedExercise, setExpandedExercise] = useState<number | null>(null);
 
   const startWorkout = (template: WorkoutTemplate) => {
     const active: ActiveWorkout = {
@@ -60,14 +61,16 @@ export default function Workouts() {
     setSelectedExercises([]);
     setSelectedFolder('');
     setEditingTemplate(null);
+    setExpandedExercise(null);
     setShowCreate(true);
   };
 
   const openEdit = (t: WorkoutTemplate) => {
     setName(t.name);
-    setSelectedExercises([...t.exercises]);
+    setSelectedExercises(t.exercises.map(e => ({ ...e, sets: e.sets.map(s => ({ ...s })) })));
     setSelectedFolder(t.folder || '');
     setEditingTemplate(t);
+    setExpandedExercise(null);
     setShowCreate(true);
   };
 
@@ -102,6 +105,45 @@ export default function Workouts() {
 
   const removeExercise = (index: number) => {
     setSelectedExercises(prev => prev.filter((_, i) => i !== index));
+    if (expandedExercise === index) setExpandedExercise(null);
+  };
+
+  const moveExercise = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= selectedExercises.length) return;
+    setSelectedExercises(prev => {
+      const arr = [...prev];
+      [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+      return arr;
+    });
+    if (expandedExercise === index) setExpandedExercise(newIndex);
+  };
+
+  // Edit sets/reps/rest for an exercise in the template editor
+  const updateExerciseSets = (exIndex: number, sets: SetConfig[]) => {
+    setSelectedExercises(prev => prev.map((e, i) => i === exIndex ? { ...e, sets } : e));
+  };
+
+  const updateExerciseRest = (exIndex: number, restTime: number) => {
+    setSelectedExercises(prev => prev.map((e, i) => i === exIndex ? { ...e, restTime } : e));
+  };
+
+  const addSetToExercise = (exIndex: number) => {
+    const ex = selectedExercises[exIndex];
+    const lastSet = ex.sets[ex.sets.length - 1];
+    updateExerciseSets(exIndex, [...ex.sets, { targetReps: lastSet?.targetReps || 10, weight: lastSet?.weight || 0 }]);
+  };
+
+  const removeSetFromExercise = (exIndex: number, setIndex: number) => {
+    const ex = selectedExercises[exIndex];
+    if (ex.sets.length <= 1) return;
+    updateExerciseSets(exIndex, ex.sets.filter((_, i) => i !== setIndex));
+  };
+
+  const updateSetField = (exIndex: number, setIndex: number, field: 'targetReps' | 'weight', value: number) => {
+    const ex = selectedExercises[exIndex];
+    const sets = ex.sets.map((s, i) => i === setIndex ? { ...s, [field]: value } : s);
+    updateExerciseSets(exIndex, sets);
   };
 
   const filteredExercises = allExercises.filter(e => {
@@ -110,7 +152,6 @@ export default function Workouts() {
     return true;
   });
 
-  // Group templates by folder
   const usedFolders = [...new Set(templates.map(t => t.folder || 'Sem Pasta').filter(Boolean))];
   const displayTemplates = activeFolder
     ? templates.filter(t => (t.folder || 'Sem Pasta') === activeFolder)
@@ -198,7 +239,7 @@ export default function Workouts() {
                     <div key={j} className="flex items-center gap-3 text-sm">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       <span className="text-secondary-foreground font-body">{ex.name}</span>
-                      <span className="text-muted-foreground font-body ml-auto">{e.sets.length}x</span>
+                      <span className="text-muted-foreground font-body ml-auto">{e.sets.length}×{e.sets[0]?.targetReps || 10}</span>
                     </div>
                   ) : null;
                 })}
@@ -243,7 +284,7 @@ export default function Workouts() {
               placeholder="Nome do treino (ex: Push, Treino A)"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body"
+              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring font-body"
             />
 
             <input
@@ -251,21 +292,99 @@ export default function Workouts() {
               placeholder="Pasta (opcional: Hipertrofia, Força...)"
               value={selectedFolder}
               onChange={e => setSelectedFolder(e.target.value)}
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body text-sm"
+              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring font-body text-sm"
             />
 
             <div className="space-y-2">
               {selectedExercises.map((ex, i) => {
                 const exercise = getExerciseById(ex.exerciseId);
+                const isExpanded = expandedExercise === i;
                 return (
-                  <div key={i} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3">
-                    <div>
-                      <p className="font-medium text-sm">{exercise?.name}</p>
-                      <p className="text-xs text-muted-foreground font-body">{ex.sets.length} séries</p>
+                  <div key={i} className="bg-secondary rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <button onClick={() => setExpandedExercise(isExpanded ? null : i)} className="flex-1 text-left flex items-center gap-2">
+                        <div>
+                          <p className="font-medium text-sm">{exercise?.name}</p>
+                          <p className="text-xs text-muted-foreground font-body">{ex.sets.length} séries • {ex.restTime}s descanso</p>
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => moveExercise(i, -1)} disabled={i === 0} className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground disabled:opacity-20">
+                          <ChevronUp size={14} />
+                        </button>
+                        <button onClick={() => moveExercise(i, 1)} disabled={i === selectedExercises.length - 1} className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground disabled:opacity-20">
+                          <ChevronDown size={14} />
+                        </button>
+                        <button onClick={() => setExpandedExercise(isExpanded ? null : i)} className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground">
+                          {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                        </button>
+                        <button onClick={() => removeExercise(i)} className="w-7 h-7 rounded-lg flex items-center justify-center text-destructive">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
-                    <button onClick={() => removeExercise(i)} className="text-destructive">
-                      <Trash2 size={16} />
-                    </button>
+
+                    {/* Expanded editor */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="px-4 pb-3 space-y-3 overflow-hidden"
+                        >
+                          {/* Rest time */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground font-body">Descanso (seg)</span>
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => updateExerciseRest(i, Math.max(0, ex.restTime - 15))} className="w-7 h-7 rounded-lg bg-card flex items-center justify-center text-muted-foreground"><Minus size={12} /></button>
+                              <span className="text-sm font-medium w-10 text-center">{ex.restTime}s</span>
+                              <button onClick={() => updateExerciseRest(i, ex.restTime + 15)} className="w-7 h-7 rounded-lg bg-card flex items-center justify-center text-muted-foreground"><Plus size={12} /></button>
+                            </div>
+                          </div>
+
+                          {/* Sets */}
+                          <div className="space-y-1.5">
+                            <div className="grid grid-cols-[40px_1fr_1fr_28px] gap-2 text-xs text-muted-foreground font-body">
+                              <span>Série</span>
+                              <span className="text-center">Reps</span>
+                              <span className="text-center">Peso (kg)</span>
+                              <span></span>
+                            </div>
+                            {ex.sets.map((set, si) => (
+                              <div key={si} className="grid grid-cols-[40px_1fr_1fr_28px] gap-2 items-center">
+                                <span className="text-xs font-medium text-center text-muted-foreground">{si + 1}</span>
+                                <input
+                                  type="number"
+                                  inputMode="numeric"
+                                  value={set.targetReps || ''}
+                                  onChange={e => updateSetField(i, si, 'targetReps', parseInt(e.target.value) || 0)}
+                                  className="w-full bg-card rounded-lg px-2 py-1.5 text-center text-xs font-medium outline-none focus:ring-1 focus:ring-ring"
+                                />
+                                <input
+                                  type="number"
+                                  inputMode="decimal"
+                                  value={set.weight || ''}
+                                  onChange={e => updateSetField(i, si, 'weight', parseFloat(e.target.value) || 0)}
+                                  placeholder="0"
+                                  className="w-full bg-card rounded-lg px-2 py-1.5 text-center text-xs font-medium outline-none focus:ring-1 focus:ring-ring"
+                                />
+                                <button onClick={() => removeSetFromExercise(i, si)} disabled={ex.sets.length <= 1} className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-destructive disabled:opacity-20">
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+
+                          <button
+                            onClick={() => addSetToExercise(i)}
+                            className="w-full border border-dashed border-border rounded-lg py-1.5 text-muted-foreground text-xs font-body flex items-center justify-center gap-1 hover:border-primary hover:text-primary transition-colors"
+                          >
+                            <Plus size={12} /> Série
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
@@ -301,7 +420,7 @@ export default function Workouts() {
               placeholder="Buscar exercício..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary font-body text-sm"
+              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring font-body text-sm"
             />
             <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
               <button
