@@ -1,75 +1,153 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2 } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import PageShell from '@/components/PageShell';
-import { useHistory, useGoals } from '@/hooks/useStorage';
+import { useHistory, useGoals, usePersonalRecords } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function Progress() {
+  const navigate = useNavigate();
   const [history] = useHistory();
   const { goals, addGoal, removeGoal } = useGoals();
+  const { records } = usePersonalRecords();
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [goalTarget, setGoalTarget] = useState(4);
 
   // Weekly volume data (last 8 weeks)
-  const weeklyData: { week: string; volume: number }[] = [];
-  for (let i = 7; i >= 0; i--) {
-    const now = new Date();
-    const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
-    const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
-    const volume = history
-      .filter(w => {
-        const d = new Date(w.completedAt);
-        return d >= weekStart && d < weekEnd;
-      })
-      .reduce((sum, w) => sum + w.totalVolume, 0);
-    weeklyData.push({ week: `S${8 - i}`, volume: Math.round(volume / 1000) });
-  }
+  const weeklyData = useMemo(() => {
+    const data: { week: string; volume: number }[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const now = new Date();
+      const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      const volume = history
+        .filter(w => {
+          const d = new Date(w.completedAt);
+          return d >= weekStart && d < weekEnd;
+        })
+        .reduce((sum, w) => sum + w.totalVolume, 0);
+      data.push({ week: `S${8 - i}`, volume: Math.round(volume / 1000) });
+    }
+    return data;
+  }, [history]);
 
   // Frequency data
-  const freqData: { week: string; count: number }[] = [];
-  for (let i = 3; i >= 0; i--) {
-    const now = new Date();
-    const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
-    const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
-    const count = history.filter(w => {
-      const d = new Date(w.completedAt);
-      return d >= weekStart && d < weekEnd;
-    }).length;
-    freqData.push({ week: `Sem ${4 - i}`, count });
-  }
-
-  // Heatmap data (last 12 weeks)
-  const heatmapWeeks: { date: Date; count: number }[][] = [];
-  const today = new Date();
-  for (let w = 11; w >= 0; w--) {
-    const week: { date: Date; count: number }[] = [];
-    for (let d = 0; d < 7; d++) {
-      const date = new Date(today.getTime() - (w * 7 + (6 - d)) * 24 * 60 * 60 * 1000);
-      const dateStr = date.toISOString().split('T')[0];
-      const count = history.filter(h => h.completedAt.startsWith(dateStr)).length;
-      week.push({ date, count });
+  const freqData = useMemo(() => {
+    const data: { week: string; count: number }[] = [];
+    for (let i = 3; i >= 0; i--) {
+      const now = new Date();
+      const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      const count = history.filter(w => {
+        const d = new Date(w.completedAt);
+        return d >= weekStart && d < weekEnd;
+      }).length;
+      data.push({ week: `Sem ${4 - i}`, count });
     }
-    heatmapWeeks.push(week);
-  }
+    return data;
+  }, [history]);
 
-  // Volume by muscle group
-  const muscleVolume: Record<string, number> = {};
-  history.forEach(w => {
-    w.exercises.forEach(ex => {
-      const exercise = getExerciseById(ex.exerciseId);
-      if (exercise) {
-        const vol = ex.sets.filter(s => s.completed).reduce((s, set) => s + set.weight * set.reps, 0);
-        muscleVolume[exercise.muscleGroup] = (muscleVolume[exercise.muscleGroup] || 0) + vol;
+  // Heatmap data (last 16 weeks)
+  const heatmapWeeks = useMemo(() => {
+    const weeks: { date: Date; count: number }[][] = [];
+    const today = new Date();
+    for (let w = 15; w >= 0; w--) {
+      const week: { date: Date; count: number }[] = [];
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(today.getTime() - (w * 7 + (6 - d)) * 24 * 60 * 60 * 1000);
+        const dateStr = date.toISOString().split('T')[0];
+        const count = history.filter(h => h.completedAt.startsWith(dateStr)).length;
+        week.push({ date, count });
       }
+      weeks.push(week);
+    }
+    return weeks;
+  }, [history]);
+
+  // Streak calculation
+  const { currentStreak, bestStreak } = useMemo(() => {
+    if (history.length === 0) return { currentStreak: 0, bestStreak: 0 };
+    
+    const trainedDays = new Set<string>();
+    history.forEach(w => {
+      trainedDays.add(new Date(w.completedAt).toISOString().split('T')[0]);
     });
-  });
-  const muscleData = Object.entries(muscleVolume)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 6)
-    .map(([name, volume]) => ({ name, volume: Math.round(volume / 1000) }));
+    
+    const sortedDays = Array.from(trainedDays).sort().reverse();
+    let current = 0;
+    let best = 0;
+    
+    // Check current streak from today
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    
+    if (trainedDays.has(today) || trainedDays.has(yesterday)) {
+      let checkDate = trainedDays.has(today) ? new Date() : new Date(Date.now() - 86400000);
+      while (trainedDays.has(checkDate.toISOString().split('T')[0])) {
+        current++;
+        checkDate = new Date(checkDate.getTime() - 86400000);
+      }
+    }
+    
+    // Best streak
+    let streak = 1;
+    for (let i = 0; i < sortedDays.length - 1; i++) {
+      const diff = new Date(sortedDays[i]).getTime() - new Date(sortedDays[i + 1]).getTime();
+      if (diff <= 86400000) {
+        streak++;
+      } else {
+        best = Math.max(best, streak);
+        streak = 1;
+      }
+    }
+    best = Math.max(best, streak, current);
+    
+    return { currentStreak: current, bestStreak: best };
+  }, [history]);
+
+  // Volume by muscle group with series count
+  const muscleStats = useMemo(() => {
+    const stats: Record<string, { volume: number; sets: number }> = {};
+    history.forEach(w => {
+      w.exercises.forEach(ex => {
+        const exercise = getExerciseById(ex.exerciseId);
+        if (exercise) {
+          const completedSets = ex.sets.filter(s => s.completed);
+          const vol = completedSets.reduce((s, set) => s + set.weight * set.reps, 0);
+          if (!stats[exercise.muscleGroup]) stats[exercise.muscleGroup] = { volume: 0, sets: 0 };
+          stats[exercise.muscleGroup].volume += vol;
+          stats[exercise.muscleGroup].sets += completedSets.length;
+        }
+      });
+    });
+    return Object.entries(stats)
+      .sort(([, a], [, b]) => b.sets - a.sets)
+      .slice(0, 8)
+      .map(([name, data]) => ({ name, volume: Math.round(data.volume / 1000), sets: data.sets }));
+  }, [history]);
+
+  // Monthly stats
+  const monthlyStats = useMemo(() => {
+    const now = new Date();
+    const thisMonth = history.filter(w => {
+      const d = new Date(w.completedAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const lastMonth = history.filter(w => {
+      const d = new Date(w.completedAt);
+      const lm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      return d.getMonth() === lm.getMonth() && d.getFullYear() === lm.getFullYear();
+    });
+    return {
+      thisMonthCount: thisMonth.length,
+      lastMonthCount: lastMonth.length,
+      thisMonthVolume: thisMonth.reduce((s, w) => s + w.totalVolume, 0),
+      lastMonthVolume: lastMonth.reduce((s, w) => s + w.totalVolume, 0),
+    };
+  }, [history]);
 
   const totalWorkouts = history.length;
   const totalVolume = history.reduce((s, w) => s + w.totalVolume, 0);
@@ -83,29 +161,61 @@ export default function Progress() {
 
   const weeklyGoal = goals.find(g => g.type === 'weekly_frequency');
 
+  // Top PRs
+  const topPRs = records
+    .map(r => ({ ...r, exercise: getExerciseById(r.exerciseId) }))
+    .filter(r => r.exercise)
+    .sort((a, b) => b.maxWeight - a.maxWeight)
+    .slice(0, 5);
+
   return (
     <PageShell title="Progresso" rightAction={
-      <button onClick={() => setShowGoalDialog(true)} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-        <Target size={20} />
-      </button>
+      <div className="flex gap-2">
+        <button onClick={() => navigate('/configuracoes')} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-muted-foreground">
+          <Settings size={18} />
+        </button>
+        <button onClick={() => setShowGoalDialog(true)} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+          <Target size={20} />
+        </button>
+      </div>
     }>
       <div className="space-y-6 max-w-lg mx-auto">
         {/* Summary */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-3 gap-3">
-          <div className="bg-card rounded-2xl p-4 space-y-1">
-            <Calendar size={16} className="text-primary" />
-            <p className="text-xl font-bold">{totalWorkouts}</p>
-            <p className="text-[10px] text-muted-foreground font-body">treinos</p>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
+          <div className="bg-card rounded-2xl p-3 space-y-1">
+            <Calendar size={14} className="text-primary" />
+            <p className="text-lg font-bold">{totalWorkouts}</p>
+            <p className="text-[9px] text-muted-foreground font-body">treinos</p>
           </div>
-          <div className="bg-card rounded-2xl p-4 space-y-1">
-            <TrendingUp size={16} className="text-primary" />
-            <p className="text-xl font-bold">{(totalVolume / 1000).toFixed(1)}t</p>
-            <p className="text-[10px] text-muted-foreground font-body">volume total</p>
+          <div className="bg-card rounded-2xl p-3 space-y-1">
+            <TrendingUp size={14} className="text-primary" />
+            <p className="text-lg font-bold">{(totalVolume / 1000).toFixed(1)}t</p>
+            <p className="text-[9px] text-muted-foreground font-body">volume</p>
           </div>
-          <div className="bg-card rounded-2xl p-4 space-y-1">
-            <BarChart3 size={16} className="text-primary" />
-            <p className="text-xl font-bold">{avgDuration}m</p>
-            <p className="text-[10px] text-muted-foreground font-body">média/treino</p>
+          <div className="bg-card rounded-2xl p-3 space-y-1">
+            <Flame size={14} className="text-primary" />
+            <p className="text-lg font-bold">{currentStreak}</p>
+            <p className="text-[9px] text-muted-foreground font-body">dias seguidos</p>
+          </div>
+          <div className="bg-card rounded-2xl p-3 space-y-1">
+            <Award size={14} className="text-primary" />
+            <p className="text-lg font-bold">{bestStreak}</p>
+            <p className="text-[9px] text-muted-foreground font-body">recorde</p>
+          </div>
+        </motion.div>
+
+        {/* Monthly comparison */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="bg-card rounded-2xl p-4 space-y-2">
+          <h3 className="font-semibold text-sm">Este Mês</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-xl font-bold text-primary">{monthlyStats.thisMonthCount}</p>
+              <p className="text-[10px] text-muted-foreground font-body">treinos ({monthlyStats.lastMonthCount} mês passado)</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-primary">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
+              <p className="text-[10px] text-muted-foreground font-body">volume ({(monthlyStats.lastMonthVolume / 1000).toFixed(1)}t anterior)</p>
+            </div>
           </div>
         </motion.div>
 
@@ -131,13 +241,13 @@ export default function Progress() {
         {/* Heatmap */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-card rounded-2xl p-5 space-y-3">
           <h3 className="font-semibold text-sm">Consistência</h3>
-          <div className="flex gap-1 justify-center">
+          <div className="flex gap-[3px] justify-center overflow-x-auto">
             {heatmapWeeks.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-1">
+              <div key={wi} className="flex flex-col gap-[3px]">
                 {week.map((day, di) => (
                   <div
                     key={di}
-                    className={`w-3 h-3 rounded-sm ${
+                    className={`w-[11px] h-[11px] rounded-sm transition-colors ${
                       day.count >= 2 ? 'bg-primary' :
                       day.count === 1 ? 'bg-primary/50' :
                       'bg-secondary'
@@ -150,15 +260,59 @@ export default function Progress() {
           </div>
           <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground font-body">
             <span>Menos</span>
-            <div className="w-3 h-3 rounded-sm bg-secondary" />
-            <div className="w-3 h-3 rounded-sm bg-primary/50" />
-            <div className="w-3 h-3 rounded-sm bg-primary" />
+            <div className="w-[11px] h-[11px] rounded-sm bg-secondary" />
+            <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
+            <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
             <span>Mais</span>
           </div>
         </motion.div>
 
+        {/* Muscle Stats */}
+        {muscleStats.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="bg-card rounded-2xl p-5 space-y-4">
+            <h3 className="font-semibold text-sm">Séries por Músculo</h3>
+            <div className="space-y-3">
+              {muscleStats.map(m => {
+                const maxSets = muscleStats[0]?.sets || 1;
+                return (
+                  <div key={m.name} className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-body text-secondary-foreground">{m.name}</span>
+                      <span className="font-medium text-primary text-xs">{m.sets} séries • {m.volume}t</span>
+                    </div>
+                    <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                      <div className="h-full bg-primary/60 rounded-full" style={{ width: `${(m.sets / maxSets) * 100}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Top PRs */}
+        {topPRs.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="bg-card rounded-2xl p-5 space-y-3">
+            <div className="flex items-center gap-2">
+              <Award size={16} className="text-primary" />
+              <h3 className="font-semibold text-sm">Recordes Pessoais</h3>
+            </div>
+            <div className="space-y-2">
+              {topPRs.map(pr => (
+                <div key={pr.exerciseId} className="flex items-center justify-between bg-secondary rounded-xl px-4 py-2.5">
+                  <span className="text-sm font-body truncate flex-1">{pr.exercise?.name}</span>
+                  <div className="flex gap-3 text-xs text-muted-foreground font-body shrink-0">
+                    <span className="text-primary font-medium">{pr.maxWeight}kg</span>
+                    <span>{pr.maxReps}reps</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Volume Chart */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="bg-card rounded-2xl p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <BarChart3 size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Volume Semanal (ton)</h3>
@@ -169,7 +323,7 @@ export default function Progress() {
                 <XAxis dataKey="week" tick={{ fill: 'hsl(0 0% 60%)', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(240 2% 18%)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: 12 }} cursor={false} />
-                <Bar dataKey="volume" fill="hsl(130 60% 50%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="volume" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -178,29 +332,6 @@ export default function Progress() {
             </div>
           )}
         </motion.div>
-
-        {/* Volume by Muscle */}
-        {muscleData.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl p-5 space-y-4">
-            <h3 className="font-semibold text-sm">Volume por Músculo (ton)</h3>
-            <div className="space-y-3">
-              {muscleData.map(m => {
-                const maxVol = muscleData[0]?.volume || 1;
-                return (
-                  <div key={m.name} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-body text-secondary-foreground">{m.name}</span>
-                      <span className="font-medium text-primary">{m.volume}t</span>
-                    </div>
-                    <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-primary/60 rounded-full" style={{ width: `${(m.volume / maxVol) * 100}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
 
         {/* Frequency */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="bg-card rounded-2xl p-5 space-y-4">
@@ -214,7 +345,7 @@ export default function Progress() {
                 <XAxis dataKey="week" tick={{ fill: 'hsl(0 0% 60%)', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(240 2% 18%)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: 12 }} cursor={false} />
-                <Line type="monotone" dataKey="count" stroke="hsl(130 60% 50%)" strokeWidth={2} dot={{ fill: 'hsl(130 60% 50%)', r: 4 }} />
+                <Line type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))', r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
@@ -246,7 +377,6 @@ export default function Progress() {
             </div>
             <button
               onClick={() => {
-                // Remove existing weekly goal first
                 const existing = goals.find(g => g.type === 'weekly_frequency');
                 if (existing) removeGoal(existing.id);
                 addGoal({ type: 'weekly_frequency', target: goalTarget });
