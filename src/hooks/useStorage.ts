@@ -11,15 +11,20 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((pre
     }
   });
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(storedValue));
-    } catch (e) {
-      console.error('Error saving to localStorage', e);
-    }
-  }, [key, storedValue]);
+  const setValue = useCallback((value: T | ((prev: T) => T)) => {
+    setStoredValue(prev => {
+      const newValue = value instanceof Function ? value(prev) : value;
+      // Sync write to localStorage so navigations pick up the value immediately
+      try {
+        localStorage.setItem(key, JSON.stringify(newValue));
+      } catch (e) {
+        console.error('Error saving to localStorage', e);
+      }
+      return newValue;
+    });
+  }, [key]);
 
-  return [storedValue, setStoredValue];
+  return [storedValue, setValue];
 }
 
 export function useTemplates() {
@@ -93,4 +98,8 @@ export function useGoals() {
 
 export function useFolders() {
   return useLocalStorage<string[]>('workout-folders', ['Treinos Atuais']);
+}
+
+export function useTheme() {
+  return useLocalStorage<string>('app-theme', 'green');
 }

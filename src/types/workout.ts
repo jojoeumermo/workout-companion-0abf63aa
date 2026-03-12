@@ -18,11 +18,15 @@ export type Equipment =
   | 'Barra' | 'Halteres' | 'Máquina' | 'Cabos' | 'Peso Corporal'
   | 'Kettlebell' | 'Elástico' | 'Smith Machine' | 'Banco' | 'Outro';
 
+export type SetType = 'normal' | 'warmup' | 'dropset' | 'superset';
+
 export interface WorkoutExercise {
   exerciseId: string;
   sets: SetConfig[];
   restTime: number;
   notes?: string;
+  setType?: SetType;
+  supersetWith?: string; // exerciseId of paired exercise
 }
 
 export interface SetConfig {
@@ -74,6 +78,8 @@ export interface ActiveExercise {
   exerciseId: string;
   sets: ActiveSet[];
   restTime: number;
+  setType?: SetType;
+  supersetWith?: string;
 }
 
 export interface ActiveSet {

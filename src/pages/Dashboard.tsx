@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useHistory, useTemplates, useActiveWorkout, useGoals } from '@/hooks/useStorage';
+import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { ActiveWorkout } from '@/types/workout';
+
+const themes: Record<string, string> = {
+  green: '130 60% 50%',
+  blue: '210 80% 55%',
+  orange: '25 90% 55%',
+  purple: '270 70% 60%',
+  red: '0 75% 55%',
+  cyan: '180 70% 45%',
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -13,6 +22,16 @@ export default function Dashboard() {
   const [templates] = useTemplates();
   const [, setActiveWorkout] = useActiveWorkout();
   const { goals } = useGoals();
+  const [theme] = useTheme();
+
+  // Apply saved theme on mount
+  useEffect(() => {
+    if (theme && themes[theme]) {
+      document.documentElement.style.setProperty('--primary', themes[theme]);
+      document.documentElement.style.setProperty('--accent', themes[theme]);
+      document.documentElement.style.setProperty('--ring', themes[theme]);
+    }
+  }, [theme]);
 
   const thisWeek = history.filter(w => {
     const d = new Date(w.completedAt);
@@ -54,9 +73,14 @@ export default function Dashboard() {
     <PageShell>
       <div className="pt-14 space-y-6 max-w-lg mx-auto">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-          <p className="text-muted-foreground font-body text-sm">Pronto para treinar?</p>
-          <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-muted-foreground font-body text-sm">Pronto para treinar?</p>
+            <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
+          </div>
+          <button onClick={() => navigate('/configuracoes')} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-muted-foreground">
+            <Settings size={20} />
+          </button>
         </motion.div>
 
         {/* Start Buttons */}
@@ -75,16 +99,28 @@ export default function Dashboard() {
               <Play size={28} fill="currentColor" />
             </div>
           </button>
-          <button
-            onClick={startFreeWorkout}
-            className="w-full bg-card text-foreground rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-border"
-          >
-            <div className="text-left">
-              <span className="font-semibold block">Treino Livre</span>
-              <span className="text-xs text-muted-foreground font-body">Sem rotina pré-definida</span>
-            </div>
-            <Zap size={22} className="text-primary" />
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={startFreeWorkout}
+              className="bg-card text-foreground rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform border border-border"
+            >
+              <Zap size={20} className="text-primary" />
+              <div className="text-left">
+                <span className="font-semibold text-sm block">Treino Livre</span>
+                <span className="text-[10px] text-muted-foreground font-body">Sem rotina</span>
+              </div>
+            </button>
+            <button
+              onClick={() => navigate('/programas')}
+              className="bg-card text-foreground rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform border border-border"
+            >
+              <BookOpen size={20} className="text-primary" />
+              <div className="text-left">
+                <span className="font-semibold text-sm block">Programas</span>
+                <span className="text-[10px] text-muted-foreground font-body">Planos IA</span>
+              </div>
+            </button>
+          </div>
         </motion.div>
 
         {/* AI Coach Quick Access */}
@@ -101,7 +137,7 @@ export default function Dashboard() {
             </div>
             <div className="text-left">
               <span className="font-semibold text-sm block">FitAI Coach</span>
-              <span className="text-xs text-muted-foreground font-body">Assistente inteligente de treino</span>
+              <span className="text-xs text-muted-foreground font-body">Treinador inteligente com IA</span>
             </div>
           </div>
           <ChevronRight size={18} className="text-primary" />

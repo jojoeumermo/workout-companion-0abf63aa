@@ -1,19 +1,22 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Bot, User, Sparkles, Dumbbell, TrendingUp, Zap, ArrowLeft, Trash2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Dumbbell, TrendingUp, Zap, Trash2, Target, Brain, AlertTriangle, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import PageShell from '@/components/PageShell';
 import { useHistory, usePersonalRecords, useTemplates } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 
-
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const QUICK_PROMPTS = [
-  { icon: Dumbbell, label: 'Substituir exercício', prompt: 'Qual exercício posso usar para substituir o supino reto com barra?' },
-  { icon: TrendingUp, label: 'Progressão de carga', prompt: 'Me dê dicas de como progredir carga no agachamento de forma segura.' },
-  { icon: Zap, label: 'Gerar rotina', prompt: 'Crie uma rotina de treino Push/Pull/Legs para hipertrofia, 6 dias por semana.' },
-  { icon: Sparkles, label: 'Analisar treino', prompt: 'Analise meu histórico de treinos recente e sugira melhorias.' },
+  { icon: Dumbbell, label: 'Criar treino', prompt: 'Crie uma rotina de treino completa para hipertrofia, considerando meu histórico. Inclua exercícios, séries, repetições e tempo de descanso.' },
+  { icon: TrendingUp, label: 'Analisar progresso', prompt: 'Analise meu progresso de treinos das últimas semanas. Identifique pontos fortes, fracos e sugira melhorias.' },
+  { icon: Zap, label: 'Substituir exercício', prompt: 'Sugira exercícios substitutos para os principais exercícios que faço, mantendo os mesmos grupos musculares.' },
+  { icon: Target, label: 'Progressão de carga', prompt: 'Analise meus pesos atuais e sugira progressão de carga para os próximos treinos, baseado no meu histórico.' },
+  { icon: Brain, label: 'Gerar programa', prompt: 'Crie um programa de treino de 8 semanas com periodização, incluindo fases de adaptação, progressão, intensidade e deload.' },
+  { icon: AlertTriangle, label: 'Detectar overtraining', prompt: 'Analise meu volume e frequência de treino recentes. Estou em risco de overtraining? Devo fazer um deload?' },
+  { icon: Calendar, label: 'Dividir semana', prompt: 'Sugira a melhor divisão de treino para minha semana, considerando meu histórico e grupos musculares treinados.' },
+  { icon: Sparkles, label: 'Insights do treino', prompt: 'Me dê insights inteligentes sobre meus treinos: tendências de volume, músculos mais e menos treinados, e recomendações.' },
 ];
 
 export default function AICoach() {
@@ -35,39 +38,70 @@ export default function AICoach() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Build context from user data
   const buildContext = () => {
     const parts: string[] = [];
 
-    // Recent workouts
-    const recentWorkouts = history.slice(-5).reverse();
+    // Recent workouts with more detail
+    const recentWorkouts = history.slice(-10).reverse();
     if (recentWorkouts.length > 0) {
-      parts.push('Últimos treinos:');
+      parts.push('Últimos treinos do usuário:');
       recentWorkouts.forEach(w => {
         const date = new Date(w.completedAt).toLocaleDateString('pt-BR');
         const exercises = w.exercises.map(e => {
           const ex = getExerciseById(e.exerciseId);
-          const sets = e.sets.filter(s => s.completed).map(s => `${s.weight}kg×${s.reps}`).join(', ');
-          return `${ex?.name || 'Exercício'}: ${sets}`;
-        }).join('; ');
-        parts.push(`- ${w.name} (${date}, ${Math.round(w.duration / 60)}min, ${w.totalVolume}kg vol): ${exercises}`);
+          const completedSets = e.sets.filter(s => s.completed);
+          const sets = completedSets.map(s => `${s.weight}kg×${s.reps}`).join(', ');
+          const vol = completedSets.reduce((s, set) => s + set.weight * set.reps, 0);
+          return `${ex?.name || 'Exercício'} [${ex?.muscleGroup}]: ${sets} (vol: ${vol}kg)`;
+        }).join('\n  ');
+        parts.push(`- ${w.name} (${date}, ${Math.round(w.duration / 60)}min, vol total: ${w.totalVolume}kg):\n  ${exercises}`);
       });
     }
+
+    // Training frequency
+    const thisWeek = history.filter(w => {
+      const d = new Date(w.completedAt);
+      return d >= new Date(Date.now() - 7 * 86400000);
+    }).length;
+    const lastWeek = history.filter(w => {
+      const d = new Date(w.completedAt);
+      return d >= new Date(Date.now() - 14 * 86400000) && d < new Date(Date.now() - 7 * 86400000);
+    }).length;
+    parts.push(`\nFrequência: ${thisWeek} treinos esta semana, ${lastWeek} semana passada, ${history.length} total.`);
 
     // Personal records
     if (records.length > 0) {
       parts.push('\nRecordes pessoais:');
-      records.slice(0, 10).forEach(r => {
+      records.forEach(r => {
         const ex = getExerciseById(r.exerciseId);
-        parts.push(`- ${ex?.name || 'Exercício'}: ${r.maxWeight}kg peso, ${r.maxReps} reps, ${r.maxVolume}kg vol`);
+        parts.push(`- ${ex?.name || 'Exercício'} [${ex?.muscleGroup}]: ${r.maxWeight}kg peso, ${r.maxReps} reps, ${r.maxVolume}kg vol (${new Date(r.date).toLocaleDateString('pt-BR')})`);
+      });
+    }
+
+    // Volume by muscle
+    const muscleVol: Record<string, number> = {};
+    history.forEach(w => w.exercises.forEach(e => {
+      const ex = getExerciseById(e.exerciseId);
+      if (ex) {
+        const vol = e.sets.filter(s => s.completed).reduce((s, set) => s + set.weight * set.reps, 0);
+        muscleVol[ex.muscleGroup] = (muscleVol[ex.muscleGroup] || 0) + vol;
+      }
+    }));
+    if (Object.keys(muscleVol).length > 0) {
+      parts.push('\nVolume acumulado por músculo:');
+      Object.entries(muscleVol).sort(([,a],[,b]) => b - a).forEach(([m, v]) => {
+        parts.push(`- ${m}: ${(v / 1000).toFixed(1)}t`);
       });
     }
 
     // Templates
     if (templates.length > 0) {
-      parts.push('\nRotinas do usuário:');
+      parts.push('\nRotinas salvas:');
       templates.forEach(t => {
-        const exNames = t.exercises.map(e => getExerciseById(e.exerciseId)?.name || '?').join(', ');
+        const exNames = t.exercises.map(e => {
+          const ex = getExerciseById(e.exerciseId);
+          return `${ex?.name} (${e.sets.length}×${e.sets[0]?.targetReps || 10})`;
+        }).join(', ');
         parts.push(`- ${t.name}: ${exNames}`);
       });
     }
@@ -158,7 +192,6 @@ export default function AICoach() {
         }
       }
 
-      // Final flush
       if (textBuffer.trim()) {
         for (let raw of textBuffer.split('\n')) {
           if (!raw) continue;
@@ -192,14 +225,10 @@ export default function AICoach() {
     }
   };
 
-  const clearChat = () => {
-    setMessages([]);
-  };
-
   return (
     <PageShell title="FitAI Coach" rightAction={
       messages.length > 0 ? (
-        <button onClick={clearChat} className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center text-destructive">
+        <button onClick={() => setMessages([])} className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center text-destructive">
           <Trash2 size={18} />
         </button>
       ) : undefined
@@ -210,7 +239,7 @@ export default function AICoach() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 flex flex-col items-center justify-center space-y-6 py-8"
+            className="flex-1 flex flex-col items-center justify-center space-y-6 py-4"
           >
             <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Bot size={36} className="text-primary" />
@@ -218,24 +247,21 @@ export default function AICoach() {
             <div className="text-center space-y-2">
               <h2 className="text-xl font-bold">FitAI Coach</h2>
               <p className="text-muted-foreground font-body text-sm max-w-xs mx-auto">
-                Seu assistente de treino inteligente. Pergunte sobre exercícios, progressão ou peça para criar rotinas.
+                Treinador inteligente que analisa seus dados reais. Pergunte qualquer coisa sobre treino!
               </p>
             </div>
 
-            <div className="w-full space-y-2">
+            <div className="w-full grid grid-cols-2 gap-2">
               {QUICK_PROMPTS.map(({ icon: Icon, label, prompt }) => (
                 <button
                   key={label}
                   onClick={() => sendMessage(prompt)}
-                  className="w-full bg-card rounded-xl p-3.5 flex items-center gap-3 text-left active:scale-[0.98] transition-transform hover:bg-secondary"
+                  className="bg-card rounded-xl p-3 flex items-center gap-2.5 text-left active:scale-[0.98] transition-transform hover:bg-secondary"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Icon size={16} className="text-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Icon size={14} className="text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm">{label}</p>
-                    <p className="text-xs text-muted-foreground font-body truncate">{prompt}</p>
-                  </div>
+                  <p className="font-medium text-xs leading-tight">{label}</p>
                 </button>
               ))}
             </div>
@@ -266,7 +292,7 @@ export default function AICoach() {
                     }`}
                   >
                     {msg.role === 'assistant' ? (
-                      <div className="prose prose-sm prose-invert max-w-none [&_p]:text-sm [&_p]:font-body [&_li]:text-sm [&_li]:font-body [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:text-xs [&_pre]:bg-secondary [&_pre]:rounded-lg">
+                      <div className="prose prose-sm prose-invert max-w-none [&_p]:text-sm [&_p]:font-body [&_li]:text-sm [&_li]:font-body [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:text-xs [&_pre]:bg-secondary [&_pre]:rounded-lg [&_table]:text-xs [&_th]:px-2 [&_td]:px-2">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     ) : (
@@ -283,11 +309,7 @@ export default function AICoach() {
             </AnimatePresence>
 
             {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex gap-3"
-              >
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <Bot size={16} className="text-primary" />
                 </div>
