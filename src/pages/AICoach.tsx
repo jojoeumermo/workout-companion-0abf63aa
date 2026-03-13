@@ -123,20 +123,16 @@ export default function AICoach() {
     try {
       const context = buildContext();
 
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`,
-        {
+      const resp = await fetch('/api/ai-coach', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
             messages: allMessages.map(m => ({ role: m.role, content: m.content })),
             context,
           }),
-        }
-      );
+        });
 
       if (!resp.ok) {
         const errorData = await resp.json().catch(() => ({ error: 'Erro desconhecido' }));
