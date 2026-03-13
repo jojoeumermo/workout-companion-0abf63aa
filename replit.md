@@ -39,6 +39,7 @@ Two workflows run in parallel:
 - Workout history and progress charts
 - Personal records tracking
 - AI coach powered by OpenAI (Portuguese language)
+- **Camera AI Analysis** — in-browser pose detection (MoveNet via TensorFlow.js) with automatic rep counting and execution feedback. Runs 100% locally, no video sent to servers. Supports: Agachamento, Flexão, Rosca Direta, Desenvolvimento.
 - PWA support (installable on mobile)
 - Theme customization
 - Goals tracking

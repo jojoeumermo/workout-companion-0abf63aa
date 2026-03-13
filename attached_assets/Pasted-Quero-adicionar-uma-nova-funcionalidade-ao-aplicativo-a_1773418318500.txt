@@ -1,0 +1,153 @@
+Quero adicionar uma nova funcionalidade ao aplicativo: análise de execução de exercícios usando a câmera com inteligência artificial.
+
+IMPORTANTE:
+Não remover nenhuma funcionalidade existente.
+Não quebrar nenhuma parte do aplicativo atual.
+Tudo que já funciona deve continuar funcionando exatamente como está.
+
+Essa funcionalidade deve ser adicionada como um recurso novo no aplicativo.
+
+--------------------------------------------------
+
+NOME DA FUNCIONALIDADE
+
+Adicionar uma nova seção chamada:
+
+"Análise de Exercício com IA"
+ou
+"Câmera com IA"
+
+--------------------------------------------------
+
+OBJETIVO
+
+Permitir que o usuário utilize a câmera do celular ou computador para:
+
+- analisar execução do exercício
+- contar repetições automaticamente
+- receber feedback básico de execução
+
+Essa função deve ser opcional e complementar ao sistema atual de registro de treino.
+
+--------------------------------------------------
+
+TECNOLOGIA SUGERIDA
+
+Utilizar detecção de pose no navegador.
+
+Sugestões:
+
+MediaPipe Pose
+ou
+TensorFlow.js MoveNet / BlazePose
+
+A câmera deve ser acessada com getUserMedia().
+
+Sempre que possível a análise deve acontecer localmente no navegador.
+
+Não enviar vídeo para servidores.
+
+--------------------------------------------------
+
+EXERCÍCIOS SUPORTADOS INICIALMENTE
+
+Começar com alguns exercícios bem implementados:
+
+- agachamento
+- flexão
+- rosca direta
+- desenvolvimento com halteres
+
+Depois será possível expandir.
+
+--------------------------------------------------
+
+CONTAGEM AUTOMÁTICA DE REPETIÇÕES
+
+Detectar o ciclo completo do movimento.
+
+Exemplo:
+
+descida → subida
+
+Mostrar contador em tempo real:
+
+Repetições: 7
+
+Incrementar apenas quando uma repetição completa for detectada.
+
+--------------------------------------------------
+
+FEEDBACK DE EXECUÇÃO
+
+Mostrar sugestões simples como:
+
+- "desça um pouco mais"
+- "suba completamente"
+- "mantenha postura estável"
+- "boa execução"
+
+Esses avisos devem ser simples e motivadores.
+
+Não prometer precisão médica.
+
+--------------------------------------------------
+
+INTERFACE
+
+Criar uma interface simples com:
+
+botão iniciar câmera
+botão parar câmera
+botão recalibrar
+botão salvar sessão
+
+Mostrar o esqueleto da pose sobre o vídeo.
+
+Mostrar o contador de repetições de forma clara.
+
+--------------------------------------------------
+
+INTEGRAÇÃO COM O TREINO
+
+Permitir salvar as repetições detectadas no treino atual.
+
+Essa funcionalidade deve ajudar o treino, mas não substituir o registro manual.
+
+--------------------------------------------------
+
+PERFORMANCE
+
+A análise deve ser leve e fluida.
+
+Priorizar funcionamento em celular.
+
+Evitar travamentos ou congelamentos da interface.
+
+--------------------------------------------------
+
+PRIVACIDADE E SEGURANÇA
+
+A câmera só deve ativar com permissão do usuário.
+
+Não gravar vídeos automaticamente.
+
+Não enviar vídeos para servidores.
+
+Explicar claramente que a câmera é usada apenas para análise de movimento.
+
+--------------------------------------------------
+
+SEGURANÇA DO SISTEMA
+
+Se a câmera ou detecção de pose falhar:
+
+- o aplicativo não pode quebrar
+- deve mostrar uma mensagem amigável
+- permitir continuar usando o app normalmente
+
+--------------------------------------------------
+
+OBJETIVO FINAL
+
+Adicionar uma funcionalidade moderna de análise de exercícios com IA que ajude o usuário a contar repetições e melhorar a execução dos movimentos sem afetar o restante do aplicativo.

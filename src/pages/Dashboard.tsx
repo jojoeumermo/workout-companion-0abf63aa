@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme } from '@/hooks/useStorage';
@@ -141,6 +141,26 @@ export default function Dashboard() {
             </div>
           </div>
           <ChevronRight size={18} className="text-primary" />
+        </motion.button>
+
+        {/* Camera IA Quick Access */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.09 }}
+          onClick={() => navigate('/camera-ia')}
+          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-border"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+              <Camera size={18} className="text-foreground" />
+            </div>
+            <div className="text-left">
+              <span className="font-semibold text-sm block">Câmera com IA</span>
+              <span className="text-xs text-muted-foreground font-body">Análise de execução • Conta repetições</span>
+            </div>
+          </div>
+          <ChevronRight size={18} className="text-muted-foreground" />
         </motion.button>
 
         {/* Weekly Goal */}
