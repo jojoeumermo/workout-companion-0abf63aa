@@ -300,13 +300,30 @@ export default function ActiveWorkoutPage() {
       notes: workoutNotes || undefined,
     };
 
+    const prs: { exerciseName: string; type: string; value: string }[] = [];
     completedExercises.forEach(ex => {
+      const exInfo = getExerciseById(ex.exerciseId);
+      const record = getRecord(ex.exerciseId);
       ex.sets.filter(s => s.completed).forEach(s => {
-        updateRecord(ex.exerciseId, s.weight, s.reps);
+        if (exInfo) {
+          if (record) {
+            if (s.weight > record.maxWeight) prs.push({ exerciseName: exInfo.name, type: 'Peso', value: `${s.weight}kg (anterior: ${record.maxWeight}kg)` });
+            if (s.reps > record.maxReps) prs.push({ exerciseName: exInfo.name, type: 'Reps', value: `${s.reps} (anterior: ${record.maxReps})` });
+            if (s.weight * s.reps > record.maxVolume) prs.push({ exerciseName: exInfo.name, type: 'Volume', value: `${s.weight * s.reps}kg (anterior: ${record.maxVolume}kg)` });
+          }
+          updateRecord(ex.exerciseId, s.weight, s.reps);
+        }
       });
     });
 
     setHistory(prev => [...prev, completed]);
+    setWorkoutSummary(completed);
+    setSummaryPRs(prs);
+    setShowSummary(true);
+  };
+
+  const closeSummary = () => {
+    setShowSummary(false);
     setActiveWorkout(null);
     navigate('/historico');
   };
