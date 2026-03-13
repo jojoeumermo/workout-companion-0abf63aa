@@ -26,6 +26,9 @@ export default function ActiveWorkoutPage() {
   const [exerciseSearch, setExerciseSearch] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
   const [newPR, setNewPR] = useState<{ exerciseName: string; type: string; value: string } | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const [workoutSummary, setWorkoutSummary] = useState<CompletedWorkout | null>(null);
+  const [summaryPRs, setSummaryPRs] = useState<{ exerciseName: string; type: string; value: string }[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const exerciseTimerRef = useRef<ReturnType<typeof setInterval>>();
   const exerciseStartRef = useRef(Date.now());
