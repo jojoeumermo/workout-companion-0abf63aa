@@ -1,8 +1,5 @@
 import { Exercise, MuscleGroup, Equipment } from '@/types/workout';
 
-const img = (name: string) => `https://images.unsplash.com/photo-${name}?w=400&h=300&fit=crop`;
-
-// Helper to create exercise
 let idCounter = 0;
 const ex = (
   name: string,
@@ -23,7 +20,7 @@ const ex = (
 });
 
 export const exercises: Exercise[] = [
-  // PEITO (20 exercises)
+  // PEITO (25 exercises)
   ex('Supino Reto com Barra', 'Peito', ['Tríceps', 'Ombros'], 'Barra', 'Exercício principal para desenvolvimento do peitoral.', ['Deite no banco reto', 'Segure a barra na largura dos ombros', 'Desça até o peito', 'Empurre até extensão dos braços']),
   ex('Supino Inclinado com Barra', 'Peito', ['Ombros', 'Tríceps'], 'Barra', 'Enfatiza a parte superior do peitoral.', ['Ajuste o banco a 30-45 graus', 'Desça a barra até a parte superior do peito', 'Empurre para cima']),
   ex('Supino Declinado com Barra', 'Peito', ['Tríceps'], 'Barra', 'Enfatiza a parte inferior do peitoral.', ['Ajuste o banco em declínio', 'Desça a barra até a parte inferior do peito', 'Empurre para cima']),
@@ -44,8 +41,13 @@ export const exercises: Exercise[] = [
   ex('Supino com Pegada Fechada', 'Peito', ['Tríceps'], 'Barra', 'Enfatiza tríceps e peitoral interno.', ['Pegada mais estreita que ombros', 'Desça a barra', 'Empurre para cima']),
   ex('Flexão com Apoio', 'Peito', ['Tríceps', 'Ombros'], 'Peso Corporal', 'Flexão com amplitude extra usando apoios.', ['Use apoios para as mãos', 'Desça mais fundo', 'Empurre para cima']),
   ex('Fly na Máquina', 'Peito', [], 'Máquina', 'Movimento de fly na máquina.', ['Sente-se na máquina', 'Abra e feche os braços', 'Controle o movimento']),
+  ex('Supino Declinado com Halteres', 'Peito', ['Tríceps'], 'Halteres', 'Supino declinado com halteres para maior amplitude.', ['Banco em declínio', 'Desça os halteres ao lado do peito', 'Empurre para cima']),
+  ex('Floor Press com Halteres', 'Peito', ['Tríceps'], 'Halteres', 'Supino no chão para limitar amplitude.', ['Deite no chão com halteres', 'Desça até os cotovelos tocarem o chão', 'Empurre para cima']),
+  ex('Flexão Archer', 'Peito', ['Tríceps', 'Ombros'], 'Peso Corporal', 'Flexão unilateral avançada.', ['Mãos bem afastadas', 'Desça para um lado', 'Alterne os lados']),
+  ex('Squeeze Press', 'Peito', ['Tríceps'], 'Halteres', 'Press com halteres juntos para peitoral interno.', ['Deite no banco com halteres encostados', 'Mantenha pressão lateral', 'Empurre para cima']),
+  ex('Svend Press', 'Peito', [], 'Outro', 'Press isométrico com anilha.', ['Segure uma anilha com as palmas', 'Empurre à frente apertando', 'Retorne ao peito']),
 
-  // COSTAS (20 exercises)
+  // COSTAS (25 exercises)
   ex('Barra Fixa (Pull-up)', 'Costas', ['Bíceps'], 'Peso Corporal', 'Exercício fundamental para costas.', ['Segure a barra com pegada pronada', 'Puxe o corpo para cima', 'Desça controladamente']),
   ex('Puxada Frontal', 'Costas', ['Bíceps'], 'Máquina', 'Simula o movimento da barra fixa.', ['Sente-se na máquina', 'Puxe a barra até o peito', 'Retorne controlando']),
   ex('Puxada Aberta', 'Costas', ['Bíceps'], 'Máquina', 'Puxada com pegada mais aberta.', ['Pegada larga na barra', 'Puxe até o peito', 'Retorne lentamente']),
@@ -66,8 +68,13 @@ export const exercises: Exercise[] = [
   ex('Hiperextensão', 'Costas', ['Glúteos'], 'Banco', 'Extensão lombar no banco romano.', ['Posicione-se no banco', 'Desça o tronco', 'Suba até alinhar com as pernas']),
   ex('Remada Alta com Barra', 'Costas', ['Ombros'], 'Barra', 'Trabalha trapézio e deltoides.', ['Segure a barra com pegada fechada', 'Puxe até a altura do queixo', 'Desça controlando']),
   ex('Pulldown Unilateral', 'Costas', ['Bíceps'], 'Cabos', 'Puxada com um braço de cada vez.', ['Segure a pegada com uma mão', 'Puxe para baixo', 'Retorne controlando']),
+  ex('Remada Pendlay', 'Costas', ['Bíceps'], 'Barra', 'Remada explosiva partindo do chão.', ['Barra no chão', 'Puxe explosivamente até o peito', 'Retorne ao chão a cada rep']),
+  ex('Seal Row', 'Costas', ['Bíceps'], 'Halteres', 'Remada deitado em banco elevado.', ['Deite de bruços no banco elevado', 'Puxe os halteres', 'Desça controlando']),
+  ex('Puxada com Triângulo', 'Costas', ['Bíceps'], 'Cabos', 'Puxada com pegada neutra fechada.', ['Segure o triângulo na polia alta', 'Puxe até o peito', 'Retorne controlando']),
+  ex('Remada na Smith', 'Costas', ['Bíceps'], 'Smith Machine', 'Remada guiada na Smith Machine.', ['Incline o tronco', 'Puxe a barra até o abdômen', 'Desça controlando']),
+  ex('Barra Fixa Australiana', 'Costas', ['Bíceps'], 'Barra', 'Barra fixa invertida com pés no chão.', ['Segure uma barra baixa', 'Puxe o peito até a barra', 'Desça controlando']),
 
-  // OMBROS (15 exercises)
+  // OMBROS (18 exercises)
   ex('Desenvolvimento com Barra', 'Ombros', ['Tríceps'], 'Barra', 'Exercício principal para ombros.', ['Sentado ou em pé', 'Empurre a barra acima da cabeça', 'Desça até a altura das orelhas']),
   ex('Desenvolvimento com Halteres', 'Ombros', ['Tríceps'], 'Halteres', 'Desenvolvimento livre com halteres.', ['Sentado com halteres na altura dos ombros', 'Empurre para cima', 'Desça controlando']),
   ex('Elevação Lateral', 'Ombros', [], 'Halteres', 'Isolamento do deltoide lateral.', ['Em pé com halteres ao lado', 'Eleve os braços lateralmente', 'Desça controlando']),
@@ -83,8 +90,11 @@ export const exercises: Exercise[] = [
   ex('Elevação Lateral Inclinada', 'Ombros', [], 'Halteres', 'Elevação lateral com tronco inclinado.', ['Incline-se segurando em suporte', 'Eleve o halter lateralmente', 'Desça controlando']),
   ex('Face Pull com Corda', 'Ombros', ['Costas'], 'Cabos', 'Excelente para saúde dos ombros.', ['Polia alta com corda', 'Puxe em direção ao rosto', 'Abra os braços ao puxar']),
   ex('Desenvolvimento Landmine', 'Ombros', ['Peito', 'Tríceps'], 'Barra', 'Press com barra apoiada em ângulo.', ['Segure a ponta da barra', 'Empurre à frente e para cima', 'Retorne controlando']),
+  ex('Push Press', 'Ombros', ['Tríceps', 'Pernas'], 'Barra', 'Desenvolvimento com impulso das pernas.', ['Barra na frente dos ombros', 'Flexione levemente os joelhos', 'Empurre explosivamente para cima']),
+  ex('Elevação Frontal com Barra', 'Ombros', [], 'Barra', 'Elevação frontal usando barra.', ['Segure a barra à frente das coxas', 'Eleve até a altura dos ombros', 'Desça controlando']),
+  ex('Elevação Lateral com Elástico', 'Ombros', [], 'Elástico', 'Elevação lateral usando elástico.', ['Pise no elástico', 'Eleve os braços lateralmente', 'Desça controlando']),
 
-  // BÍCEPS (12 exercises)
+  // BÍCEPS (15 exercises)
   ex('Rosca Direta com Barra', 'Bíceps', ['Antebraço'], 'Barra', 'Exercício clássico para bíceps.', ['Em pé com barra', 'Flexione os braços', 'Desça controlando']),
   ex('Rosca Alternada com Halteres', 'Bíceps', ['Antebraço'], 'Halteres', 'Rosca alternando os braços.', ['Em pé com halteres', 'Flexione alternadamente', 'Desça controlando']),
   ex('Rosca Concentrada', 'Bíceps', [], 'Halteres', 'Isolamento máximo do bíceps.', ['Sentado com cotovelo apoiado na coxa', 'Flexione o braço', 'Desça controlando']),
@@ -97,8 +107,11 @@ export const exercises: Exercise[] = [
   ex('Rosca Inversa', 'Bíceps', ['Antebraço'], 'Barra', 'Rosca com pegada pronada.', ['Pegada pronada na barra', 'Flexione os braços', 'Desça controlando']),
   ex('Rosca na Máquina', 'Bíceps', [], 'Máquina', 'Rosca guiada na máquina.', ['Sente-se na máquina', 'Flexione os braços', 'Desça controlando']),
   ex('Rosca com Corda', 'Bíceps', ['Antebraço'], 'Cabos', 'Rosca martelo no cabo com corda.', ['Segure a corda na polia baixa', 'Flexione os braços', 'Desça controlando']),
+  ex('Rosca Simultânea com Halteres', 'Bíceps', ['Antebraço'], 'Halteres', 'Rosca com os dois braços ao mesmo tempo.', ['Em pé com halteres', 'Flexione ambos os braços juntos', 'Desça controlando']),
+  ex('Rosca com Barra W', 'Bíceps', ['Antebraço'], 'Barra', 'Rosca com barra W para melhor pegada.', ['Segure a barra W', 'Flexione os braços', 'Desça controlando']),
+  ex('Rosca Martelo no Cabo', 'Bíceps', ['Antebraço'], 'Cabos', 'Rosca martelo usando corda no cabo.', ['Segure a corda na polia baixa', 'Flexione com pegada neutra', 'Desça controlando']),
 
-  // TRÍCEPS (12 exercises)
+  // TRÍCEPS (15 exercises)
   ex('Tríceps Corda', 'Tríceps', [], 'Cabos', 'Extensão de tríceps com corda.', ['Polia alta com corda', 'Estenda os braços para baixo', 'Abra a corda ao final']),
   ex('Tríceps Testa', 'Tríceps', [], 'Barra', 'Extensão deitado para tríceps.', ['Deitado no banco', 'Desça a barra até a testa', 'Estenda os braços']),
   ex('Tríceps Banco', 'Tríceps', ['Peito'], 'Banco', 'Mergulho entre bancos.', ['Apoie as mãos em um banco atrás', 'Desça o corpo flexionando os braços', 'Empurre para cima']),
@@ -111,8 +124,11 @@ export const exercises: Exercise[] = [
   ex('Tríceps Unilateral no Cabo', 'Tríceps', [], 'Cabos', 'Extensão com um braço na polia.', ['Segure a pegada com uma mão', 'Estenda o braço para baixo', 'Retorne controlando']),
   ex('Tríceps com Barra W', 'Tríceps', [], 'Barra', 'Tríceps testa com barra W.', ['Deitado com barra W', 'Desça até a testa', 'Estenda os braços']),
   ex('Supino Fechado', 'Tríceps', ['Peito'], 'Barra', 'Supino com pegada estreita para tríceps.', ['Pegada na largura dos ombros', 'Desça a barra', 'Empurre para cima']),
+  ex('Tríceps Overhead com Corda', 'Tríceps', [], 'Cabos', 'Extensão acima da cabeça com corda no cabo.', ['Polia baixa com corda', 'De costas para a polia', 'Estenda os braços acima da cabeça']),
+  ex('Tríceps JM Press', 'Tríceps', ['Peito'], 'Barra', 'Híbrido entre supino fechado e tríceps testa.', ['Deitado com barra', 'Desça em ângulo até o queixo', 'Empurre para cima']),
+  ex('Tríceps com Elástico', 'Tríceps', [], 'Elástico', 'Extensão de tríceps com banda elástica.', ['Prenda o elástico acima', 'Estenda os braços para baixo', 'Retorne controlando']),
 
-  // PERNAS (18 exercises)
+  // PERNAS (22 exercises)
   ex('Agachamento Livre', 'Pernas', ['Glúteos'], 'Barra', 'Exercício rei para pernas.', ['Barra apoiada nos trapézios', 'Desça até a paralela ou abaixo', 'Empurre para cima']),
   ex('Leg Press', 'Pernas', ['Glúteos'], 'Máquina', 'Prensa de pernas na máquina.', ['Sente-se na máquina', 'Desça a plataforma flexionando os joelhos', 'Empurre para cima']),
   ex('Hack Machine', 'Pernas', ['Glúteos'], 'Máquina', 'Agachamento guiado na máquina.', ['Posicione-se na máquina', 'Desça controlando', 'Empurre para cima']),
@@ -131,8 +147,12 @@ export const exercises: Exercise[] = [
   ex('Flexora em Pé', 'Pernas', [], 'Máquina', 'Flexão de pernas em pé.', ['Em pé na máquina', 'Flexione uma perna', 'Retorne controlando']),
   ex('Agachamento Goblet', 'Pernas', ['Glúteos'], 'Halteres', 'Agachamento segurando halter no peito.', ['Segure halter junto ao peito', 'Desça em agachamento', 'Empurre para cima']),
   ex('Step Up', 'Pernas', ['Glúteos'], 'Halteres', 'Subida no banco com carga.', ['Suba no banco com uma perna', 'Retorne ao chão', 'Alterne as pernas']),
+  ex('Agachamento com Kettlebell', 'Pernas', ['Glúteos'], 'Kettlebell', 'Agachamento segurando kettlebell.', ['Segure o kettlebell no peito', 'Desça em agachamento', 'Empurre para cima']),
+  ex('Levantamento Terra Sumô', 'Pernas', ['Costas', 'Glúteos'], 'Barra', 'Terra com pernas afastadas.', ['Pernas bem afastadas', 'Pegada entre as pernas', 'Levante estendendo quadril e joelhos']),
+  ex('Pistol Squat', 'Pernas', ['Glúteos'], 'Peso Corporal', 'Agachamento unilateral avançado.', ['Em pé em uma perna', 'Desça controlando a outra perna estendida', 'Empurre para cima']),
+  ex('Sissy Squat', 'Pernas', [], 'Peso Corporal', 'Agachamento para isolamento do quadríceps.', ['Em pé, incline o tronco para trás', 'Flexione os joelhos à frente', 'Retorne à posição inicial']),
 
-  // GLÚTEOS (8 exercises)
+  // GLÚTEOS (10 exercises)
   ex('Hip Thrust', 'Glúteos', ['Pernas'], 'Barra', 'Exercício principal para glúteos.', ['Costas apoiadas no banco', 'Barra sobre o quadril', 'Empurre o quadril para cima', 'Desça controlando']),
   ex('Glute Bridge', 'Glúteos', ['Pernas'], 'Peso Corporal', 'Ponte de glúteos no solo.', ['Deitado de costas', 'Pés no chão', 'Eleve o quadril', 'Desça controlando']),
   ex('Abdução na Máquina', 'Glúteos', [], 'Máquina', 'Abdução das pernas na máquina.', ['Sente-se na máquina', 'Abra as pernas', 'Retorne controlando']),
@@ -141,8 +161,10 @@ export const exercises: Exercise[] = [
   ex('Abdução com Elástico', 'Glúteos', [], 'Elástico', 'Abdução usando mini band.', ['Elástico acima dos joelhos', 'Abra as pernas lateralmente', 'Retorne controlando']),
   ex('Agachamento com Elástico', 'Glúteos', ['Pernas'], 'Elástico', 'Agachamento com mini band.', ['Elástico acima dos joelhos', 'Realize o agachamento mantendo tensão', 'Empurre para cima']),
   ex('Kickback na Máquina', 'Glúteos', [], 'Máquina', 'Coice na máquina para glúteos.', ['Posicione-se na máquina', 'Empurre a plataforma para trás', 'Retorne controlando']),
+  ex('Hip Thrust com Halter', 'Glúteos', ['Pernas'], 'Halteres', 'Hip thrust com halter para iniciantes.', ['Costas no banco', 'Halter sobre o quadril', 'Empurre para cima', 'Desça controlando']),
+  ex('Adução na Máquina', 'Glúteos', ['Pernas'], 'Máquina', 'Adução das pernas na máquina.', ['Sente-se na máquina', 'Feche as pernas', 'Retorne controlando']),
 
-  // ABDÔMEN (10 exercises)
+  // ABDÔMEN (15 exercises)
   ex('Crunch', 'Abdômen', [], 'Peso Corporal', 'Abdominal básico.', ['Deitado de costas', 'Flexione o tronco elevando os ombros', 'Desça controlando']),
   ex('Prancha', 'Abdômen', [], 'Peso Corporal', 'Isometria para core.', ['Apoie antebraços e pés no chão', 'Mantenha o corpo reto', 'Segure a posição']),
   ex('Elevação de Pernas', 'Abdômen', [], 'Peso Corporal', 'Eleva as pernas deitado ou suspenso.', ['Deitado ou suspenso na barra', 'Eleve as pernas', 'Desça controlando']),
@@ -153,32 +175,55 @@ export const exercises: Exercise[] = [
   ex('Russian Twist', 'Abdômen', [], 'Peso Corporal', 'Rotação do tronco sentado.', ['Sentado com tronco inclinado', 'Rotacione de um lado ao outro', 'Mantenha os pés elevados']),
   ex('Ab Wheel', 'Abdômen', [], 'Outro', 'Roda abdominal.', ['Ajoelhado com a roda', 'Estenda o corpo à frente', 'Retorne à posição inicial']),
   ex('Crunch no Cabo', 'Abdômen', [], 'Cabos', 'Abdominal ajoelhado no cabo.', ['Ajoelhado com corda na polia alta', 'Flexione o tronco para baixo', 'Retorne controlando']),
+  ex('Mountain Climber', 'Abdômen', ['Cardio'], 'Peso Corporal', 'Escalador para abdômen e cardio.', ['Posição de prancha', 'Alterne os joelhos em direção ao peito', 'Mantenha ritmo rápido']),
+  ex('Elevação de Pernas na Barra', 'Abdômen', [], 'Peso Corporal', 'Elevação de pernas suspenso na barra fixa.', ['Suspenso na barra', 'Eleve as pernas retas', 'Desça controlando']),
+  ex('Dragon Flag', 'Abdômen', [], 'Banco', 'Exercício avançado de core.', ['Segure no banco acima da cabeça', 'Eleve o corpo inteiro mantendo reto', 'Desça controlando']),
+  ex('Prancha com Elevação de Braço', 'Abdômen', ['Ombros'], 'Peso Corporal', 'Prancha com extensão unilateral.', ['Posição de prancha', 'Eleve um braço à frente', 'Alterne os braços']),
+  ex('Hollow Body Hold', 'Abdômen', [], 'Peso Corporal', 'Isometria em posição de corpo oco.', ['Deitado de costas', 'Eleve braços e pernas levemente', 'Mantenha lombar no chão']),
 
-  // PANTURRILHA (5 exercises)
+  // PANTURRILHA (6 exercises)
   ex('Panturrilha em Pé', 'Panturrilha', [], 'Máquina', 'Elevação de panturrilha em pé.', ['Na máquina em pé', 'Eleve os calcanhares', 'Desça controlando']),
   ex('Panturrilha Sentado', 'Panturrilha', [], 'Máquina', 'Elevação de panturrilha sentado.', ['Sentado na máquina', 'Eleve os calcanhares', 'Desça controlando']),
   ex('Panturrilha no Leg Press', 'Panturrilha', [], 'Máquina', 'Panturrilha usando o leg press.', ['Pés na borda da plataforma', 'Empurre com as pontas dos pés', 'Retorne controlando']),
   ex('Panturrilha Unilateral', 'Panturrilha', [], 'Halteres', 'Panturrilha com um pé de cada vez.', ['Em pé com halter', 'Eleve o calcanhar de uma perna', 'Desça controlando']),
   ex('Panturrilha no Step', 'Panturrilha', [], 'Peso Corporal', 'Panturrilha em degrau com peso corporal.', ['Pontas dos pés no degrau', 'Eleve os calcanhares', 'Desça alongando']),
+  ex('Panturrilha na Smith', 'Panturrilha', [], 'Smith Machine', 'Panturrilha em pé na Smith Machine.', ['Posicione-se na Smith', 'Eleve os calcanhares', 'Desça controlando']),
 
-  // ANTEBRAÇO (5 exercises)
+  // ANTEBRAÇO (6 exercises)
   ex('Rosca de Punho', 'Antebraço', [], 'Barra', 'Flexão de punho para antebraço.', ['Antebraços apoiados nos joelhos', 'Flexione os punhos para cima', 'Desça controlando']),
   ex('Rosca de Punho Inversa', 'Antebraço', [], 'Barra', 'Extensão de punho para antebraço.', ['Antebraços apoiados, palmas para baixo', 'Estenda os punhos para cima', 'Desça controlando']),
   ex('Farmer Walk', 'Antebraço', ['Corpo Inteiro'], 'Halteres', 'Caminhada com carga pesada.', ['Segure halteres pesados', 'Caminhe mantendo postura', 'Mantenha por tempo ou distância']),
   ex('Wrist Roller', 'Antebraço', [], 'Outro', 'Enrolar corda com peso.', ['Segure o bastão à frente', 'Enrole a corda com os punhos', 'Desenrole controlando']),
   ex('Dead Hang', 'Antebraço', ['Costas'], 'Peso Corporal', 'Suspensão na barra fixa.', ['Segure na barra fixa', 'Mantenha-se suspenso', 'Segure pelo máximo de tempo']),
+  ex('Rosca de Punho com Halter', 'Antebraço', [], 'Halteres', 'Flexão de punho com halter.', ['Antebraço apoiado', 'Flexione o punho para cima', 'Desça controlando']),
 
-  // CARDIO (5 exercises)
+  // CORPO INTEIRO (10 exercises)
+  ex('Clean and Press', 'Corpo Inteiro', ['Ombros', 'Pernas'], 'Barra', 'Levantamento olímpico composto.', ['Barra no chão', 'Puxe até os ombros', 'Empurre acima da cabeça']),
+  ex('Snatch', 'Corpo Inteiro', ['Ombros', 'Pernas'], 'Barra', 'Arranco olímpico.', ['Barra no chão com pegada larga', 'Puxe em um movimento até acima da cabeça', 'Estabilize acima']),
+  ex('Thruster', 'Corpo Inteiro', ['Ombros', 'Pernas'], 'Barra', 'Agachamento com desenvolvimento.', ['Barra na frente dos ombros', 'Agache e empurre para cima ao subir', 'Desça controlando']),
+  ex('Turkish Get Up', 'Corpo Inteiro', ['Ombros', 'Abdômen'], 'Kettlebell', 'Levantamento turco.', ['Deitado com kettlebell erguido', 'Levante-se mantendo o peso acima', 'Retorne ao chão']),
+  ex('Swing com Kettlebell', 'Corpo Inteiro', ['Glúteos', 'Costas'], 'Kettlebell', 'Balanço com kettlebell.', ['Segure o kettlebell com ambas as mãos', 'Balance entre as pernas', 'Projete o quadril à frente']),
+  ex('Man Maker', 'Corpo Inteiro', ['Peito', 'Costas', 'Ombros'], 'Halteres', 'Exercício complexo com halteres.', ['Flexão com halteres', 'Remada alternada', 'Clean and press para ficar em pé']),
+  ex('Bear Crawl', 'Corpo Inteiro', ['Ombros', 'Abdômen'], 'Peso Corporal', 'Caminhada de urso.', ['Quatro apoios com joelhos elevados', 'Caminhe movendo mão e pé opostos', 'Mantenha o core ativado']),
+  ex('Devil Press', 'Corpo Inteiro', ['Ombros', 'Peito'], 'Halteres', 'Burpee com halteres.', ['Flexão segurando halteres', 'Swing dos halteres acima', 'Controle a descida']),
+  ex('Wall Ball', 'Corpo Inteiro', ['Pernas', 'Ombros'], 'Outro', 'Agachamento com arremesso de bola.', ['Segure a medicine ball', 'Agache e arremesse na parede ao subir', 'Receba e repita']),
+  ex('Rope Climb', 'Corpo Inteiro', ['Costas', 'Bíceps'], 'Outro', 'Escalada na corda.', ['Segure a corda acima', 'Use braços e pernas para subir', 'Desça controlando']),
+
+  // CARDIO (8 exercises)
   ex('Corrida na Esteira', 'Cardio', ['Pernas'], 'Máquina', 'Corrida na esteira ergométrica.', ['Ajuste velocidade e inclinação', 'Corra mantendo postura', 'Monitore frequência cardíaca']),
   ex('Bicicleta Ergométrica', 'Cardio', ['Pernas'], 'Máquina', 'Pedalada na bicicleta estacionária.', ['Ajuste a altura do banco', 'Pedale no ritmo desejado', 'Monitore intensidade']),
   ex('Elíptico', 'Cardio', ['Corpo Inteiro'], 'Máquina', 'Exercício no transport.', ['Posicione-se na máquina', 'Mova braços e pernas', 'Mantenha ritmo constante']),
   ex('Pular Corda', 'Cardio', ['Panturrilha'], 'Outro', 'Exercício cardiovascular com corda.', ['Segure a corda nas mãos', 'Salte passando a corda sob os pés', 'Mantenha ritmo constante']),
   ex('Burpee', 'Cardio', ['Corpo Inteiro'], 'Peso Corporal', 'Exercício de corpo inteiro de alta intensidade.', ['Em pé, desça ao chão', 'Faça uma flexão', 'Salte de volta e pule']),
+  ex('Remo Ergométrico', 'Cardio', ['Costas', 'Pernas'], 'Máquina', 'Remada na máquina ergométrica.', ['Sente-se no remo', 'Puxe a pegada com pernas e costas', 'Retorne controlando']),
+  ex('Jumping Jack', 'Cardio', ['Corpo Inteiro'], 'Peso Corporal', 'Polichinelo.', ['Em pé com pés juntos', 'Salte abrindo pernas e braços', 'Retorne à posição inicial']),
+  ex('Box Jump', 'Cardio', ['Pernas'], 'Outro', 'Salto na caixa.', ['Em frente à caixa', 'Salte com ambos os pés', 'Aterrisse em cima e desça']),
 ];
 
 export const muscleGroups: MuscleGroup[] = [
   'Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps',
-  'Pernas', 'Glúteos', 'Abdômen', 'Panturrilha', 'Antebraço', 'Cardio',
+  'Pernas', 'Glúteos', 'Abdômen', 'Panturrilha', 'Antebraço',
+  'Corpo Inteiro', 'Cardio',
 ];
 
 export const equipmentList: Equipment[] = [
