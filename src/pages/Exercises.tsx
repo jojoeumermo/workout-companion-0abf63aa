@@ -47,16 +47,16 @@ export default function Exercises() {
 
         {/* Filters */}
         <div className="space-y-2">
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setShowFavs(!showFavs)}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors ${showFavs ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors ${showFavs ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
             >
               <Heart size={12} fill={showFavs ? 'currentColor' : 'none'} /> Favoritos
             </button>
             <button
               onClick={() => setMuscleFilter('')}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
             >
               Todos
             </button>
@@ -64,18 +64,18 @@ export default function Exercises() {
               <button
                 key={mg}
                 onClick={() => setMuscleFilter(muscleFilter === mg ? '' : mg)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
               >
                 {mg}
               </button>
             ))}
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          <div className="flex flex-wrap gap-2">
             {equipmentList.map(eq => (
               <button
                 key={eq}
                 onClick={() => setEquipFilter(equipFilter === eq ? '' : eq)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${equipFilter === eq ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${equipFilter === eq ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
               >
                 {eq}
               </button>

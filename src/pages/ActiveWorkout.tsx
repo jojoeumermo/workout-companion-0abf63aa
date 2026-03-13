@@ -609,15 +609,18 @@ export default function ActiveWorkoutPage() {
                   <Timer size={16} className="text-primary" /> Descanso
                 </span>
                 <span className="text-2xl font-bold font-mono text-primary">{formatTime(restTimer)}</span>
-                <button onClick={() => setShowRest(false)} className="px-4 py-2 bg-secondary rounded-xl text-sm font-medium">
-                  Pular
-                </button>
               </div>
               <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary rounded-full transition-all duration-1000 ease-linear"
                   style={{ width: `${(restTimer / restTotal) * 100}%` }}
                 />
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <button onClick={() => setRestTimer(prev => Math.max(0, prev - 15))} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">-15s</button>
+                <button onClick={() => setRestTimer(prev => prev + 15)} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">+15s</button>
+                <button onClick={() => setRestTimer(prev => prev + 60)} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">+1min</button>
+                <button onClick={() => setShowRest(false)} className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold">Pular</button>
               </div>
             </div>
           ) : (
