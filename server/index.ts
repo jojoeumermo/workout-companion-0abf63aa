@@ -37,9 +37,44 @@ const SYSTEM_PROMPT = `Você é o FitAI Coach — um treinador pessoal virtual e
 - Para periodização, explique cada fase claramente
 - Alerte sobre overtraining quando detectar sinais (volume >20% acima da média, >5 dias consecutivos)`;
 
+function friendlyErrorMessage(err: unknown): { message: string; status: number } {
+  if (err instanceof OpenAI.APIError) {
+    if (err.status === 429) {
+      const isQuota = String(err.message).includes("quota") || String(err.message).includes("insufficient_quota");
+      if (isQuota) {
+        return {
+          status: 402,
+          message: "Cota da API OpenAI esgotada. Adicione créditos em platform.openai.com/settings/billing para continuar usando o FitAI Coach.",
+        };
+      }
+      return {
+        status: 429,
+        message: "Muitas requisições. Aguarde alguns segundos e tente novamente.",
+      };
+    }
+    if (err.status === 401) {
+      return {
+        status: 401,
+        message: "Chave da API OpenAI inválida. Verifique a configuração do OPENAI_API_KEY.",
+      };
+    }
+    if (err.status === 503 || err.status === 502) {
+      return {
+        status: 503,
+        message: "Serviço de IA temporariamente indisponível. Tente novamente em alguns instantes.",
+      };
+    }
+  }
+  const msg = err instanceof Error ? err.message : String(err);
+  return {
+    status: 500,
+    message: `Erro ao conectar com a IA: ${msg.slice(0, 120)}`,
+  };
+}
+
 app.post("/api/ai-coach", async (req, res) => {
   if (!process.env.OPENAI_API_KEY) {
-    res.status(500).json({ error: "OPENAI_API_KEY não configurado. Adicione a chave nas configurações do projeto." });
+    res.status(500).json({ error: "OPENAI_API_KEY não configurado. Adicione a chave de API nas configurações do projeto." });
     return;
   }
 
@@ -50,6 +85,11 @@ app.post("/api/ai-coach", async (req, res) => {
       messages: { role: "user" | "assistant"; content: string }[];
       context?: string;
     };
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      res.status(400).json({ error: "Nenhuma mensagem fornecida." });
+      return;
+    }
 
     const systemContent =
       SYSTEM_PROMPT +
@@ -78,10 +118,10 @@ app.post("/api/ai-coach", async (req, res) => {
     }
     res.end();
   } catch (err: unknown) {
-    console.error("AI error:", err);
-    const message = err instanceof Error ? err.message : "Erro desconhecido";
+    const { message, status } = friendlyErrorMessage(err);
+    console.error(`[ai-coach] ${status}:`, message);
     if (!res.headersSent) {
-      res.status(500).json({ error: message });
+      res.status(status).json({ error: message });
     } else {
       res.end();
     }

@@ -1,0 +1,61 @@
+Depois da implementação da câmera com IA, o FitAI Coach parou de funcionar e agora aparecem erros no console.
+
+IMPORTANTE:
+Não remover nenhuma funcionalidade atual.
+Não desfazer a câmera com IA.
+Não recriar o app do zero.
+Quero corrigir o problema preservando tudo que já existe.
+
+Objetivo:
+Diagnosticar o erro do console, identificar exatamente o que a funcionalidade da câmera com IA quebrou e restaurar o funcionamento completo do FitAI Coach sem afetar o restante do aplicativo.
+
+Tarefas:
+
+1. Ler e analisar os erros atuais do console e do runtime
+- identificar a causa raiz
+- apontar qual arquivo, componente, hook, importação ou dependência está causando o erro
+
+2. Verificar se a câmera com IA introduziu algum destes problemas:
+- import quebrado
+- dependência incompatível
+- erro de renderização
+- conflito de estado global
+- conflito entre providers/contexts
+- problema de rota
+- erro assíncrono
+- loop de renderização
+- componente tentando acessar browser APIs fora da hora certa
+
+3. Corrigir o FitAI Coach para voltar a funcionar normalmente
+
+4. Garantir que a câmera com IA continue funcionando
+
+5. Isolar melhor os sistemas
+A câmera com IA e o FitAI Coach devem ficar desacoplados.
+Se um falhar, o outro não pode quebrar.
+
+6. Adicionar proteção contra falhas
+Implementar tratamento de erro, fallback e proteção para que:
+- se a câmera falhar, o chat continue funcionando
+- se o chat falhar, o restante do app continue funcionando
+- nenhuma dessas falhas derrube a tela inteira
+
+7. Revisar integração de IA do app inteiro
+Verificar:
+- FitAI Coach
+- câmera com IA
+- programas com IA
+- análise pós-treino
+- qualquer fluxo que use IA
+
+8. Testar após corrigir:
+- abrir o FitAI Coach
+- enviar mensagem
+- receber resposta
+- abrir a câmera com IA
+- usar a câmera com IA
+- voltar para o chat
+- usar os dois sem conflito
+
+Objetivo final:
+Corrigir a causa raiz do erro de console, restaurar o FitAI Coach, manter a câmera com IA funcionando e impedir que uma funcionalidade de IA volte a quebrar a outra.

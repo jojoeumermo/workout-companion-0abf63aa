@@ -98,9 +98,12 @@ export default function Exercises() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i * 0.02, 0.3) }}
                 >
-                  <button
+                  <div
+                    className="w-full bg-card rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform cursor-pointer"
                     onClick={() => navigate(`/exercicio/${ex.id}`)}
-                    className="w-full bg-card rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.98] transition-transform"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && navigate(`/exercicio/${ex.id}`)}
                   >
                     <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-primary text-lg font-bold shrink-0">
                       {ex.name.charAt(0)}
@@ -109,14 +112,17 @@ export default function Exercises() {
                       <p className="font-medium text-sm truncate">{ex.name}</p>
                       <p className="text-xs text-muted-foreground font-body">{ex.equipment}</p>
                     </div>
-                    <button
+                    <span
                       onClick={e => { e.stopPropagation(); toggleFavorite(ex.id); }}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); toggleFavorite(ex.id); } }}
                       className="p-2 shrink-0"
                     >
                       <Heart size={16} className={isFavorite(ex.id) ? 'text-primary fill-primary' : 'text-muted-foreground'} />
-                    </button>
+                    </span>
                     <ChevronRight size={16} className="text-muted-foreground shrink-0" />
-                  </button>
+                  </div>
                 </motion.div>
               ))}
             </div>

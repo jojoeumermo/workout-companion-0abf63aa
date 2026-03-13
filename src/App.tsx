@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import BottomNav from "@/components/BottomNav";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import Workouts from "./pages/Workouts";
 import Exercises from "./pages/Exercises";
@@ -33,8 +34,8 @@ const App = () => (
           <Route path="/historico/:id" element={<WorkoutDetail />} />
           <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
           <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
-          <Route path="/ai-coach" element={<><AICoach /><BottomNav /></>} />
-          <Route path="/camera-ia" element={<CameraAnalysis />} />
+          <Route path="/ai-coach" element={<><ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary><BottomNav /></>} />
+          <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
           <Route path="/configuracoes" element={<><Settings /><BottomNav /></>} />
           <Route path="/programas" element={<><Programs /><BottomNav /></>} />
           <Route path="*" element={<NotFound />} />

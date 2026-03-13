@@ -204,10 +204,11 @@ export default function AICoach() {
         }
       }
     } catch (e) {
-      console.error('AI chat error:', e);
+      const msg = e instanceof Error ? e.message : 'Erro ao conectar com a IA.';
+      console.error('AI chat error:', msg);
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: `❌ ${e instanceof Error ? e.message : 'Erro ao conectar com a IA. Tente novamente.'}` },
+        { role: 'assistant', content: `❌ **Erro:** ${msg}\n\nTente novamente em alguns instantes.` },
       ]);
     } finally {
       setIsLoading(false);
