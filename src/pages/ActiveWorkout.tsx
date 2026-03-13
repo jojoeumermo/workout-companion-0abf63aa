@@ -704,6 +704,93 @@ export default function ActiveWorkoutPage() {
           <ExercisePickerContent onSelect={replaceExercise} />
         </DialogContent>
       </Dialog>
+
+      {/* Post-Workout Summary */}
+      <Dialog open={showSummary} onOpenChange={() => closeSummary()}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">🎉 Treino Finalizado!</DialogTitle>
+          </DialogHeader>
+          {workoutSummary && (
+            <div className="space-y-5 mt-2">
+              <h3 className="text-center font-bold text-lg">{workoutSummary.name}</h3>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-secondary rounded-xl p-3 text-center space-y-1">
+                  <Clock size={16} className="text-primary mx-auto" />
+                  <p className="text-lg font-bold">{formatTime(workoutSummary.duration)}</p>
+                  <p className="text-[10px] text-muted-foreground font-body">duração</p>
+                </div>
+                <div className="bg-secondary rounded-xl p-3 text-center space-y-1">
+                  <TrendingUp size={16} className="text-primary mx-auto" />
+                  <p className="text-lg font-bold">{workoutSummary.totalVolume > 1000 ? `${(workoutSummary.totalVolume / 1000).toFixed(1)}t` : `${workoutSummary.totalVolume}kg`}</p>
+                  <p className="text-[10px] text-muted-foreground font-body">volume</p>
+                </div>
+                <div className="bg-secondary rounded-xl p-3 text-center space-y-1">
+                  <Dumbbell size={16} className="text-primary mx-auto" />
+                  <p className="text-lg font-bold">{workoutSummary.exercises.length}</p>
+                  <p className="text-[10px] text-muted-foreground font-body">exercícios</p>
+                </div>
+              </div>
+
+              {/* Muscles worked */}
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm">Músculos Trabalhados</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {[...new Set(workoutSummary.exercises.map(e => getExerciseById(e.exerciseId)?.muscleGroup).filter(Boolean))].map(m => (
+                    <span key={m} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-lg font-medium">{m}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* PRs */}
+              {summaryPRs.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Trophy size={16} className="text-primary" />
+                    <h4 className="font-semibold text-sm">Recordes Batidos!</h4>
+                  </div>
+                  <div className="space-y-1.5">
+                    {summaryPRs.map((pr, i) => (
+                      <div key={i} className="bg-primary/5 border border-primary/20 rounded-xl px-3 py-2 text-sm">
+                        <span className="font-medium">{pr.exerciseName}</span>
+                        <span className="text-muted-foreground"> — {pr.type}: </span>
+                        <span className="text-primary font-semibold">{pr.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Exercises detail */}
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm">Detalhes</h4>
+                {workoutSummary.exercises.map((ex, i) => {
+                  const exInfo = getExerciseById(ex.exerciseId);
+                  const completedSets = ex.sets.filter(s => s.completed);
+                  const vol = completedSets.reduce((s, set) => s + set.weight * set.reps, 0);
+                  return (
+                    <div key={i} className="bg-secondary rounded-xl px-3 py-2.5 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">{exInfo?.name}</p>
+                        <p className="text-xs text-muted-foreground font-body">{completedSets.length} séries completadas</p>
+                      </div>
+                      <span className="text-xs text-primary font-medium">{vol}kg</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={closeSummary}
+                className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-semibold"
+              >
+                Ver Histórico
+              </button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
