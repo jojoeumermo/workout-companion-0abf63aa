@@ -104,3 +104,38 @@ export function useFolders() {
 export function useTheme() {
   return useLocalStorage<string>('app-theme', 'green');
 }
+
+export function useMeals() {
+  const [meals, setMeals] = useLocalStorage<MealEntry[]>('meal-history', []);
+
+  const addMeal = useCallback((meal: Omit<MealEntry, 'id'>) => {
+    setMeals(prev => [...prev, { ...meal, id: `meal-${Date.now()}` }]);
+  }, [setMeals]);
+
+  const updateMeal = useCallback((id: string, updates: Partial<MealEntry>) => {
+    setMeals(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+  }, [setMeals]);
+
+  const deleteMeal = useCallback((id: string) => {
+    setMeals(prev => prev.filter(m => m.id !== id));
+  }, [setMeals]);
+
+  const getMealsForDate = useCallback((date: string) => {
+    return meals.filter(m => m.date.startsWith(date));
+  }, [meals]);
+
+  return { meals, addMeal, updateMeal, deleteMeal, getMealsForDate };
+}
+
+export function useNutritionGoals() {
+  return useLocalStorage<DailyNutritionGoal>('nutrition-goals', {
+    calories: 2000,
+    protein: 150,
+    carbs: 250,
+    fat: 70,
+  });
+}
+
+export function useBodyWeight() {
+  return useLocalStorage<{ date: string; weight: number }[]>('body-weight', []);
+}
