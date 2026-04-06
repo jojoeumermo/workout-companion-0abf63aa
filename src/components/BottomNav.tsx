@@ -1,12 +1,12 @@
 import { NavLink as RouterNavLink } from 'react-router-dom';
-import { Home, Dumbbell, BookOpen, BarChart3, Bot } from 'lucide-react';
+import { Home, Dumbbell, BookOpen, BarChart3, UtensilsCrossed } from 'lucide-react';
 
 const tabs = [
   { to: '/', icon: Home, label: 'Home' },
   { to: '/treinos', icon: Dumbbell, label: 'Treinos' },
   { to: '/exercicios', icon: BookOpen, label: 'Exercícios' },
+  { to: '/nutricao', icon: UtensilsCrossed, label: 'Nutrição' },
   { to: '/progresso', icon: BarChart3, label: 'Progresso' },
-  { to: '/ai-coach', icon: Bot, label: 'FitAI' },
 ];
 
 export default function BottomNav() {
