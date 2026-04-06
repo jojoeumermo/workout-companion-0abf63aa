@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WorkoutTemplate, CompletedWorkout, ActiveWorkout, PersonalRecord, Goal } from '@/types/workout';
+import { MealEntry, DailyNutritionGoal } from '@/types/nutrition';
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
