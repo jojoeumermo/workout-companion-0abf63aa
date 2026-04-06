@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, Camera } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, UtensilsCrossed, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme } from '@/hooks/useStorage';
+import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useNutritionGoals } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { ActiveWorkout } from '@/types/workout';
 
@@ -23,8 +23,9 @@ export default function Dashboard() {
   const [, setActiveWorkout] = useActiveWorkout();
   const { goals } = useGoals();
   const [theme] = useTheme();
+  const { meals } = useMeals();
+  const [nutritionGoals] = useNutritionGoals();
 
-  // Apply saved theme on mount
   useEffect(() => {
     if (theme && themes[theme]) {
       document.documentElement.style.setProperty('--primary', themes[theme]);
@@ -43,17 +44,13 @@ export default function Dashboard() {
   const weekVolume = thisWeek.reduce((sum, w) => sum + w.totalVolume, 0);
   const weekCount = thisWeek.length;
 
-  const recentWorkouts = history.slice(-3).reverse();
+  // Today's nutrition
+  const today = new Date().toISOString().split('T')[0];
+  const todayMeals = meals.filter(m => m.date === today);
+  const todayCalories = todayMeals.reduce((s, m) => s + m.totals.calories, 0);
+  const todayProtein = todayMeals.reduce((s, m) => s + m.totals.protein, 0);
 
-  const exerciseCount: Record<string, number> = {};
-  history.forEach(w => w.exercises.forEach(e => {
-    exerciseCount[e.exerciseId] = (exerciseCount[e.exerciseId] || 0) + 1;
-  }));
-  const topExercises = Object.entries(exerciseCount)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 4)
-    .map(([id, count]) => ({ exercise: getExerciseById(id), count }))
-    .filter(e => e.exercise);
+  const recentWorkouts = history.slice(-3).reverse();
 
   const startFreeWorkout = () => {
     const active: ActiveWorkout = {
@@ -71,7 +68,7 @@ export default function Dashboard() {
 
   return (
     <PageShell>
-      <div className="pt-14 space-y-6 max-w-lg mx-auto">
+      <div className="pt-14 space-y-5 max-w-lg mx-auto">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <div className="space-y-1">
@@ -99,68 +96,54 @@ export default function Dashboard() {
               <Play size={28} fill="currentColor" />
             </div>
           </button>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={startFreeWorkout}
-              className="bg-card text-foreground rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform border border-border"
+              className="bg-card text-foreground rounded-2xl p-3 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform border border-border"
             >
-              <Zap size={20} className="text-primary" />
-              <div className="text-left">
-                <span className="font-semibold text-sm block">Treino Livre</span>
-                <span className="text-[10px] text-muted-foreground font-body">Sem rotina</span>
-              </div>
+              <Zap size={18} className="text-primary" />
+              <span className="font-semibold text-[11px]">Treino Livre</span>
             </button>
             <button
               onClick={() => navigate('/programas')}
-              className="bg-card text-foreground rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform border border-border"
+              className="bg-card text-foreground rounded-2xl p-3 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform border border-border"
             >
-              <BookOpen size={20} className="text-primary" />
-              <div className="text-left">
-                <span className="font-semibold text-sm block">Programas</span>
-                <span className="text-[10px] text-muted-foreground font-body">Planos IA</span>
-              </div>
+              <BookOpen size={18} className="text-primary" />
+              <span className="font-semibold text-[11px]">Programas</span>
+            </button>
+            <button
+              onClick={() => navigate('/nutricao/camera')}
+              className="bg-card text-foreground rounded-2xl p-3 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform border border-border"
+            >
+              <Camera size={18} className="text-primary" />
+              <span className="font-semibold text-[11px]">Câmera Nutri</span>
             </button>
           </div>
         </motion.div>
 
-        {/* AI Coach Quick Access */}
+        {/* Nutrition summary card */}
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.07 }}
-          onClick={() => navigate('/ai-coach')}
-          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-primary/20"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Bot size={18} className="text-primary" />
-            </div>
-            <div className="text-left">
-              <span className="font-semibold text-sm block">FitAI Coach</span>
-              <span className="text-xs text-muted-foreground font-body">Treinador inteligente com IA</span>
-            </div>
-          </div>
-          <ChevronRight size={18} className="text-primary" />
-        </motion.button>
-
-        {/* Camera IA Quick Access */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.09 }}
-          onClick={() => navigate('/camera-ia')}
+          onClick={() => navigate('/nutricao')}
           className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-border"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
-              <Camera size={18} className="text-foreground" />
+            <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+              <UtensilsCrossed size={18} className="text-orange-400" />
             </div>
             <div className="text-left">
-              <span className="font-semibold text-sm block">Câmera com IA</span>
-              <span className="text-xs text-muted-foreground font-body">Análise de execução • Conta repetições</span>
+              <span className="font-semibold text-sm block">Nutrição Hoje</span>
+              <span className="text-xs text-muted-foreground font-body">
+                {todayCalories} kcal • {todayProtein}g proteína
+              </span>
             </div>
           </div>
-          <ChevronRight size={18} className="text-muted-foreground" />
+          <div className="text-right">
+            <span className="text-xs text-muted-foreground font-body">{todayMeals.length} refeições</span>
+            <ChevronRight size={16} className="text-muted-foreground ml-1 inline" />
+          </div>
         </motion.button>
 
         {/* Weekly Goal */}
@@ -192,6 +175,26 @@ export default function Dashboard() {
             <p className="text-xs text-muted-foreground font-body">volume esta semana</p>
           </div>
         </motion.div>
+
+        {/* AI Coach - secondary */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          onClick={() => navigate('/ai-coach')}
+          className="w-full bg-card rounded-2xl p-3 flex items-center justify-between active:scale-[0.98] transition-transform border border-border"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Bot size={16} className="text-primary" />
+            </div>
+            <div className="text-left">
+              <span className="font-medium text-sm block">FitAI Coach</span>
+              <span className="text-[10px] text-muted-foreground font-body">Pergunte sobre treino ou nutrição</span>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-muted-foreground" />
+        </motion.button>
 
         {/* Recent */}
         {recentWorkouts.length > 0 && (
@@ -228,23 +231,7 @@ export default function Dashboard() {
           </motion.div>
         )}
 
-        {/* Top */}
-        {topExercises.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-3">
-            <h2 className="text-lg font-semibold">Mais Usados</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {topExercises.map(({ exercise: ex, count }) => ex && (
-                <div key={ex.id} className="bg-card rounded-2xl p-4 space-y-1">
-                  <Dumbbell size={16} className="text-primary" />
-                  <p className="font-medium text-sm truncate">{ex.name}</p>
-                  <p className="text-xs text-muted-foreground font-body">{count}x usado</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {history.length === 0 && (
+        {history.length === 0 && todayMeals.length === 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-center py-12 space-y-3">
             <Dumbbell size={48} className="text-muted-foreground/30 mx-auto" />
             <p className="text-muted-foreground font-body">Comece seu primeiro treino!</p>
