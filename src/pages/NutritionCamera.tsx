@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Camera, Upload, ArrowLeft, Pencil, Save, Trash2, Loader2, Info, UtensilsCrossed, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
+import { apiFetch } from '@/lib/api';
 import { useMeals } from '@/hooks/useStorage';
 import { useToast } from '@/hooks/use-toast';
 import { NutritionItem, MealEntry } from '@/types/nutrition';
@@ -65,7 +66,7 @@ export default function NutritionCamera() {
     }
     setIsAnalyzing(true);
     try {
-      const response = await fetch('/api/analyze-meal', {
+      const response = await apiFetch('/api/analyze-meal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64, description: description.trim() || undefined }),

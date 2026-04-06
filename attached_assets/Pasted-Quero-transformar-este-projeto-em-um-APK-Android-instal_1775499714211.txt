@@ -1,0 +1,98 @@
+Quero transformar este projeto em um APK Android instalável para uso pessoal, sem depender da Play Store.
+
+IMPORTANTE:
+- Não remover nenhuma funcionalidade existente
+- Não recriar o projeto do zero
+- Não quebrar o que já funciona
+- Quero adaptar o app atual para virar um aplicativo Android instalável
+
+OBJETIVO:
+Transformar o projeto atual em um app Android em formato APK, com experiência mobile real e aparência de aplicativo.
+
+--------------------------------------------------
+1. ESTRATÉGIA DE EMPACOTAMENTO
+--------------------------------------------------
+
+Quero adaptar o projeto web atual para rodar como aplicativo Android.
+
+Usar uma abordagem híbrida/nativa adequada para isso, preferencialmente com boa compatibilidade com apps web modernos.
+
+Se for apropriado, usar Capacitor ou solução equivalente para empacotar o app como APK Android.
+
+--------------------------------------------------
+2. EXPERIÊNCIA DE APP MOBILE
+--------------------------------------------------
+
+O aplicativo deve abrir como app real:
+
+- tela cheia
+- sem aparência de navegador
+- navegação mobile confortável
+- layout otimizado para Android
+- experiência parecida com app nativo
+
+--------------------------------------------------
+3. INTEGRAÇÃO COM O APP ATUAL
+--------------------------------------------------
+
+Manter todas as telas e funcionalidades existentes funcionando no app Android:
+
+- treino
+- histórico
+- progresso
+- dashboard
+- câmera
+- nutrição
+- configurações
+- qualquer funcionalidade atual já existente
+
+--------------------------------------------------
+4. PREPARAÇÃO PARA BUILD ANDROID
+--------------------------------------------------
+
+Preparar toda a estrutura necessária para gerar APK Android.
+
+Configurar corretamente:
+
+- ícone do app
+- splash screen
+- nome do app
+- orientação
+- permissões necessárias
+- comportamento mobile
+
+--------------------------------------------------
+5. AJUSTES MOBILE E ANDROID
+--------------------------------------------------
+
+Revisar o app para garantir boa experiência no Android:
+
+- safe areas
+- performance
+- responsividade
+- botões
+- navegação
+- carregamento
+- estado offline quando possível
+
+--------------------------------------------------
+6. FUNCIONAMENTO LOCAL E PRÁTICO
+--------------------------------------------------
+
+Como o app será para uso pessoal, quero a melhor experiência possível de uso local.
+
+Melhorar o que for necessário para o app funcionar bem instalado no celular.
+
+--------------------------------------------------
+7. SEGURANÇA E ESTABILIDADE
+--------------------------------------------------
+
+Garantir que a adaptação para APK não quebre o app.
+
+Adicionar fallbacks, tratamento de erro e proteção para que o app continue estável.
+
+--------------------------------------------------
+8. RESULTADO FINAL
+--------------------------------------------------
+
+Quero deixar o projeto pronto para gerar um APK Android instalável para uso pessoal, sem Play Store, com cara de aplicativo real.

@@ -3,6 +3,7 @@ import { Send, Bot, User, Sparkles, Dumbbell, TrendingUp, Zap, Trash2, Target, B
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import PageShell from '@/components/PageShell';
+import { apiFetch } from '@/lib/api';
 import { useHistory, usePersonalRecords, useTemplates } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 
@@ -123,7 +124,7 @@ export default function AICoach() {
     try {
       const context = buildContext();
 
-      const resp = await fetch('/api/ai-coach', {
+      const resp = await apiFetch('/api/ai-coach', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
