@@ -16,6 +16,8 @@ import AICoach from "./pages/AICoach";
 import CameraAnalysis from "./pages/CameraAnalysis";
 import Settings from "./pages/Settings";
 import Programs from "./pages/Programs";
+import Nutrition from "./pages/Nutrition";
+import NutritionCamera from "./pages/NutritionCamera";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
           <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
           <Route path="/ai-coach" element={<><ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary><BottomNav /></>} />
           <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
+          <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
+          <Route path="/nutricao/camera" element={<NutritionCamera />} />
           <Route path="/configuracoes" element={<><Settings /><BottomNav /></>} />
           <Route path="/programas" element={<><Programs /><BottomNav /></>} />
           <Route path="*" element={<NotFound />} />
