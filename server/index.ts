@@ -72,6 +72,66 @@ function friendlyErrorMessage(err: unknown): { message: string; status: number }
   };
 }
 
+app.post("/api/analyze-meal", async (req, res) => {
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  if (!OPENAI_API_KEY) {
+    res.status(500).json({ error: "OPENAI_API_KEY não configurado." });
+    return;
+  }
+
+  try {
+    const { imageBase64, description } = req.body as { imageBase64?: string; description?: string };
+
+    if (!imageBase64 && !description) {
+      res.status(400).json({ error: "Envie uma imagem ou descrição da refeição" });
+      return;
+    }
+
+    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+
+    const systemMessage = {
+      role: "system" as const,
+      content: `Você é um nutricionista especialista. Analise a refeição e retorne APENAS um JSON válido (sem markdown, sem backticks) com esta estrutura exata:
+{
+  "items": [{"name": "nome do alimento", "portion": "porção estimada", "calories": 0, "protein": 0, "carbs": 0, "fat": 0, "fiber": 0}],
+  "totals": {"calories": 0, "protein": 0, "carbs": 0, "fat": 0, "fiber": 0},
+  "confidence": "alta|media|baixa",
+  "tips": "dica nutricional curta"
+}
+Valores em gramas (exceto calorias em kcal). Se não conseguir identificar, estime com base na descrição. Seja preciso mas realista.`,
+    };
+
+    const userContent: any[] = [];
+    if (description) userContent.push({ type: "text", text: `Analise esta refeição e estime os macronutrientes: ${description}` });
+    if (imageBase64) {
+      if (!description) userContent.push({ type: "text", text: "Analise esta refeição e estime os macronutrientes." });
+      userContent.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${imageBase64}` } });
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [systemMessage, { role: "user", content: userContent }],
+    });
+
+    const content = completion.choices[0]?.message?.content || "";
+    let parsed;
+    try {
+      const cleaned = content.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      parsed = JSON.parse(cleaned);
+    } catch {
+      console.error("Failed to parse AI response:", content);
+      res.status(500).json({ error: "Não foi possível processar a análise. Tente novamente." });
+      return;
+    }
+
+    res.json(parsed);
+  } catch (err: unknown) {
+    const { message, status } = friendlyErrorMessage(err);
+    console.error(`[analyze-meal] ${status}:`, message);
+    res.status(status).json({ error: message });
+  }
+});
+
 app.post("/api/ai-coach", async (req, res) => {
   if (!process.env.OPENAI_API_KEY) {
     res.status(500).json({ error: "OPENAI_API_KEY não configurado. Adicione a chave de API nas configurações do projeto." });

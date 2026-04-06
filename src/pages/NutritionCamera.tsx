@@ -7,7 +7,6 @@ import { useMeals } from '@/hooks/useStorage';
 import { useToast } from '@/hooks/use-toast';
 import { NutritionItem, MealEntry } from '@/types/nutrition';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
 
 const MEAL_TYPES = [
   { value: 'cafe', label: '☕ Café da Manhã' },
@@ -66,11 +65,14 @@ export default function NutritionCamera() {
     }
     setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('analyze-meal', {
-        body: { imageBase64, description: description.trim() || undefined },
+      const response = await fetch('/api/analyze-meal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64, description: description.trim() || undefined }),
       });
 
-      if (error) throw new Error(error.message || 'Erro ao analisar');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Erro ao analisar');
       if (data?.error) throw new Error(data.error);
 
       setAnalysisResult(data);
