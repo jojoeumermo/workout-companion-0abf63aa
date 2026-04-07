@@ -226,41 +226,35 @@ export default function Progress() {
         </button>
       </div>
     }>
-      <div className="space-y-6 max-w-lg mx-auto">
+      <div className="space-y-5 max-w-lg mx-auto">
         {/* Summary */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <Calendar size={14} className="text-primary" />
-            <p className="text-lg font-bold">{totalWorkouts}</p>
-            <p className="text-[9px] text-muted-foreground font-body">treinos</p>
-          </div>
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <TrendingUp size={14} className="text-primary" />
-            <p className="text-lg font-bold">{(totalVolume / 1000).toFixed(1)}t</p>
-            <p className="text-[9px] text-muted-foreground font-body">volume</p>
-          </div>
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <Flame size={14} className="text-primary" />
-            <p className="text-lg font-bold">{currentStreak}</p>
-            <p className="text-[9px] text-muted-foreground font-body">dias seguidos</p>
-          </div>
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <Award size={14} className="text-primary" />
-            <p className="text-lg font-bold">{bestStreak}</p>
-            <p className="text-[9px] text-muted-foreground font-body">recorde</p>
-          </div>
+          {[
+            { icon: Calendar, value: totalWorkouts.toString(), label: 'treinos' },
+            { icon: TrendingUp, value: `${(totalVolume / 1000).toFixed(1)}t`, label: 'volume' },
+            { icon: Flame, value: currentStreak.toString(), label: 'dias seguidos' },
+            { icon: Award, value: bestStreak.toString(), label: 'recorde' },
+          ].map(({ icon: Icon, value, label }) => (
+            <div key={label} className="card-premium rounded-2xl p-3 space-y-1.5">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon size={13} className="text-primary" />
+              </div>
+              <p className="text-lg font-extrabold tracking-tight">{value}</p>
+              <p className="text-[9px] text-muted-foreground font-body">{label}</p>
+            </div>
+          ))}
         </motion.div>
 
         {/* Monthly comparison */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="bg-card rounded-2xl border border-border/40 p-4 space-y-2">
-          <h3 className="font-semibold text-sm">Este Mês</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-4 space-y-3">
+          <h3 className="font-bold text-sm">Este Mês</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-xl font-bold text-primary">{monthlyStats.thisMonthCount}</p>
+              <p className="text-2xl font-extrabold text-primary tracking-tight">{monthlyStats.thisMonthCount}</p>
               <p className="text-[10px] text-muted-foreground font-body">treinos ({monthlyStats.lastMonthCount} mês passado)</p>
             </div>
             <div>
-              <p className="text-xl font-bold text-primary">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
+              <p className="text-2xl font-extrabold text-primary tracking-tight">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
               <p className="text-[10px] text-muted-foreground font-body">volume ({(monthlyStats.lastMonthVolume / 1000).toFixed(1)}t anterior)</p>
             </div>
           </div>
