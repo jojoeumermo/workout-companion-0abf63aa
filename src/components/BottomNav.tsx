@@ -12,8 +12,8 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-bottom">
-      <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border/40 safe-bottom">
+      <div className="flex items-center justify-around h-[68px] max-w-lg mx-auto px-2">
         {tabs.map(({ to, icon: Icon, label }) => (
           <RouterNavLink
             key={to}
@@ -21,7 +21,7 @@ export default function BottomNav() {
             end={to === '/'}
             onClick={() => haptic('light')}
             className={({ isActive }) =>
-              `relative flex flex-col items-center justify-center w-14 h-12 rounded-2xl transition-all duration-200 gap-0.5 ${
+              `relative flex flex-col items-center justify-center w-[52px] h-[52px] rounded-2xl transition-all duration-250 gap-1 ${
                 isActive ? 'text-primary' : 'text-muted-foreground'
               }`
             }
@@ -29,10 +29,14 @@ export default function BottomNav() {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute inset-0 rounded-2xl bg-primary/10 transition-all duration-200" />
+                  <span className="absolute inset-0 rounded-2xl bg-primary/8 transition-all duration-300" />
                 )}
-                <Icon size={20} strokeWidth={isActive ? 2.2 : 1.8} className="relative z-10 transition-all duration-200" />
-                <span className={`text-[10px] font-medium relative z-10 transition-all duration-200 ${isActive ? 'font-semibold' : ''}`}>
+                <Icon
+                  size={21}
+                  strokeWidth={isActive ? 2.3 : 1.7}
+                  className={`relative z-10 transition-all duration-250 ${isActive ? 'drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]' : ''}`}
+                />
+                <span className={`text-[10px] relative z-10 transition-all duration-250 leading-none ${isActive ? 'font-semibold' : 'font-medium'}`}>
                   {label}
                 </span>
               </>

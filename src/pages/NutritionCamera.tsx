@@ -382,7 +382,7 @@ export default function NutritionCamera() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}
-                    className="bg-card rounded-xl p-3 space-y-2"
+                    className="bg-card rounded-xl border border-border/40 p-3 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">

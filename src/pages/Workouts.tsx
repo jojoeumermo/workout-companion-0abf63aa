@@ -169,7 +169,7 @@ export default function Workouts() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={startFreeWorkout}
-          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-dashed border-border"
+          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.97] transition-all border border-dashed border-border/50 hover:border-primary/20"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -212,7 +212,7 @@ export default function Workouts() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-card rounded-2xl p-5 space-y-4"
+              className="bg-card rounded-2xl p-5 space-y-4 border border-border/40"
             >
               <div className="flex items-start justify-between">
                 <div>
