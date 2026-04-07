@@ -660,27 +660,30 @@ export default function ActiveWorkoutPage() {
       </div>
 
       {/* Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 glass-strong border-t border-border/30 safe-bottom">
         <div className="max-w-lg mx-auto px-5 py-4">
           {showRest ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold flex items-center gap-2">
-                  <Timer size={16} className="text-primary" /> Descanso
+                <span className="text-sm font-bold flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Timer size={16} className="text-primary" />
+                  </div>
+                  Descanso
                 </span>
-                <span className="text-2xl font-bold font-mono text-primary">{formatTime(restTimer)}</span>
+                <span className="text-3xl font-extrabold font-mono text-primary tracking-tight">{formatTime(restTimer)}</span>
               </div>
-              <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-primary rounded-full transition-all duration-1000 ease-linear"
-                  style={{ width: `${(restTimer / restTotal) * 100}%` }}
+                  className="h-full rounded-full transition-all duration-1000 ease-linear"
+                  style={{ width: `${(restTimer / restTotal) * 100}%`, background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.6))' }}
                 />
               </div>
               <div className="flex items-center justify-center gap-2">
-                <button onClick={() => setRestTimer(prev => Math.max(0, prev - 15))} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">-15s</button>
-                <button onClick={() => setRestTimer(prev => prev + 15)} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">+15s</button>
-                <button onClick={() => setRestTimer(prev => prev + 60)} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">+1min</button>
-                <button onClick={() => setShowRest(false)} className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold">Pular</button>
+                <button onClick={() => setRestTimer(prev => Math.max(0, prev - 15))} className="px-3.5 py-2 bg-secondary rounded-xl text-xs font-semibold active:scale-95 transition-transform">-15s</button>
+                <button onClick={() => setRestTimer(prev => prev + 15)} className="px-3.5 py-2 bg-secondary rounded-xl text-xs font-semibold active:scale-95 transition-transform">+15s</button>
+                <button onClick={() => setRestTimer(prev => prev + 60)} className="px-3.5 py-2 bg-secondary rounded-xl text-xs font-semibold active:scale-95 transition-transform">+1min</button>
+                <button onClick={() => setShowRest(false)} className="px-5 py-2 rounded-xl text-xs font-bold active:scale-95 transition-transform text-primary-foreground" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}>Pular</button>
               </div>
             </div>
           ) : (
@@ -688,7 +691,7 @@ export default function ActiveWorkoutPage() {
               <button
                 onClick={() => goToExercise(currentIndex - 1)}
                 disabled={currentIndex === 0}
-                className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-30"
+                className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-20 active:scale-95 transition-all"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -697,10 +700,11 @@ export default function ActiveWorkoutPage() {
                   if (isLastExercise && allCompleted) finishWorkout();
                   else goToExercise(currentIndex + 1);
                 }}
-                className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 font-semibold flex items-center justify-center gap-2"
+                className="flex-1 rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 active:scale-[0.97] transition-transform text-primary-foreground"
+                style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))', boxShadow: '0 4px 16px -4px hsl(var(--primary) / 0.3)' }}
               >
                 {isLastExercise ? (
-                  allCompleted ? 'Finalizar Treino' : 'Próximo'
+                  allCompleted ? '✨ Finalizar Treino' : 'Próximo'
                 ) : (
                   <>Próximo <ChevronRight size={18} /></>
                 )}
