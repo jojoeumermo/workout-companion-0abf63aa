@@ -262,7 +262,7 @@ export default function Progress() {
 
         {/* Weekly Goal */}
         {weeklyGoal && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="bg-card rounded-2xl border border-border/40 p-4 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="card-premium rounded-2xl p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Target size={16} className="text-primary" />
@@ -280,7 +280,7 @@ export default function Progress() {
         )}
 
         {/* Heatmap */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card-premium rounded-2xl p-5 space-y-3">
           <h3 className="font-semibold text-sm">Consistência</h3>
           <div className="flex gap-[3px] justify-center overflow-x-auto">
             {heatmapWeeks.map((week, wi) => (
@@ -310,7 +310,7 @@ export default function Progress() {
 
         {/* Body Weight Chart */}
         {weightChartData.length > 0 ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Scale size={16} className="text-primary" />
@@ -364,7 +364,7 @@ export default function Progress() {
 
         {/* Muscle Stats */}
         {muscleStats.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-5 space-y-4">
             <h3 className="font-semibold text-sm">Séries por Músculo</h3>
             <div className="space-y-3">
               {muscleStats.map(m => {
@@ -387,7 +387,7 @@ export default function Progress() {
 
         {/* Top PRs */}
         {topPRs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="card-premium rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
               <Award size={16} className="text-primary" />
               <h3 className="font-semibold text-sm">Recordes Pessoais</h3>
@@ -407,7 +407,7 @@ export default function Progress() {
         )}
 
         {/* Volume Chart */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <BarChart3 size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Volume Semanal (ton)</h3>
@@ -429,7 +429,7 @@ export default function Progress() {
         </motion.div>
 
         {/* Frequency */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Calendar size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Frequência Semanal</h3>
@@ -451,7 +451,7 @@ export default function Progress() {
         </motion.div>
 
         {/* Day-of-week breakdown */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Activity size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Treinos por Dia da Semana</h3>
@@ -473,7 +473,7 @@ export default function Progress() {
         </motion.div>
 
         {/* Avg Duration */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-primary" />
