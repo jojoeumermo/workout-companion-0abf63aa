@@ -93,7 +93,7 @@ export default function Nutrition() {
         </div>
 
         {/* Daily macros dashboard */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-bold">Resumo do Dia</h2>
             <button onClick={() => { setTempGoals(goals); setShowGoals(true); }} className="text-xs text-primary font-medium flex items-center gap-1">
@@ -126,7 +126,7 @@ export default function Nutrition() {
 
         {/* Water tracking */}
         {isToday && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl p-4 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl border border-border/40 p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Droplets size={16} className="text-blue-400" />
@@ -195,7 +195,7 @@ export default function Nutrition() {
         <div className="space-y-3">
           <h3 className="font-semibold text-sm px-1">Refeições {isToday ? 'de hoje' : 'do dia'}</h3>
           {dayMeals.length === 0 ? (
-            <div className="bg-card rounded-2xl p-8 text-center space-y-3">
+            <div className="bg-card rounded-2xl border border-border/40 p-8 text-center space-y-3">
               <UtensilsCrossed size={36} className="text-muted-foreground/30 mx-auto" />
               <p className="text-sm text-muted-foreground font-body">Nenhuma refeição registrada</p>
               <button
@@ -212,7 +212,7 @@ export default function Nutrition() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="bg-card rounded-2xl p-4 space-y-3"
+                className="bg-card rounded-2xl border border-border/40 p-4 space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <div>

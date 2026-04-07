@@ -176,7 +176,7 @@ export default function Settings() {
         </div>
 
         {/* Theme */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Palette size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Tema de Cor</h3>
@@ -198,7 +198,7 @@ export default function Settings() {
         </motion.div>
 
         {/* Body Measurements */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl p-5 space-y-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Ruler size={16} className="text-primary" />
@@ -233,7 +233,7 @@ export default function Settings() {
         </motion.div>
 
         {/* Export/Import */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="bg-card rounded-2xl p-5 space-y-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Download size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Backup & Exportação</h3>
@@ -265,7 +265,7 @@ export default function Settings() {
         </motion.div>
 
         {/* Stats */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="bg-card rounded-2xl p-5 space-y-2.5">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-2.5">
           <h3 className="font-semibold text-sm">Resumo dos Dados</h3>
           <div className="space-y-2 text-sm font-body text-muted-foreground">
             <div className="flex justify-between"><span>Rotinas salvas</span><span className="text-foreground font-medium">{templates.length}</span></div>
