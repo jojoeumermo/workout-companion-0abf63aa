@@ -280,18 +280,21 @@ export default function Progress() {
         )}
 
         {/* Heatmap */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card-premium rounded-2xl p-5 space-y-3">
-          <h3 className="font-semibold text-sm">Consistência</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card-premium rounded-2xl p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-sm">Consistência</h3>
+            <span className="text-[10px] text-muted-foreground font-body">16 semanas</span>
+          </div>
           <div className="flex gap-[3px] justify-center overflow-x-auto">
             {heatmapWeeks.map((week, wi) => (
               <div key={wi} className="flex flex-col gap-[3px]">
                 {week.map((day, di) => (
                   <div
                     key={di}
-                    className={`w-[11px] h-[11px] rounded-sm transition-colors ${
-                      day.count >= 2 ? 'bg-primary' :
-                      day.count === 1 ? 'bg-primary/50' :
-                      'bg-secondary'
+                    className={`w-[11px] h-[11px] rounded-[3px] transition-colors ${
+                      day.count >= 2 ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' :
+                      day.count === 1 ? 'bg-primary/45' :
+                      'bg-secondary/80'
                     }`}
                     title={`${day.date.toLocaleDateString('pt-BR')} - ${day.count} treinos`}
                   />
@@ -301,9 +304,9 @@ export default function Progress() {
           </div>
           <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground font-body">
             <span>Menos</span>
-            <div className="w-[11px] h-[11px] rounded-sm bg-secondary" />
-            <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
-            <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
+            <div className="w-[11px] h-[11px] rounded-[3px] bg-secondary/80" />
+            <div className="w-[11px] h-[11px] rounded-[3px] bg-primary/45" />
+            <div className="w-[11px] h-[11px] rounded-[3px] bg-primary" />
             <span>Mais</span>
           </div>
         </motion.div>
