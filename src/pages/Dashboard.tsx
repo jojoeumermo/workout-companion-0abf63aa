@@ -73,7 +73,7 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-muted-foreground font-body text-sm">Pronto para treinar?</p>
-            <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">Dashboard oi</h1>
           </div>
           <button onClick={() => navigate('/configuracoes')} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-muted-foreground">
             <Settings size={20} />
