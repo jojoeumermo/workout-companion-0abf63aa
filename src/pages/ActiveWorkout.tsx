@@ -587,7 +587,7 @@ export default function ActiveWorkoutPage() {
 
               {/* Sets */}
               <div className="space-y-2">
-                <div className="grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 px-2 text-xs text-muted-foreground font-body">
+                <div className="grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 px-2 text-[10px] text-muted-foreground font-body uppercase tracking-wider font-semibold">
                   <span>Série</span>
                   <span className="text-center">Peso (kg)</span>
                   <span className="text-center">Reps</span>
@@ -598,11 +598,11 @@ export default function ActiveWorkoutPage() {
                   <motion.div
                     key={i}
                     layout
-                    className={`grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 items-center rounded-xl px-2 py-2 transition-all ${
-                      set.completed ? 'bg-primary/5 border border-primary/20' : 'bg-card'
+                    className={`grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 items-center rounded-xl px-2 py-2.5 transition-all duration-200 ${
+                      set.completed ? 'bg-primary/8 border border-primary/20' : 'card-premium'
                     } ${flashIndex === i ? 'animate-set-flash' : ''}`}
                   >
-                    <span className="text-sm font-semibold text-center text-muted-foreground">{i + 1}</span>
+                    <span className={`text-sm font-bold text-center ${set.completed ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
                     <div className="relative">
                       <input
                         type="number"
@@ -610,10 +610,10 @@ export default function ActiveWorkoutPage() {
                         value={set.weight || ''}
                         onChange={e => updateSet(i, 'weight', parseFloat(e.target.value) || 0)}
                         placeholder={previousSets?.[i] ? `${previousSets[i].weight}` : '0'}
-                        className={`w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-ring ${set.completed ? 'text-primary' : ''}`}
+                        className={`w-full bg-secondary/80 rounded-lg px-3 py-2.5 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-ring transition-all ${set.completed ? 'text-primary bg-primary/5' : 'text-foreground'}`}
                       />
                       {!set.completed && (
-                        <button onClick={() => copyPrevWeight(i)} className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground">
+                        <button onClick={() => copyPrevWeight(i)} className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
                           <Copy size={11} />
                         </button>
                       )}
@@ -624,19 +624,22 @@ export default function ActiveWorkoutPage() {
                       value={set.reps || ''}
                       onChange={e => updateSet(i, 'reps', parseInt(e.target.value) || 0)}
                       placeholder={`${set.targetReps}`}
-                      className={`w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-ring ${set.completed ? 'text-primary' : ''}`}
+                      className={`w-full bg-secondary/80 rounded-lg px-3 py-2.5 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-ring transition-all ${set.completed ? 'text-primary bg-primary/5' : 'text-foreground'}`}
                     />
                     <button
                       onClick={() => toggleSetCompletion(i)}
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        set.completed ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                        set.completed
+                          ? 'text-primary-foreground'
+                          : 'bg-secondary/80 text-muted-foreground hover:text-foreground'
                       }`}
+                      style={set.completed ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' } : {}}
                     >
                       <Check size={18} />
                     </button>
                     <button
                       onClick={() => removeSet(i)}
-                      className="w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive"
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground/30 hover:text-destructive transition-colors"
                     >
                       <X size={14} />
                     </button>
@@ -646,7 +649,7 @@ export default function ActiveWorkoutPage() {
                 {/* Add Set Button */}
                 <button
                   onClick={addSet}
-                  className="w-full border border-dashed border-border rounded-xl py-2.5 text-muted-foreground text-xs font-body flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary transition-colors"
+                  className="w-full border border-dashed border-border/60 rounded-xl py-3 text-muted-foreground text-xs font-body flex items-center justify-center gap-1.5 hover:border-primary/40 hover:text-primary transition-all"
                 >
                   <Plus size={14} /> Adicionar Série
                 </button>
