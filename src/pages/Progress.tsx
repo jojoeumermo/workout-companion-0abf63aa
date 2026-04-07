@@ -226,41 +226,35 @@ export default function Progress() {
         </button>
       </div>
     }>
-      <div className="space-y-6 max-w-lg mx-auto">
+      <div className="space-y-5 max-w-lg mx-auto">
         {/* Summary */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <Calendar size={14} className="text-primary" />
-            <p className="text-lg font-bold">{totalWorkouts}</p>
-            <p className="text-[9px] text-muted-foreground font-body">treinos</p>
-          </div>
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <TrendingUp size={14} className="text-primary" />
-            <p className="text-lg font-bold">{(totalVolume / 1000).toFixed(1)}t</p>
-            <p className="text-[9px] text-muted-foreground font-body">volume</p>
-          </div>
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <Flame size={14} className="text-primary" />
-            <p className="text-lg font-bold">{currentStreak}</p>
-            <p className="text-[9px] text-muted-foreground font-body">dias seguidos</p>
-          </div>
-          <div className="bg-card rounded-2xl border border-border/40 p-3 space-y-1">
-            <Award size={14} className="text-primary" />
-            <p className="text-lg font-bold">{bestStreak}</p>
-            <p className="text-[9px] text-muted-foreground font-body">recorde</p>
-          </div>
+          {[
+            { icon: Calendar, value: totalWorkouts.toString(), label: 'treinos' },
+            { icon: TrendingUp, value: `${(totalVolume / 1000).toFixed(1)}t`, label: 'volume' },
+            { icon: Flame, value: currentStreak.toString(), label: 'dias seguidos' },
+            { icon: Award, value: bestStreak.toString(), label: 'recorde' },
+          ].map(({ icon: Icon, value, label }) => (
+            <div key={label} className="card-premium rounded-2xl p-3 space-y-1.5">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon size={13} className="text-primary" />
+              </div>
+              <p className="text-lg font-extrabold tracking-tight">{value}</p>
+              <p className="text-[9px] text-muted-foreground font-body">{label}</p>
+            </div>
+          ))}
         </motion.div>
 
         {/* Monthly comparison */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="bg-card rounded-2xl border border-border/40 p-4 space-y-2">
-          <h3 className="font-semibold text-sm">Este Mês</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-4 space-y-3">
+          <h3 className="font-bold text-sm">Este Mês</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-xl font-bold text-primary">{monthlyStats.thisMonthCount}</p>
+              <p className="text-2xl font-extrabold text-primary tracking-tight">{monthlyStats.thisMonthCount}</p>
               <p className="text-[10px] text-muted-foreground font-body">treinos ({monthlyStats.lastMonthCount} mês passado)</p>
             </div>
             <div>
-              <p className="text-xl font-bold text-primary">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
+              <p className="text-2xl font-extrabold text-primary tracking-tight">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
               <p className="text-[10px] text-muted-foreground font-body">volume ({(monthlyStats.lastMonthVolume / 1000).toFixed(1)}t anterior)</p>
             </div>
           </div>
@@ -268,11 +262,11 @@ export default function Progress() {
 
         {/* Weekly Goal */}
         {weeklyGoal && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="bg-card rounded-2xl border border-border/40 p-4 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="card-premium rounded-2xl p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Target size={16} className="text-primary" />
-                <span className="font-semibold text-sm">Meta Semanal</span>
+                <span className="font-bold text-sm">Meta Semanal</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-primary">{thisWeekCount}/{weeklyGoal.target}</span>
@@ -286,18 +280,21 @@ export default function Progress() {
         )}
 
         {/* Heatmap */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
-          <h3 className="font-semibold text-sm">Consistência</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card-premium rounded-2xl p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-sm">Consistência</h3>
+            <span className="text-[10px] text-muted-foreground font-body">16 semanas</span>
+          </div>
           <div className="flex gap-[3px] justify-center overflow-x-auto">
             {heatmapWeeks.map((week, wi) => (
               <div key={wi} className="flex flex-col gap-[3px]">
                 {week.map((day, di) => (
                   <div
                     key={di}
-                    className={`w-[11px] h-[11px] rounded-sm transition-colors ${
-                      day.count >= 2 ? 'bg-primary' :
-                      day.count === 1 ? 'bg-primary/50' :
-                      'bg-secondary'
+                    className={`w-[11px] h-[11px] rounded-[3px] transition-colors ${
+                      day.count >= 2 ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' :
+                      day.count === 1 ? 'bg-primary/45' :
+                      'bg-secondary/80'
                     }`}
                     title={`${day.date.toLocaleDateString('pt-BR')} - ${day.count} treinos`}
                   />
@@ -307,20 +304,20 @@ export default function Progress() {
           </div>
           <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground font-body">
             <span>Menos</span>
-            <div className="w-[11px] h-[11px] rounded-sm bg-secondary" />
-            <div className="w-[11px] h-[11px] rounded-sm bg-primary/50" />
-            <div className="w-[11px] h-[11px] rounded-sm bg-primary" />
+            <div className="w-[11px] h-[11px] rounded-[3px] bg-secondary/80" />
+            <div className="w-[11px] h-[11px] rounded-[3px] bg-primary/45" />
+            <div className="w-[11px] h-[11px] rounded-[3px] bg-primary" />
             <span>Mais</span>
           </div>
         </motion.div>
 
         {/* Body Weight Chart */}
         {weightChartData.length > 0 ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Scale size={16} className="text-primary" />
-                <h3 className="font-semibold text-sm">Peso Corporal</h3>
+                <h3 className="font-bold text-sm">Peso Corporal</h3>
               </div>
               <button onClick={() => navigate('/peso')} className="text-xs text-primary font-medium">Ver tudo</button>
             </div>
@@ -370,8 +367,8 @@ export default function Progress() {
 
         {/* Muscle Stats */}
         {muscleStats.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
-            <h3 className="font-semibold text-sm">Séries por Músculo</h3>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-5 space-y-4">
+            <h3 className="font-bold text-sm">Séries por Músculo</h3>
             <div className="space-y-3">
               {muscleStats.map(m => {
                 const maxSets = muscleStats[0]?.sets || 1;
@@ -393,10 +390,10 @@ export default function Progress() {
 
         {/* Top PRs */}
         {topPRs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="card-premium rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
               <Award size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Recordes Pessoais</h3>
+              <h3 className="font-bold text-sm">Recordes Pessoais</h3>
             </div>
             <div className="space-y-2">
               {topPRs.map(pr => (
@@ -413,10 +410,10 @@ export default function Progress() {
         )}
 
         {/* Volume Chart */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <BarChart3 size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Volume Semanal (ton)</h3>
+            <h3 className="font-bold text-sm">Volume Semanal (ton)</h3>
           </div>
           {history.length > 0 ? (
             <ResponsiveContainer width="100%" height={160}>
@@ -435,10 +432,10 @@ export default function Progress() {
         </motion.div>
 
         {/* Frequency */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Calendar size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Frequência Semanal</h3>
+            <h3 className="font-bold text-sm">Frequência Semanal</h3>
           </div>
           {history.length > 0 ? (
             <ResponsiveContainer width="100%" height={120}>
@@ -457,10 +454,10 @@ export default function Progress() {
         </motion.div>
 
         {/* Day-of-week breakdown */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Activity size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Treinos por Dia da Semana</h3>
+            <h3 className="font-bold text-sm">Treinos por Dia da Semana</h3>
           </div>
           {history.length > 0 ? (
             <ResponsiveContainer width="100%" height={140}>
@@ -479,11 +476,11 @@ export default function Progress() {
         </motion.div>
 
         {/* Avg Duration */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Duração Média (min)</h3>
+              <h3 className="font-bold text-sm">Duração Média (min)</h3>
             </div>
             {history.length > 0 && (
               <span className="text-sm font-bold text-primary">{avgDuration} min</span>
