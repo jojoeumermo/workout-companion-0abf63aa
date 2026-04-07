@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
+import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity, Scale } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip, ReferenceLine } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import PageShell from '@/components/PageShell';
-import { useHistory, useGoals, usePersonalRecords } from '@/hooks/useStorage';
+import { useHistory, useGoals, usePersonalRecords, useBodyWeight } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -15,6 +15,7 @@ export default function Progress() {
   const { records } = usePersonalRecords();
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [goalTarget, setGoalTarget] = useState(4);
+  const { entries: weightEntries, latest: latestWeight } = useBodyWeight();
 
   // Weekly volume data (last 8 weeks)
   const weeklyData = useMemo(() => {
@@ -177,6 +178,24 @@ export default function Progress() {
     };
   }, [history]);
 
+  // Body weight chart data (last 60 days)
+  const weightChartData = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 60);
+    const cutoffStr = cutoff.toISOString().split('T')[0];
+    return weightEntries
+      .filter(e => e.date >= cutoffStr)
+      .map(e => ({
+        date: new Date(e.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+        weight: e.weight,
+      }));
+  }, [weightEntries]);
+
+  const avgWeight = useMemo(() => {
+    if (weightChartData.length === 0) return null;
+    return weightChartData.reduce((s, e) => s + e.weight, 0) / weightChartData.length;
+  }, [weightChartData]);
+
   const totalWorkouts = history.length;
   const totalVolume = history.reduce((s, w) => s + w.totalVolume, 0);
   const avgDuration = history.length > 0 ? Math.round(history.reduce((s, w) => s + w.duration, 0) / history.length / 60) : 0;
@@ -294,6 +313,60 @@ export default function Progress() {
             <span>Mais</span>
           </div>
         </motion.div>
+
+        {/* Body Weight Chart */}
+        {weightChartData.length > 0 ? (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="bg-card rounded-2xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Scale size={16} className="text-primary" />
+                <h3 className="font-semibold text-sm">Peso Corporal</h3>
+              </div>
+              <button onClick={() => navigate('/peso')} className="text-xs text-primary font-medium">Ver tudo</button>
+            </div>
+            {latestWeight && (
+              <div className="flex gap-4">
+                <div>
+                  <p className="text-2xl font-bold text-primary">{latestWeight.weight} kg</p>
+                  <p className="text-[10px] text-muted-foreground font-body">peso atual</p>
+                </div>
+                {avgWeight && (
+                  <div>
+                    <p className="text-2xl font-bold">{avgWeight.toFixed(1)} kg</p>
+                    <p className="text-[10px] text-muted-foreground font-body">média 60d</p>
+                  </div>
+                )}
+              </div>
+            )}
+            {weightChartData.length >= 2 && (
+              <ResponsiveContainer width="100%" height={130}>
+                <LineChart data={weightChartData}>
+                  <XAxis dataKey="date" tick={{ fill: 'hsl(0 0% 60%)', fontSize: 9 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                  <YAxis hide domain={['auto', 'auto']} />
+                  <Tooltip contentStyle={{ backgroundColor: 'hsl(240 2% 18%)', border: 'none', borderRadius: '10px', color: '#fff', fontSize: 11 }} formatter={(v: any) => [`${v} kg`, 'Peso']} />
+                  {avgWeight && <ReferenceLine y={parseFloat(avgWeight.toFixed(1))} stroke="hsl(var(--primary))" strokeDasharray="4 4" strokeOpacity={0.3} />}
+                  <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))', r: 2.5 }} activeDot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </motion.div>
+        ) : (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.07 }}
+            onClick={() => navigate('/peso')}
+            className="w-full bg-card rounded-2xl p-4 flex items-center gap-3 border border-dashed border-border active:scale-[0.98] transition-transform"
+          >
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Scale size={16} className="text-primary" />
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-sm">Registrar Peso Corporal</p>
+              <p className="text-xs text-muted-foreground font-body">Acompanhe sua evolução com gráfico</p>
+            </div>
+          </motion.button>
+        )}
 
         {/* Muscle Stats */}
         {muscleStats.length > 0 && (

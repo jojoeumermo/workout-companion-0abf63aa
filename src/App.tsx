@@ -20,6 +20,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Nutrition = lazy(() => import("./pages/Nutrition"));
 const NutritionCamera = lazy(() => import("./pages/NutritionCamera"));
+const WeightLog = lazy(() => import("./pages/WeightLog"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/nutricao/camera" element={<NutritionCamera />} />
             <Route path="/configuracoes" element={<><Settings /><BottomNav /></>} />
             <Route path="/programas" element={<><Programs /><BottomNav /></>} />
+            <Route path="/peso" element={<WeightLog />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

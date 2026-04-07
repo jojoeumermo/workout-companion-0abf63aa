@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, UtensilsCrossed, Camera } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, UtensilsCrossed, Camera, Scale, Droplets } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useNutritionGoals } from '@/hooks/useStorage';
+import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useNutritionGoals, useBodyWeight, useWaterLog } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { ActiveWorkout } from '@/types/workout';
 
@@ -25,6 +25,8 @@ export default function Dashboard() {
   const [theme] = useTheme();
   const { meals } = useMeals();
   const [nutritionGoals] = useNutritionGoals();
+  const { latest: latestWeight } = useBodyWeight();
+  const { getTodayWater } = useWaterLog();
 
   useEffect(() => {
     if (theme && themes[theme]) {
@@ -121,30 +123,39 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Nutrition summary card */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.07 }}
-          onClick={() => navigate('/nutricao')}
-          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform border border-border"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
-              <UtensilsCrossed size={18} className="text-orange-400" />
+        {/* Today's summary strip */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => navigate('/nutricao')}
+            className="bg-card rounded-2xl p-3.5 text-left active:scale-95 transition-transform border border-border"
+          >
+            <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center mb-2">
+              <UtensilsCrossed size={15} className="text-orange-400" />
             </div>
-            <div className="text-left">
-              <span className="font-semibold text-sm block">Nutrição Hoje</span>
-              <span className="text-xs text-muted-foreground font-body">
-                {todayCalories} kcal • {todayProtein}g proteína
-              </span>
+            <p className="text-base font-bold leading-none">{Math.round(todayCalories)}</p>
+            <p className="text-[10px] text-muted-foreground font-body mt-0.5">kcal hoje</p>
+          </button>
+          <button
+            onClick={() => navigate('/nutricao')}
+            className="bg-card rounded-2xl p-3.5 text-left active:scale-95 transition-transform border border-border"
+          >
+            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center mb-2">
+              <Droplets size={15} className="text-blue-400" />
             </div>
-          </div>
-          <div className="text-right">
-            <span className="text-xs text-muted-foreground font-body">{todayMeals.length} refeições</span>
-            <ChevronRight size={16} className="text-muted-foreground ml-1 inline" />
-          </div>
-        </motion.button>
+            <p className="text-base font-bold leading-none">{((getTodayWater()) / 1000).toFixed(1).replace('.', ',')}L</p>
+            <p className="text-[10px] text-muted-foreground font-body mt-0.5">água hoje</p>
+          </button>
+          <button
+            onClick={() => navigate('/peso')}
+            className="bg-card rounded-2xl p-3.5 text-left active:scale-95 transition-transform border border-border"
+          >
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
+              <Scale size={15} className="text-primary" />
+            </div>
+            <p className="text-base font-bold leading-none">{latestWeight ? `${latestWeight.weight}` : '--'}</p>
+            <p className="text-[10px] text-muted-foreground font-body mt-0.5">{latestWeight ? 'kg peso' : 'registrar'}</p>
+          </button>
+        </motion.div>
 
         {/* Weekly Goal */}
         {goalProgress !== null && weeklyGoal && (

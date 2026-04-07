@@ -1,0 +1,527 @@
+IMPORTANTE — LEIA COM MÁXIMA ATENÇÃO
+
+Este aplicativo JÁ está bom e JÁ tem muitas partes funcionando bem.
+NÃO recrie o projeto do zero.
+NÃO remova funcionalidades existentes.
+NÃO simplifique o app.
+NÃO quebre nada que já funciona.
+NÃO piore o design atual.
+Quero EVOLUIR o app existente para uma versão 2.0 muito mais refinada, mais forte, mais bonita, mais inteligente e mais completa.
+
+OBJETIVO GERAL
+
+Transformar este app em uma versão 2.0 premium, extremamente refinada, robusta, rápida, visualmente mais forte, com melhor organização, mais recursos úteis, melhor sistema de rotinas, melhor progresso, melhor nutrição e melhor experiência mobile.
+
+Quero um upgrade real, profundo e profissional.
+A prioridade máxima é:
+
+* corrigir a IA e a câmera nutri a todo custo
+* melhorar o app sem quebrar nada
+* elevar o design, UX e estrutura a um nível muito superior
+* deixar tudo mais forte, mais inteligente e mais bonito
+
+==================================================
+REGRA PRINCIPAL
+===============
+
+* manter tudo que já existe
+* não remover funções atuais
+* não quebrar fluxos existentes
+* melhorar arquitetura e UX sem destruir nada
+* tratar este trabalho como uma evolução do produto, não como reconstrução
+
+==================================================
+
+1. MISSÃO PRINCIPAL: CONSERTAR A IA E A CÂMERA NUTRI
+   ==================================================
+
+A câmera nutri continua não funcionando corretamente.
+Quero consertar isso de forma definitiva.
+
+Fazer diagnóstico profundo e corrigir completamente:
+
+* captura da foto
+* upload/entrada da imagem
+* envio para análise
+* integração com a IA
+* interpretação do resultado
+* exibição dos alimentos detectados
+* cálculo de calorias
+* cálculo de proteínas, carboidratos e gorduras
+* edição manual da refeição
+* salvamento da refeição
+* histórico alimentar
+
+Quero que a câmera nutri funcione de ponta a ponta.
+
+Fluxo ideal:
+
+1. abrir câmera ou selecionar imagem
+2. enviar imagem
+3. analisar refeição
+4. estimar calorias
+5. estimar macros
+6. permitir editar alimentos detectados
+7. permitir ajustar porções
+8. permitir corrigir manualmente
+9. salvar refeição no histórico alimentar
+
+Se a análise falhar:
+
+* mostrar mensagem amigável
+* permitir tentar novamente
+* não quebrar a tela
+* não travar o app
+
+==================================================
+2. IA MAIS CONFIÁVEL E MAIS FORTE
+=================================
+
+A IA deve ficar mais confiável e melhor integrada.
+
+Quero:
+
+* revisar toda a integração de IA
+* corrigir endpoints
+* corrigir parsing de resposta
+* revisar tratamento de erros
+* revisar variáveis de ambiente
+* revisar chamadas para imagem e texto
+* revisar limites e falhas
+
+Também quero:
+
+* respostas melhores
+* integração mais forte com treino e nutrição
+* maior estabilidade
+* menos falhas silenciosas
+
+==================================================
+3. TROCAR OPENAI POR GEMINI COM SEGURANÇA
+=========================================
+
+Substituir a integração da OpenAI pela API do Gemini sem quebrar o app.
+
+IMPORTANTE:
+
+* não remover OpenAI antes de garantir que Gemini está funcionando
+* implementar Gemini primeiro
+* testar tudo
+* só depois desativar completamente a OpenAI
+
+Quero que Gemini seja usado para:
+
+* FitAI Coach
+* análise nutricional
+* recursos de IA necessários
+
+Garantir:
+
+* respostas em português
+* tratamento de erro amigável
+* estabilidade
+* menor custo
+* uso mais inteligente e econômico da IA
+
+Também revisar se ainda ficou alguma referência antiga da OpenAI no projeto.
+
+==================================================
+4. APP 2.0: POLIMENTO VISUAL TOTAL
+==================================
+
+Quero uma evolução visual forte, premium e moderna.
+
+Melhorar:
+
+* animações
+* transições
+* loading
+* microinterações
+* estados vazios
+* feedback visual
+* espaçamento
+* cards
+* títulos
+* hierarquia visual
+* clareza de navegação
+* sensação de app premium
+
+Quero que o app pareça muito mais refinado, sólido e profissional.
+
+Sem exagerar.
+Sem poluição.
+Sem quebrar a identidade atual.
+Apenas elevar MUITO a qualidade.
+
+==================================================
+5. TEMA DINÂMICO E PALETA DE CORES
+==================================
+
+Adicionar uma opção de personalização visual do app com seletor de cor.
+
+Quero uma área de tema/aparência com:
+
+* seletor de cor principal
+* paleta de cores
+* opção de escolher tom
+* roda de cor ou color picker
+* preview em tempo real
+* salvar tema escolhido
+
+A personalização deve afetar:
+
+* destaques do app
+* botões
+* elementos ativos
+* gráficos
+* detalhes visuais
+
+Manter dark mode como base, mas permitir variar a cor de destaque.
+
+Exemplos:
+
+* verde fitness
+* azul
+* laranja
+* roxo
+* vermelho
+* ciano
+
+==================================================
+6. ROTINAS 2.0 — MUITO MAIS ORGANIZADAS
+=======================================
+
+Melhorar muito o sistema de rotinas.
+
+Quero:
+
+* layout melhor
+* visual mais bonito
+* organização mais clara
+* melhor edição de exercícios
+* melhor estrutura de treino
+* melhor sensação de controle
+
+Adicionar:
+
+* pastas para organizar rotinas
+* arquivar rotinas
+* mover rotinas entre pastas
+* rotinas favoritas
+* pastas como "Atuais", "Arquivadas", "Hipertrofia", "Calistenia", "Teste", etc.
+
+Também melhorar:
+
+* ordenar rotinas
+* reordenar exercícios
+* editar descanso
+* editar reps/séries/peso planejado
+* observações por exercício
+* observações por rotina
+
+Tudo isso sem quebrar o que já existe.
+
+==================================================
+7. TREINO ATIVO 2.0
+===================
+
+Melhorar drasticamente o treino ativo.
+
+Quero:
+
+* menos cliques
+* maior clareza
+* sensação mais rápida
+* ergonomia melhor no celular
+* mais informações úteis no momento certo
+
+Adicionar ou melhorar:
+
+* barra de progresso do treino
+* indicação do exercício atual
+* comparação com treino anterior
+* volume em tempo real
+* sugestões rápidas de carga
+* copiar peso anterior automaticamente
+* descanso mais prático
+* superséries mais visuais
+* dropsets melhor representados
+* melhor feedback ao concluir série
+
+==================================================
+8. PROGRESSO 2.0 COM GRÁFICOS
+=============================
+
+Fortalecer muito a área de progresso.
+
+O heatmap deve continuar existindo, mas quero muito mais que isso.
+
+Adicionar uma área de estatísticas gráficas com:
+
+* evolução de carga por exercício
+* volume semanal
+* volume mensal
+* treinos por semana
+* frequência de treino
+* comparação entre semanas
+* comparação entre meses
+* músculos mais trabalhados
+* séries por grupo muscular
+* duração média dos treinos
+* evolução de peso corporal, se existir essa função
+* exercício com maior progresso
+
+Também quero indicadores resumidos:
+
+* total de treinos no mês
+* volume total levantado
+* grupo muscular mais treinado
+* tempo médio por treino
+* recordes recentes
+
+Quero gráficos bonitos, claros, modernos e fáceis de entender no celular.
+
+==================================================
+9. NOVAS FUNÇÕES INTELIGENTES E ÚTEIS
+=====================================
+
+Adicionar novas funções que façam sentido para um app pessoal de treino premium.
+
+Sugestões que quero no app:
+
+* sistema de metas
+* streak de treino
+* streak de nutrição
+* resumo do dia na tela inicial
+* favoritos de exercícios
+* favoritos de rotinas
+* backup/exportação
+* importação de backup
+* notas por exercício
+* notas por treino
+* radar muscular
+* histórico em timeline
+* comparação lado a lado com treino anterior
+* resumo semanal automático
+* lembretes leves
+* meta de água
+* registro de peso corporal
+* registro de medidas corporais
+* gráfico de evolução corporal
+
+==================================================
+10. FITAI COACH MAIS ÚTIL
+=========================
+
+Quero melhorar o FitAI Coach sem fazer ele virar peso morto.
+
+Ele deve ser mais objetivo, mais útil e mais integrado ao app.
+
+Quero que ele consiga:
+
+* analisar treino do dia
+* sugerir progressão de carga
+* sugerir substituição de exercício
+* analisar progresso da semana
+* sugerir ajustes na rotina
+* comentar treino finalizado
+* comentar alimentação salva
+* sugerir metas
+* sugerir descanso quando necessário
+
+Adicionar atalhos rápidos como:
+
+* analisar treino
+* sugerir progressão
+* sugerir substituição
+* criar treino
+* analisar alimentação
+
+==================================================
+11. PERFORMANCE E PESO DO APP
+=============================
+
+Quero otimização séria.
+
+Melhorar:
+
+* tempo de abertura
+* bundle
+* peso do app
+* renderização
+* carregamento inicial
+* lazy loading
+* divisão de chunks
+* redução de travadas
+* performance no celular
+* performance em telas mais pesadas
+
+Quero o app mais rápido e mais leve.
+
+==================================================
+12. OFFLINE MAIS FORTE
+======================
+
+Quero um modo offline mais robusto.
+
+Prioridades:
+
+* treinos funcionando offline
+* histórico offline
+* progresso local offline
+* salvar dados localmente
+* sincronizar depois quando internet voltar
+* telas não quebrarem sem internet
+
+Se algo depender de internet:
+
+* mostrar mensagem amigável
+* não travar o app
+* preservar o uso do resto normalmente
+
+==================================================
+13. FEEDBACK TÁTIL E MICROINTERAÇÕES
+====================================
+
+Adicionar feedback tátil/háptico e sensorial onde fizer sentido.
+
+Exemplos:
+
+* concluir série
+* iniciar descanso
+* terminar descanso
+* concluir treino
+* salvar refeição
+* bater recorde
+* ações importantes
+
+Também melhorar:
+
+* feedback de clique
+* efeitos sutis
+* sensação de resposta imediata
+* experiência mobile premium
+
+==================================================
+14. APARÊNCIA DE APP NATIVO
+===========================
+
+Quero deixar o app com sensação ainda mais forte de aplicativo nativo.
+
+Melhorar:
+
+* navegação inferior
+* headers
+* safe areas
+* splash screen
+* ícone do app preparado corretamente
+* abertura do app
+* consistência visual
+* comportamento mobile-first
+
+==================================================
+15. VARREDURA TOTAL DE BUGS
+===========================
+
+Fazer uma revisão completa e profunda do app inteiro.
+
+Verificar e corrigir:
+
+* treino ativo
+* rotinas
+* pastas
+* histórico
+* progresso
+* heatmap
+* gráficos
+* câmera nutri
+* IA
+* FitAI Coach
+* nutrição
+* offline
+* responsividade
+* erros de renderização
+* erros de rota
+* erros silenciosos
+* loading states
+* falhas de salvamento
+* falhas de integração
+
+Adicionar:
+
+* error boundaries
+* fallbacks
+* logs úteis
+* mensagens de erro amigáveis
+* proteção contra travamentos
+
+==================================================
+16. SEGURANÇA E PRIVACIDADE
+===========================
+
+Reforçar segurança e privacidade em todo o app.
+
+Especialmente:
+
+* câmera com consentimento
+* não armazenar imagem sem necessidade
+* validação de entradas
+* ações destrutivas com confirmação
+* proteção contra perda de dados
+* mensagens claras
+* comportamento seguro em caso de erro
+
+==================================================
+17. TESTES OBRIGATÓRIOS
+=======================
+
+Depois de implementar, validar estes fluxos:
+
+* abrir o app no celular
+* navegar pelas telas
+* criar e editar rotinas
+* organizar rotinas em pastas
+* iniciar treino
+* registrar séries
+* usar superséries
+* concluir treino
+* salvar no histórico
+* alimentar progresso
+* ver gráficos
+* ver heatmap
+* abrir FitAI Coach
+* enviar mensagem
+* receber resposta via Gemini
+* abrir câmera nutri
+* tirar foto
+* enviar foto
+* receber análise nutricional
+* editar refeição
+* salvar refeição
+* usar modo offline sem travar
+* usar o app com performance boa
+
+==================================================
+18. RESULTADO FINAL
+===================
+
+Quero uma versão 2.0 muito melhor do app.
+
+Objetivo final:
+
+* muito mais bonita
+* muito mais forte
+* muito mais organizada
+* muito mais premium
+* mais estável
+* mais rápida
+* com IA funcionando de verdade
+* com câmera nutri funcionando de verdade
+* com rotinas e pastas muito melhores
+* com gráficos e progresso melhores
+* com tema personalizável
+* com sensação de aplicativo superior
+
+SEM QUEBRAR O APP.
+SEM REMOVER O QUE JÁ ESTÁ BOM.
+APENAS EVOLUIR PARA UMA VERSÃO MUITO MAIS FORTE.

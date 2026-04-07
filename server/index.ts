@@ -10,7 +10,7 @@ const app = express();
 const isDev = process.env.NODE_ENV !== "production";
 
 app.use(cors());
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json({ limit: "15mb" }));
 
 function getGemini() {
   const key = process.env.GEMINI_API_KEY;
@@ -151,11 +151,29 @@ ${description ? `Descrição: ${description}` : "Analise a imagem desta refeiç�
     const content = result.response.text();
     let parsed;
     try {
-      const cleaned = content.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      // Strip markdown code blocks
+      let cleaned = content.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      // Extract JSON object if there's surrounding text
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) cleaned = jsonMatch[0];
       parsed = JSON.parse(cleaned);
+      // Validate required structure
+      if (!parsed.items || !Array.isArray(parsed.items)) {
+        throw new Error("Missing items array in response");
+      }
+      if (!parsed.totals || typeof parsed.totals.calories !== 'number') {
+        // Recalculate totals from items if missing
+        parsed.totals = {
+          calories: parsed.items.reduce((s: number, i: any) => s + (i.calories || 0), 0),
+          protein: parsed.items.reduce((s: number, i: any) => s + (i.protein || 0), 0),
+          carbs: parsed.items.reduce((s: number, i: any) => s + (i.carbs || 0), 0),
+          fat: parsed.items.reduce((s: number, i: any) => s + (i.fat || 0), 0),
+          fiber: parsed.items.reduce((s: number, i: any) => s + (i.fiber || 0), 0),
+        };
+      }
     } catch {
-      console.error("Failed to parse AI response:", content);
-      res.status(500).json({ error: "Não foi possível processar a análise. Tente novamente." });
+      console.error("Failed to parse AI response:", content.slice(0, 500));
+      res.status(500).json({ error: "Não foi possível interpretar a análise. Tente tirar uma foto mais clara ou descreva os alimentos manualmente." });
       return;
     }
 

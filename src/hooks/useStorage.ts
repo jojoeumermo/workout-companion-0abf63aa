@@ -137,5 +137,43 @@ export function useNutritionGoals() {
 }
 
 export function useBodyWeight() {
-  return useLocalStorage<{ date: string; weight: number }[]>('body-weight', []);
+  const [entries, setEntries] = useLocalStorage<{ date: string; weight: number; note?: string }[]>('body-weight', []);
+
+  const addWeight = useCallback((weight: number, note?: string) => {
+    const date = new Date().toISOString().split('T')[0];
+    setEntries(prev => {
+      const filtered = prev.filter(e => e.date !== date);
+      return [...filtered, { date, weight, note }].sort((a, b) => a.date.localeCompare(b.date));
+    });
+  }, [setEntries]);
+
+  const removeWeight = useCallback((date: string) => {
+    setEntries(prev => prev.filter(e => e.date !== date));
+  }, [setEntries]);
+
+  const latest = entries.length > 0 ? entries[entries.length - 1] : null;
+
+  return { entries, addWeight, removeWeight, latest };
+}
+
+export function useWaterLog() {
+  const [water, setWater] = useLocalStorage<Record<string, number>>('water-log', {});
+
+  const getTodayWater = useCallback(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return water[today] || 0;
+  }, [water]);
+
+  const addWater = useCallback((ml: number) => {
+    const today = new Date().toISOString().split('T')[0];
+    setWater(prev => ({ ...prev, [today]: Math.max(0, (prev[today] || 0) + ml) }));
+  }, [setWater]);
+
+  const setDayWater = useCallback((date: string, ml: number) => {
+    setWater(prev => ({ ...prev, [date]: Math.max(0, ml) }));
+  }, [setWater]);
+
+  const getWaterForDate = useCallback((date: string) => water[date] || 0, [water]);
+
+  return { water, getTodayWater, addWater, setDayWater, getWaterForDate };
 }

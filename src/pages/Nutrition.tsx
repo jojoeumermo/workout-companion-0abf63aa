@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft, ChevronRight, Trash2, TrendingUp, UtensilsCrossed, Target, Pencil } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Scale } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useMeals, useNutritionGoals } from '@/hooks/useStorage';
+import { useMeals, useNutritionGoals, useWaterLog } from '@/hooks/useStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { haptic } from '@/lib/haptic';
 
 const MEAL_TYPE_LABELS: Record<string, string> = {
   cafe: '☕ Café da Manhã',
@@ -15,15 +16,22 @@ const MEAL_TYPE_LABELS: Record<string, string> = {
   outro: '🍴 Outro',
 };
 
+const WATER_PRESETS = [150, 200, 300, 500];
+const WATER_GOAL_ML = 2500;
+
 export default function Nutrition() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { meals, deleteMeal } = useMeals();
   const [goals, setGoals] = useNutritionGoals();
+  const { getTodayWater, addWater, getWaterForDate } = useWaterLog();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showGoals, setShowGoals] = useState(false);
   const [tempGoals, setTempGoals] = useState(goals);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+  const todayWater = isToday ? getTodayWater() : getWaterForDate(selectedDate);
 
   const dayMeals = useMemo(() =>
     meals.filter(m => m.date === selectedDate).sort((a, b) => a.time.localeCompare(b.time)),
@@ -43,14 +51,16 @@ export default function Nutrition() {
     setSelectedDate(d.toISOString().split('T')[0]);
   };
 
-  const isToday = selectedDate === new Date().toISOString().split('T')[0];
-  const dateLabel = isToday ? 'Hoje' : new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
+  const dateLabel = isToday
+    ? 'Hoje'
+    : new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
 
   const macroBar = (current: number, goal: number, color: string) => {
     const pct = Math.min((current / goal) * 100, 100);
+    const over = (current / goal) > 1;
     return (
       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
+        <div className={`h-full rounded-full transition-all ${over ? 'bg-red-400' : color}`} style={{ width: `${pct}%` }} />
       </div>
     );
   };
@@ -61,16 +71,23 @@ export default function Nutrition() {
     toast({ title: 'Refeição removida' });
   };
 
+  const waterPct = Math.min((todayWater / WATER_GOAL_ML) * 100, 100);
+  const waterGlasses = Math.round(todayWater / 250);
+
   return (
     <PageShell title="Nutrição">
-      <div className="max-w-lg mx-auto space-y-5">
+      <div className="max-w-lg mx-auto space-y-4">
         {/* Date selector */}
         <div className="flex items-center justify-between">
-          <button onClick={() => changeDate(-1)} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center">
+          <button onClick={() => changeDate(-1)} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center active:scale-95 transition-transform">
             <ChevronLeft size={18} />
           </button>
           <span className="font-semibold capitalize">{dateLabel}</span>
-          <button onClick={() => changeDate(1)} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center">
+          <button
+            onClick={() => changeDate(1)}
+            disabled={isToday}
+            className="w-10 h-10 rounded-xl bg-card flex items-center justify-center disabled:opacity-30 active:scale-95 transition-transform"
+          >
             <ChevronRight size={18} />
           </button>
         </div>
@@ -85,16 +102,16 @@ export default function Nutrition() {
           </div>
 
           <div className="text-center space-y-1">
-            <p className="text-4xl font-black text-primary">{dayTotals.calories}</p>
+            <p className="text-4xl font-black text-primary">{Math.round(dayTotals.calories)}</p>
             <p className="text-xs text-muted-foreground font-body">de {goals.calories} kcal</p>
             {macroBar(dayTotals.calories, goals.calories, 'bg-orange-400')}
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Proteína', current: dayTotals.protein, goal: goals.protein, unit: 'g', color: 'bg-red-400' },
-              { label: 'Carbos', current: dayTotals.carbs, goal: goals.carbs, unit: 'g', color: 'bg-blue-400' },
-              { label: 'Gordura', current: dayTotals.fat, goal: goals.fat, unit: 'g', color: 'bg-yellow-400' },
+              { label: 'Proteína', current: Math.round(dayTotals.protein * 10) / 10, goal: goals.protein, unit: 'g', color: 'bg-red-400' },
+              { label: 'Carbos', current: Math.round(dayTotals.carbs * 10) / 10, goal: goals.carbs, unit: 'g', color: 'bg-blue-400' },
+              { label: 'Gordura', current: Math.round(dayTotals.fat * 10) / 10, goal: goals.fat, unit: 'g', color: 'bg-yellow-400' },
             ].map(m => (
               <div key={m.label} className="space-y-1.5">
                 <div className="flex items-baseline justify-between">
@@ -107,29 +124,94 @@ export default function Nutrition() {
           </div>
         </motion.div>
 
-        {/* Add meal button */}
-        <button
-          onClick={() => navigate('/nutricao/camera')}
-          className="w-full bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-3 font-semibold active:scale-[0.98] transition-transform"
-        >
-          <Camera size={20} />
-          Registrar Refeição
-        </button>
+        {/* Water tracking */}
+        {isToday && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Droplets size={16} className="text-blue-400" />
+                <h3 className="font-semibold text-sm">Água</h3>
+              </div>
+              <div className="text-right">
+                <span className="text-sm font-bold text-blue-400">{(todayWater / 1000).toFixed(2).replace('.', ',')}L</span>
+                <span className="text-xs text-muted-foreground font-body"> / {(WATER_GOAL_ML / 1000).toFixed(1).replace('.', ',')}L</span>
+              </div>
+            </div>
+
+            {/* Water progress */}
+            <div className="space-y-2">
+              <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-400 rounded-full transition-all duration-500"
+                  style={{ width: `${waterPct}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground font-body">
+                <span>{waterGlasses} 🥛 copos de 250ml</span>
+                <span>{Math.max(0, WATER_GOAL_ML - todayWater)}ml restantes</span>
+              </div>
+            </div>
+
+            {/* Water buttons */}
+            <div className="flex gap-2">
+              {WATER_PRESETS.map(ml => (
+                <button
+                  key={ml}
+                  onClick={() => { addWater(ml); haptic('light'); }}
+                  className="flex-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl py-2 text-xs font-semibold active:scale-95 transition-transform"
+                >
+                  +{ml < 1000 ? `${ml}ml` : `${ml / 1000}L`}
+                </button>
+              ))}
+              <button
+                onClick={() => { addWater(-150); haptic('light'); }}
+                className="w-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground active:scale-95 transition-transform"
+              >
+                <Minus size={14} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Quick actions */}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => navigate('/nutricao/camera')}
+            className="bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-2.5 font-semibold active:scale-[0.97] transition-transform shadow-lg shadow-primary/20"
+          >
+            <Camera size={20} />
+            Registrar Refeição
+          </button>
+          <button
+            onClick={() => navigate('/peso')}
+            className="bg-card border border-border rounded-2xl p-4 flex items-center justify-center gap-2.5 font-semibold active:scale-[0.97] transition-transform"
+          >
+            <Scale size={20} className="text-primary" />
+            Peso Corporal
+          </button>
+        </div>
 
         {/* Meals list */}
         <div className="space-y-3">
-          <h3 className="font-semibold text-sm px-1">Refeições do dia</h3>
+          <h3 className="font-semibold text-sm px-1">Refeições {isToday ? 'de hoje' : 'do dia'}</h3>
           {dayMeals.length === 0 ? (
             <div className="bg-card rounded-2xl p-8 text-center space-y-3">
               <UtensilsCrossed size={36} className="text-muted-foreground/30 mx-auto" />
               <p className="text-sm text-muted-foreground font-body">Nenhuma refeição registrada</p>
+              <button
+                onClick={() => navigate('/nutricao/camera')}
+                className="text-xs text-primary font-medium underline underline-offset-2"
+              >
+                Adicionar refeição
+              </button>
             </div>
           ) : (
-            dayMeals.map(meal => (
+            dayMeals.map((meal, idx) => (
               <motion.div
                 key={meal.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.03 }}
                 className="bg-card rounded-2xl p-4 space-y-3"
               >
                 <div className="flex items-center justify-between">
@@ -137,26 +219,27 @@ export default function Nutrition() {
                     <p className="font-semibold text-sm">{MEAL_TYPE_LABELS[meal.type] || meal.type}</p>
                     <p className="text-xs text-muted-foreground font-body">{meal.time}</p>
                   </div>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => setConfirmDelete(meal.id)}
-                      className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-destructive"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setConfirmDelete(meal.id)}
+                    className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {meal.items.map((item, i) => (
                     <span key={i} className="text-xs bg-secondary px-2 py-1 rounded-lg font-body">{item.name}</span>
                   ))}
                 </div>
                 <div className="flex gap-4 text-xs font-body text-muted-foreground">
-                  <span className="text-orange-400 font-medium">{meal.totals.calories} kcal</span>
-                  <span>P: {meal.totals.protein}g</span>
-                  <span>C: {meal.totals.carbs}g</span>
-                  <span>G: {meal.totals.fat}g</span>
+                  <span className="text-orange-400 font-medium">{Math.round(meal.totals.calories)} kcal</span>
+                  <span>P: {Math.round(meal.totals.protein * 10) / 10}g</span>
+                  <span>C: {Math.round(meal.totals.carbs * 10) / 10}g</span>
+                  <span>G: {Math.round(meal.totals.fat * 10) / 10}g</span>
                 </div>
+                {meal.notes && (
+                  <p className="text-xs text-muted-foreground font-body italic">"{meal.notes}"</p>
+                )}
               </motion.div>
             ))
           )}
@@ -180,14 +263,15 @@ export default function Nutrition() {
                 <label className="text-xs text-muted-foreground font-body">{label}</label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   value={tempGoals[field]}
                   onChange={e => setTempGoals(prev => ({ ...prev, [field]: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
             ))}
             <button
-              onClick={() => { setGoals(tempGoals); setShowGoals(false); toast({ title: 'Metas atualizadas' }); }}
+              onClick={() => { setGoals(tempGoals); setShowGoals(false); toast({ title: 'Metas atualizadas!' }); }}
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm"
             >
               Salvar Metas
@@ -202,7 +286,7 @@ export default function Nutrition() {
           <DialogHeader>
             <DialogTitle>Excluir Refeição?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground font-body">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-muted-foreground font-body mt-1">Esta ação não pode ser desfeita.</p>
           <div className="grid grid-cols-2 gap-3 mt-4">
             <button onClick={() => setConfirmDelete(null)} className="bg-secondary rounded-xl py-2.5 font-medium text-sm">Cancelar</button>
             <button onClick={() => confirmDelete && handleDeleteMeal(confirmDelete)} className="bg-destructive text-destructive-foreground rounded-xl py-2.5 font-semibold text-sm">Excluir</button>
