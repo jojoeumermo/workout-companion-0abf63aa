@@ -16,6 +16,15 @@ const themes: Record<string, string> = {
   cyan: '180 70% 45%',
 };
 
+const stagger = {
+  hidden: { opacity: 0, y: 12 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+  }),
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [history] = useHistory();
@@ -46,11 +55,9 @@ export default function Dashboard() {
   const weekVolume = thisWeek.reduce((sum, w) => sum + w.totalVolume, 0);
   const weekCount = thisWeek.length;
 
-  // Today's nutrition
   const today = new Date().toISOString().split('T')[0];
   const todayMeals = meals.filter(m => m.date === today);
   const todayCalories = todayMeals.reduce((s, m) => s + m.totals.calories, 0);
-  const todayProtein = todayMeals.reduce((s, m) => s + m.totals.protein, 0);
 
   const recentWorkouts = history.slice(-3).reverse();
 
@@ -70,23 +77,26 @@ export default function Dashboard() {
 
   return (
     <PageShell>
-      <div className="pt-14 space-y-5 max-w-lg mx-auto">
+      <div className="pt-14 space-y-5 max-w-lg mx-auto pb-4">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-          <div className="space-y-1">
+        <motion.div custom={0} variants={stagger} initial="hidden" animate="show" className="flex items-center justify-between">
+          <div className="space-y-0.5">
             <p className="text-muted-foreground font-body text-sm">Pronto para treinar?</p>
             <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
           </div>
-          <button onClick={() => navigate('/configuracoes')} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-muted-foreground">
+          <button
+            onClick={() => navigate('/configuracoes')}
+            className="w-11 h-11 rounded-2xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors active:scale-95"
+          >
             <Settings size={20} />
           </button>
         </motion.div>
 
         {/* Start Buttons */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="space-y-3">
+        <motion.div custom={1} variants={stagger} initial="hidden" animate="show" className="space-y-3">
           <button
             onClick={() => navigate('/treinos')}
-            className="w-full bg-primary text-primary-foreground rounded-2xl p-5 flex items-center justify-between active:scale-[0.98] transition-transform"
+            className="w-full bg-primary text-primary-foreground rounded-2xl p-5 flex items-center justify-between active:scale-[0.97] transition-transform shadow-glow-strong"
           >
             <div className="text-left">
               <span className="text-lg font-bold block">Iniciar Treino</span>
@@ -94,158 +104,161 @@ export default function Dashboard() {
                 {templates.length > 0 ? `${templates.length} rotinas salvas` : 'Crie sua primeira rotina'}
               </span>
             </div>
-            <div className="w-14 h-14 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-primary-foreground/15 backdrop-blur-sm flex items-center justify-center">
               <Play size={28} fill="currentColor" />
             </div>
           </button>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={startFreeWorkout}
-              className="bg-card text-foreground rounded-2xl p-3 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform border border-border"
-            >
-              <Zap size={18} className="text-primary" />
-              <span className="font-semibold text-[11px]">Treino Livre</span>
-            </button>
-            <button
-              onClick={() => navigate('/programas')}
-              className="bg-card text-foreground rounded-2xl p-3 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform border border-border"
-            >
-              <BookOpen size={18} className="text-primary" />
-              <span className="font-semibold text-[11px]">Programas</span>
-            </button>
-            <button
-              onClick={() => navigate('/nutricao/camera')}
-              className="bg-card text-foreground rounded-2xl p-3 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform border border-border"
-            >
-              <Camera size={18} className="text-primary" />
-              <span className="font-semibold text-[11px]">Câmera Nutri</span>
-            </button>
+          <div className="grid grid-cols-3 gap-2.5">
+            {[
+              { icon: Zap, label: 'Treino Livre', action: startFreeWorkout },
+              { icon: BookOpen, label: 'Programas', action: () => navigate('/programas') },
+              { icon: Camera, label: 'Câmera Nutri', action: () => navigate('/nutricao/camera') },
+            ].map(({ icon: Icon, label, action }) => (
+              <button
+                key={label}
+                onClick={action}
+                className="bg-card text-foreground rounded-2xl p-3.5 flex flex-col items-center gap-2.5 active:scale-[0.96] transition-all border border-border/40 hover:border-primary/20 hover:shadow-glow"
+              >
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Icon size={17} className="text-primary" />
+                </div>
+                <span className="font-semibold text-[11px]">{label}</span>
+              </button>
+            ))}
           </div>
         </motion.div>
 
         {/* Today's summary strip */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="grid grid-cols-3 gap-2">
-          <button
-            onClick={() => navigate('/nutricao')}
-            className="bg-card rounded-2xl p-3.5 text-left active:scale-95 transition-transform border border-border"
-          >
-            <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center mb-2">
-              <UtensilsCrossed size={15} className="text-orange-400" />
-            </div>
-            <p className="text-base font-bold leading-none">{Math.round(todayCalories)}</p>
-            <p className="text-[10px] text-muted-foreground font-body mt-0.5">kcal hoje</p>
-          </button>
-          <button
-            onClick={() => navigate('/nutricao')}
-            className="bg-card rounded-2xl p-3.5 text-left active:scale-95 transition-transform border border-border"
-          >
-            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center mb-2">
-              <Droplets size={15} className="text-blue-400" />
-            </div>
-            <p className="text-base font-bold leading-none">{((getTodayWater()) / 1000).toFixed(1).replace('.', ',')}L</p>
-            <p className="text-[10px] text-muted-foreground font-body mt-0.5">água hoje</p>
-          </button>
-          <button
-            onClick={() => navigate('/peso')}
-            className="bg-card rounded-2xl p-3.5 text-left active:scale-95 transition-transform border border-border"
-          >
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
-              <Scale size={15} className="text-primary" />
-            </div>
-            <p className="text-base font-bold leading-none">{latestWeight ? `${latestWeight.weight}` : '--'}</p>
-            <p className="text-[10px] text-muted-foreground font-body mt-0.5">{latestWeight ? 'kg peso' : 'registrar'}</p>
-          </button>
+        <motion.div custom={2} variants={stagger} initial="hidden" animate="show" className="grid grid-cols-3 gap-2.5">
+          {[
+            { icon: UtensilsCrossed, value: Math.round(todayCalories).toString(), sub: 'kcal hoje', color: 'text-orange-400', bg: 'bg-orange-500/10', route: '/nutricao' },
+            { icon: Droplets, value: `${((getTodayWater()) / 1000).toFixed(1).replace('.', ',')}L`, sub: 'água hoje', color: 'text-blue-400', bg: 'bg-blue-500/10', route: '/nutricao' },
+            { icon: Scale, value: latestWeight ? `${latestWeight.weight}` : '--', sub: latestWeight ? 'kg peso' : 'registrar', color: 'text-primary', bg: 'bg-primary/10', route: '/peso' },
+          ].map(({ icon: Icon, value, sub, color, bg, route }) => (
+            <button
+              key={sub}
+              onClick={() => navigate(route)}
+              className="bg-card rounded-2xl p-3.5 text-left active:scale-[0.96] transition-all border border-border/40 hover:border-primary/20"
+            >
+              <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center mb-2.5`}>
+                <Icon size={15} className={color} />
+              </div>
+              <p className="text-lg font-bold leading-none">{value}</p>
+              <p className="text-[10px] text-muted-foreground font-body mt-1">{sub}</p>
+            </button>
+          ))}
         </motion.div>
 
         {/* Weekly Goal */}
         {goalProgress !== null && weeklyGoal && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="bg-card rounded-2xl p-4 space-y-3">
+          <motion.div custom={3} variants={stagger} initial="hidden" animate="show" className="bg-card rounded-2xl p-4 space-y-3 border border-border/40">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Target size={16} className="text-primary" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Target size={15} className="text-primary" />
+                </div>
                 <span className="font-semibold text-sm">Meta Semanal</span>
               </div>
               <span className="text-sm font-bold text-primary">{weekCount}/{weeklyGoal.target}</span>
             </div>
             <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${goalProgress * 100}%` }} />
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${goalProgress * 100}%` }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="h-full bg-primary rounded-full"
+              />
             </div>
           </motion.div>
         )}
 
         {/* Stats */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 gap-4">
-          <div className="bg-card rounded-2xl p-4 space-y-2">
-            <Flame size={20} className="text-primary" />
-            <p className="text-2xl font-bold">{weekCount}</p>
+        <motion.div custom={4} variants={stagger} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
+          <div className="bg-card rounded-2xl p-5 space-y-2 border border-border/40">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Flame size={18} className="text-primary" />
+            </div>
+            <p className="text-3xl font-extrabold tracking-tight">{weekCount}</p>
             <p className="text-xs text-muted-foreground font-body">treinos esta semana</p>
           </div>
-          <div className="bg-card rounded-2xl p-4 space-y-2">
-            <TrendingUp size={20} className="text-primary" />
-            <p className="text-2xl font-bold">{weekVolume > 1000 ? `${(weekVolume / 1000).toFixed(1)}t` : `${weekVolume}kg`}</p>
+          <div className="bg-card rounded-2xl p-5 space-y-2 border border-border/40">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <TrendingUp size={18} className="text-primary" />
+            </div>
+            <p className="text-3xl font-extrabold tracking-tight">{weekVolume > 1000 ? `${(weekVolume / 1000).toFixed(1)}t` : `${weekVolume}kg`}</p>
             <p className="text-xs text-muted-foreground font-body">volume esta semana</p>
           </div>
         </motion.div>
 
-        {/* AI Coach - secondary */}
+        {/* AI Coach */}
         <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12 }}
+          custom={5}
+          variants={stagger}
+          initial="hidden"
+          animate="show"
           onClick={() => navigate('/ai-coach')}
-          className="w-full bg-card rounded-2xl p-3 flex items-center justify-between active:scale-[0.98] transition-transform border border-border"
+          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.97] transition-all border border-border/40 hover:border-primary/20 group"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Bot size={16} className="text-primary" />
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:shadow-glow transition-shadow">
+              <Bot size={18} className="text-primary" />
             </div>
             <div className="text-left">
-              <span className="font-medium text-sm block">FitAI Coach</span>
-              <span className="text-[10px] text-muted-foreground font-body">Pergunte sobre treino ou nutrição</span>
+              <span className="font-semibold text-sm block">FitAI Coach</span>
+              <span className="text-[11px] text-muted-foreground font-body">Pergunte sobre treino ou nutrição</span>
             </div>
           </div>
-          <ChevronRight size={16} className="text-muted-foreground" />
+          <ChevronRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
         </motion.button>
 
         {/* Recent */}
         {recentWorkouts.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-3">
+          <motion.div custom={6} variants={stagger} initial="hidden" animate="show" className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Últimos Treinos</h2>
-              <button onClick={() => navigate('/historico')} className="text-xs text-primary font-medium flex items-center gap-0.5">
+              <h2 className="text-lg font-bold tracking-tight">Últimos Treinos</h2>
+              <button onClick={() => navigate('/historico')} className="text-xs text-primary font-semibold flex items-center gap-0.5 hover:underline">
                 Ver todos <ChevronRight size={14} />
               </button>
             </div>
-            <div className="space-y-3">
-              {recentWorkouts.map(w => (
-                <button
+            <div className="space-y-2.5">
+              {recentWorkouts.map((w, i) => (
+                <motion.button
                   key={w.id}
+                  custom={7 + i}
+                  variants={stagger}
+                  initial="hidden"
+                  animate="show"
                   onClick={() => navigate(`/historico/${w.id}`)}
-                  className="w-full bg-card rounded-2xl p-4 text-left active:scale-[0.98] transition-transform"
+                  className="w-full bg-card rounded-2xl p-4 text-left active:scale-[0.97] transition-all border border-border/40 hover:border-primary/20"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">{w.name}</span>
+                    <span className="font-bold">{w.name}</span>
                     <span className="text-xs text-muted-foreground font-body">
                       {new Date(w.completedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground font-body">
-                    <span>{w.exercises.length} exercícios</span>
-                    <span>•</span>
+                    <span className="flex items-center gap-1"><Dumbbell size={12} /> {w.exercises.length} exercícios</span>
+                    <span className="text-border">•</span>
                     <span>{Math.round(w.duration / 60)} min</span>
-                    <span>•</span>
-                    <span>{w.totalVolume.toLocaleString()}kg</span>
+                    <span className="text-border">•</span>
+                    <span className="text-primary font-medium">{w.totalVolume.toLocaleString()}kg</span>
                   </div>
-                </button>
+                </motion.button>
               ))}
             </div>
           </motion.div>
         )}
 
         {history.length === 0 && todayMeals.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-center py-12 space-y-3">
-            <Dumbbell size={48} className="text-muted-foreground/30 mx-auto" />
-            <p className="text-muted-foreground font-body">Comece seu primeiro treino!</p>
+          <motion.div custom={6} variants={stagger} initial="hidden" animate="show" className="text-center py-16 space-y-4">
+            <div className="w-20 h-20 rounded-3xl bg-card border border-border/40 mx-auto flex items-center justify-center">
+              <Dumbbell size={36} className="text-muted-foreground/30" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-semibold text-muted-foreground">Comece seu primeiro treino!</p>
+              <p className="text-xs text-muted-foreground/60 font-body">Crie uma rotina ou inicie um treino livre</p>
+            </div>
           </motion.div>
         )}
       </div>
