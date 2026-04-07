@@ -165,7 +165,7 @@ export default function Dashboard() {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${goalProgress * 100}%` }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
                 className="h-full bg-primary rounded-full"
               />
             </div>
