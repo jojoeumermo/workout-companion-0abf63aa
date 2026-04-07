@@ -266,7 +266,7 @@ export default function Progress() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Target size={16} className="text-primary" />
-                <span className="font-semibold text-sm">Meta Semanal</span>
+                <span className="font-bold text-sm">Meta Semanal</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-primary">{thisWeekCount}/{weeklyGoal.target}</span>
@@ -317,7 +317,7 @@ export default function Progress() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Scale size={16} className="text-primary" />
-                <h3 className="font-semibold text-sm">Peso Corporal</h3>
+                <h3 className="font-bold text-sm">Peso Corporal</h3>
               </div>
               <button onClick={() => navigate('/peso')} className="text-xs text-primary font-medium">Ver tudo</button>
             </div>
@@ -368,7 +368,7 @@ export default function Progress() {
         {/* Muscle Stats */}
         {muscleStats.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-5 space-y-4">
-            <h3 className="font-semibold text-sm">Séries por Músculo</h3>
+            <h3 className="font-bold text-sm">Séries por Músculo</h3>
             <div className="space-y-3">
               {muscleStats.map(m => {
                 const maxSets = muscleStats[0]?.sets || 1;
@@ -393,7 +393,7 @@ export default function Progress() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.09 }} className="card-premium rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
               <Award size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Recordes Pessoais</h3>
+              <h3 className="font-bold text-sm">Recordes Pessoais</h3>
             </div>
             <div className="space-y-2">
               {topPRs.map(pr => (
@@ -413,7 +413,7 @@ export default function Progress() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <BarChart3 size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Volume Semanal (ton)</h3>
+            <h3 className="font-bold text-sm">Volume Semanal (ton)</h3>
           </div>
           {history.length > 0 ? (
             <ResponsiveContainer width="100%" height={160}>
@@ -435,7 +435,7 @@ export default function Progress() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Calendar size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Frequência Semanal</h3>
+            <h3 className="font-bold text-sm">Frequência Semanal</h3>
           </div>
           {history.length > 0 ? (
             <ResponsiveContainer width="100%" height={120}>
@@ -457,7 +457,7 @@ export default function Progress() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Activity size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Treinos por Dia da Semana</h3>
+            <h3 className="font-bold text-sm">Treinos por Dia da Semana</h3>
           </div>
           {history.length > 0 ? (
             <ResponsiveContainer width="100%" height={140}>
@@ -480,7 +480,7 @@ export default function Progress() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Duração Média (min)</h3>
+              <h3 className="font-bold text-sm">Duração Média (min)</h3>
             </div>
             {history.length > 0 && (
               <span className="text-sm font-bold text-primary">{avgDuration} min</span>
