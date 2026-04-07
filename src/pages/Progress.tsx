@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import PageShell from '@/components/PageShell';
@@ -127,6 +127,34 @@ export default function Progress() {
       .sort(([, a], [, b]) => b.sets - a.sets)
       .slice(0, 8)
       .map(([name, data]) => ({ name, volume: Math.round(data.volume / 1000), sets: data.sets }));
+  }, [history]);
+
+  // Day-of-week breakdown
+  const dayOfWeekData = useMemo(() => {
+    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const counts = [0, 0, 0, 0, 0, 0, 0];
+    history.forEach(w => {
+      const day = new Date(w.completedAt).getDay();
+      counts[day]++;
+    });
+    return days.map((day, i) => ({ day, count: counts[i] }));
+  }, [history]);
+
+  // Avg duration per week (last 8 weeks)
+  const durationData = useMemo(() => {
+    const data: { week: string; minutes: number }[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const now = new Date();
+      const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+      const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      const workouts = history.filter(w => {
+        const d = new Date(w.completedAt);
+        return d >= weekStart && d < weekEnd;
+      });
+      const avg = workouts.length > 0 ? Math.round(workouts.reduce((s, w) => s + w.duration, 0) / workouts.length / 60) : 0;
+      data.push({ week: `S${8 - i}`, minutes: avg });
+    }
+    return data;
   }, [history]);
 
   // Monthly stats
@@ -346,6 +374,55 @@ export default function Progress() {
                 <YAxis hide />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(240 2% 18%)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: 12 }} cursor={false} />
                 <Line type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))', r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-28 flex items-center justify-center text-muted-foreground font-body text-sm">
+              Complete treinos para ver seus dados
+            </div>
+          )}
+        </motion.div>
+
+        {/* Day-of-week breakdown */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="bg-card rounded-2xl p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <Activity size={16} className="text-primary" />
+            <h3 className="font-semibold text-sm">Treinos por Dia da Semana</h3>
+          </div>
+          {history.length > 0 ? (
+            <ResponsiveContainer width="100%" height={140}>
+              <BarChart data={dayOfWeekData}>
+                <XAxis dataKey="day" tick={{ fill: 'hsl(0 0% 60%)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip contentStyle={{ backgroundColor: 'hsl(240 2% 18%)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: 12 }} cursor={false} formatter={(v) => [`${v} treinos`, '']} />
+                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} opacity={0.85} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-28 flex items-center justify-center text-muted-foreground font-body text-sm">
+              Complete treinos para ver seus dados
+            </div>
+          )}
+        </motion.div>
+
+        {/* Avg Duration */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="bg-card rounded-2xl p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock size={16} className="text-primary" />
+              <h3 className="font-semibold text-sm">Duração Média (min)</h3>
+            </div>
+            {history.length > 0 && (
+              <span className="text-sm font-bold text-primary">{avgDuration} min</span>
+            )}
+          </div>
+          {history.length > 0 ? (
+            <ResponsiveContainer width="100%" height={120}>
+              <LineChart data={durationData}>
+                <XAxis dataKey="week" tick={{ fill: 'hsl(0 0% 60%)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip contentStyle={{ backgroundColor: 'hsl(240 2% 18%)', border: 'none', borderRadius: '12px', color: '#fff', fontSize: 12 }} cursor={false} formatter={(v) => [`${v} min`, '']} />
+                <Line type="monotone" dataKey="minutes" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))', r: 3 }} connectNulls />
               </LineChart>
             </ResponsiveContainer>
           ) : (

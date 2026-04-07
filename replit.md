@@ -8,21 +8,26 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - **Backend**: Express server (`server/index.ts`) running on port 5000
 - **Dev proxy**: Vite proxies `/api` requests to the Express server in development
 - **Data storage**: localStorage (client-side) for all user data (workouts, meals, goals, etc.)
-- **AI**: OpenAI GPT-4o-mini via the Express server
+- **AI**: Google Gemini (`gemini-1.5-flash`) via `@google/generative-ai`
+- **Android**: Capacitor (`com.fitai.coach`), build guide in `BUILD_ANDROID.md`
 
 ## Key Features
 
-- Workout tracking with templates, history, and personal records
-- AI Coach chat powered by OpenAI
-- AI meal analysis (photo or text description) via `/api/analyze-meal`
+- Workout tracking with templates, history, personal records, and real-time volume tracking
+- AI Coach chat powered by Gemini (streaming SSE)
+- AI meal analysis via photo or text description (Gemini Vision)
 - Real-time pose detection using TensorFlow.js MoveNet
-- Progress tracking with charts
+- Progress tracking with rich charts: volume, frequency, day-of-week, avg duration, heatmap, PRs
+- Nutrition tracking with macros, goals, and meal history
+- Haptic feedback via Vibration API (mobile/Android)
+- Offline detection with user-friendly messaging
 - PWA support (installable on mobile)
+- Lazy-loaded routes for fast initial load
 
 ## API Routes
 
-- `POST /api/ai-coach` — AI fitness coach chat (streaming SSE)
-- `POST /api/analyze-meal` — AI meal nutritional analysis (image or text)
+- `POST /api/ai-coach` — Gemini fitness coach chat (streaming SSE)
+- `POST /api/analyze-meal` — Gemini Vision meal nutritional analysis (image or text)
 
 ## Workflows
 
@@ -31,17 +36,33 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 
 ## Environment Variables / Secrets
 
-- `OPENAI_API_KEY` — Required for AI coach and meal analysis features
+- `GEMINI_API_KEY` — Required for all AI features (coach chat + meal analysis)
+- `OPENAI_API_KEY` — No longer used (migrated to Gemini)
 
 ## Project Structure
 
 ```
-server/index.ts        — Express backend with /api/ai-coach and /api/analyze-meal
+server/index.ts              — Express backend (Gemini AI routes)
 src/
-  App.tsx              — Routes
-  pages/               — Page components
-  hooks/useStorage.ts  — All localStorage data hooks
-  hooks/usePoseDetection.ts — TensorFlow pose detection
-  components/          — Shared UI components
-  integrations/supabase/ — Legacy Supabase types (client removed, types kept for reference)
+  App.tsx                    — Routes with React.lazy + Suspense
+  pages/                     — Page components (all lazy-loaded)
+  hooks/
+    useStorage.ts            — All localStorage data hooks
+    useNetwork.ts            — Online/offline detection
+    usePoseDetection.ts      — TensorFlow pose detection
+  lib/
+    haptic.ts                — Vibration API haptic feedback
+    api.ts                   — apiFetch with VITE_API_BASE_URL support
+  components/
+    BottomNav.tsx            — Animated active tab indicator + haptics
+  integrations/supabase/     — Legacy types only (no Supabase client)
+capacitor.config.ts          — Android app config (appId: com.fitai.coach)
+BUILD_ANDROID.md             — Android APK build guide
 ```
+
+## Deployment
+
+- Run command: `tsx server/index.ts`
+- Build command: `npm run build`
+- Deploy target: autoscale
+- Production serves `dist/` as static files; dev uses Vite proxy

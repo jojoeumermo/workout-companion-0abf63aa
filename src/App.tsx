@@ -1,49 +1,61 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import BottomNav from "@/components/BottomNav";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import Dashboard from "./pages/Dashboard";
-import Workouts from "./pages/Workouts";
-import Exercises from "./pages/Exercises";
-import ExerciseDetail from "./pages/ExerciseDetail";
-import History from "./pages/History";
-import WorkoutDetail from "./pages/WorkoutDetail";
-import Progress from "./pages/Progress";
-import ActiveWorkoutPage from "./pages/ActiveWorkout";
-import AICoach from "./pages/AICoach";
-import CameraAnalysis from "./pages/CameraAnalysis";
-import Settings from "./pages/Settings";
-import Programs from "./pages/Programs";
-import Nutrition from "./pages/Nutrition";
-import NutritionCamera from "./pages/NutritionCamera";
-import NotFound from "./pages/NotFound";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Workouts = lazy(() => import("./pages/Workouts"));
+const Exercises = lazy(() => import("./pages/Exercises"));
+const ExerciseDetail = lazy(() => import("./pages/ExerciseDetail"));
+const History = lazy(() => import("./pages/History"));
+const WorkoutDetail = lazy(() => import("./pages/WorkoutDetail"));
+const Progress = lazy(() => import("./pages/Progress"));
+const ActiveWorkoutPage = lazy(() => import("./pages/ActiveWorkout"));
+const AICoach = lazy(() => import("./pages/AICoach"));
+const CameraAnalysis = lazy(() => import("./pages/CameraAnalysis"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Programs = lazy(() => import("./pages/Programs"));
+const Nutrition = lazy(() => import("./pages/Nutrition"));
+const NutritionCamera = lazy(() => import("./pages/NutritionCamera"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+    </div>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<><Dashboard /><BottomNav /></>} />
-          <Route path="/treinos" element={<><Workouts /><BottomNav /></>} />
-          <Route path="/exercicios" element={<><Exercises /><BottomNav /></>} />
-          <Route path="/exercicio/:id" element={<ExerciseDetail />} />
-          <Route path="/historico" element={<><History /><BottomNav /></>} />
-          <Route path="/historico/:id" element={<WorkoutDetail />} />
-          <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
-          <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
-          <Route path="/ai-coach" element={<><ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary><BottomNav /></>} />
-          <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
-          <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
-          <Route path="/nutricao/camera" element={<NutritionCamera />} />
-          <Route path="/configuracoes" element={<><Settings /><BottomNav /></>} />
-          <Route path="/programas" element={<><Programs /><BottomNav /></>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<><Dashboard /><BottomNav /></>} />
+            <Route path="/treinos" element={<><Workouts /><BottomNav /></>} />
+            <Route path="/exercicios" element={<><Exercises /><BottomNav /></>} />
+            <Route path="/exercicio/:id" element={<ExerciseDetail />} />
+            <Route path="/historico" element={<><History /><BottomNav /></>} />
+            <Route path="/historico/:id" element={<WorkoutDetail />} />
+            <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
+            <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
+            <Route path="/ai-coach" element={<><ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary><BottomNav /></>} />
+            <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
+            <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
+            <Route path="/nutricao/camera" element={<NutritionCamera />} />
+            <Route path="/configuracoes" element={<><Settings /><BottomNav /></>} />
+            <Route path="/programas" element={<><Programs /><BottomNav /></>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,0 +1,385 @@
+Quero uma grande rodada de refinamento premium neste app, sem recriar o projeto do zero e sem remover nenhuma funcionalidade existente.
+
+IMPORTANTE:
+
+* não remover nada que já existe
+* não quebrar o fluxo atual
+* manter integração atual com GitHub/Vercel/APK
+* manter o app funcionando como está, mas melhorar drasticamente
+* corrigir bugs, melhorar performance, melhorar UX e deixar o app com aparência de app premium real
+
+OBJETIVO GERAL
+
+Transformar este app em um aplicativo mobile mais refinado, rápido, estável, bonito e inteligente, com menos dependência de IA pesada e melhor experiência real de uso no celular.
+
+Prioridades:
+
+1. corrigir a câmera nutri
+2. trocar OpenAI por Gemini
+3. melhorar design premium e sensação de app nativo
+4. melhorar performance
+5. fortalecer modo offline
+6. usar mais lógica local e menos chamadas caras de IA
+7. fazer uma varredura geral de bugs
+
+---
+
+1. CORRIGIR A CÂMERA NUTRI
+
+---
+
+A câmera nutri está quebrada e não está analisando as comidas corretamente.
+
+Quero diagnosticar e corrigir completamente esse sistema.
+
+Verificar:
+
+* captura da imagem
+* upload/envio da imagem
+* integração com backend
+* resposta da IA
+* parsing dos alimentos
+* exibição dos resultados
+* salvamento no histórico alimentar
+* tratamento de erro
+
+Objetivo:
+Permitir que o usuário tire uma foto ou envie uma imagem do prato e receba uma estimativa funcional de:
+
+* calorias
+* proteínas
+* carboidratos
+* gorduras
+
+Se possível também:
+
+* fibras
+* açúcar
+* sódio
+
+Importante:
+
+* permitir edição manual do resultado
+* permitir corrigir alimentos detectados errados
+* permitir ajustar porções
+* se a análise falhar, mostrar erro amigável e não quebrar a tela
+
+---
+
+2. TROCAR OPENAI POR GEMINI
+
+---
+
+Quero substituir a integração atual da OpenAI pela API do Google Gemini.
+
+Objetivos:
+
+* parar de depender dos créditos da OpenAI
+* manter o FitAI Coach funcionando
+* manter análise nutricional funcionando
+* reduzir custo e melhorar sustentabilidade do app
+
+Tarefas:
+
+* remover dependência funcional da OpenAI
+* configurar Gemini no backend
+* usar GEMINI_API_KEY
+* escolher um modelo rápido e econômico
+* manter respostas em português
+* manter tratamento de erro amigável
+* revisar se ainda resta alguma referência antiga da OpenAI
+
+Se possível, usar a IA apenas quando realmente necessário e reduzir chamadas desnecessárias.
+
+---
+
+3. DEIXAR O APP MAIS PREMIUM
+
+---
+
+Quero um refinamento forte de design e UX, sem mudar radicalmente a identidade atual.
+
+Melhorar:
+
+* animações mais suaves
+* transições entre telas
+* loading bonito
+* estados de carregamento melhores
+* feedback visual mais elegante
+* microinterações
+* melhor hierarquia visual
+* layout mais refinado
+* cards mais bonitos
+* espaçamento mais profissional
+* sensação de app mobile premium
+
+Quero aparência mais próxima de app nativo.
+
+---
+
+4. FEEDBACK TÁTIL E SENSAÇÃO DE APP NATIVO
+
+---
+
+Adicionar feedback tátil/háptico onde fizer sentido, especialmente em celular.
+
+Exemplos:
+
+* concluir série
+* iniciar/finalizar descanso
+* concluir treino
+* salvar refeição
+* ações importantes no app
+
+Também melhorar:
+
+* feedback ao toque
+* microanimações
+* confirmação visual de ações
+* sensação de fluidez
+
+---
+
+5. MELHORAR PERFORMANCE
+
+---
+
+Quero otimização séria de performance.
+
+Melhorar:
+
+* tempo de abertura
+* peso do bundle
+* carregamento inicial
+* evitar travadas
+* reduzir renderizações desnecessárias
+* melhorar uso em celular
+* lazy loading onde fizer sentido
+* code splitting onde fizer sentido
+* revisão de dependências pesadas
+* revisão de componentes que possam estar pesando demais
+
+Objetivo:
+app abrir mais rápido e ficar mais fluido.
+
+---
+
+6. OFFLINE MAIS FORTE
+
+---
+
+Quero fortalecer o uso offline.
+
+Prioridades:
+
+* treinos funcionando offline
+* histórico funcionando offline
+* progresso local funcionando offline
+* nutrição local salva offline quando possível
+* sincronização depois quando a internet voltar
+
+Quero que o app se degrade bem quando estiver sem internet:
+
+* nada de tela quebrada
+* mostrar mensagens claras
+* preservar dados locais
+* sincronizar depois
+
+---
+
+7. IA MAIS LEVE E MAIS INTELIGENTE
+
+---
+
+Quero reduzir dependência de IA cara e desnecessária.
+
+Melhorias:
+
+* usar lógica local quando possível
+* só chamar IA quando realmente necessário
+* criar sugestões baseadas em histórico local
+* evitar chamadas automáticas excessivas
+* manter FitAI Coach mais objetivo
+* usar IA sob demanda, não o tempo todo
+
+Adicionar ou melhorar:
+
+* sugestão automática de carga com base no histórico
+* comparação com último treino
+* análise pós-treino mais enxuta
+* alertas simples de consistência
+* pequenas sugestões inteligentes baseadas em dados locais
+
+---
+
+8. MELHORAR TREINO E PRODUTIVIDADE
+
+---
+
+Quero deixar o treino ainda mais rápido e prático.
+
+Melhorar:
+
+* modo treino rápido
+* menos cliques por série
+* copiar peso anterior automaticamente
+* timer mais prático
+* indicador de exercício atual
+* barra de progresso do treino
+* volume em tempo real
+* comparação com treino anterior dentro do exercício
+* UX de descanso mais rápida
+
+---
+
+8.1 MELHORAR PROGRESSO COM ESTATÍSTICAS GRÁFICAS
+
+---
+
+--------------------------------
+8.1 MELHORAR PROGRESSO COM ESTATÍSTICAS GRÁFICAS
+
+
+Quero fortalecer bastante a área de progresso, além do heatmap.
+
+Adicionar uma seção de estatísticas visuais e gráficas para acompanhar evolução de forma clara.
+
+Incluir gráficos como:
+
+- evolução de carga por exercício
+- volume semanal
+- volume mensal
+- treinos por semana
+- frequência de treino
+- músculos mais trabalhados
+- séries por grupo muscular
+- duração média dos treinos
+- comparação entre semanas
+- comparação entre meses
+
+Também quero indicadores resumidos como:
+
+- total de treinos no mês
+- volume total levantado
+- exercício com maior progresso
+- grupo muscular mais treinado
+- tempo médio por treino
+
+A área de progresso deve ficar mais analítica, visual e útil, sem ficar poluída.
+
+Quero gráficos bonitos, claros, modernos e fáceis de entender no celular.
+
+O heatmap deve continuar existindo, mas agora acompanhado por estatísticas gráficas mais completas.
+---
+
+
+9. APARÊNCIA DE APP DE VERDADE
+
+---
+
+Quero polir o app para parecer realmente um app mobile de verdade.
+
+Melhorar:
+
+* tela inicial mais limpa
+* navegação estilo mobile
+* ícone melhor preparado para app
+* splash screen mais bonita
+* consistência visual entre telas
+* sensação de produto premium
+* headers melhores
+* navegação inferior mais refinada
+* adaptação melhor para telas pequenas
+
+---
+
+10. VARREDURA GERAL DE BUGS
+
+---
+
+Fazer uma revisão completa do projeto.
+
+Verificar e corrigir bugs em:
+
+* treino ativo
+* histórico
+* progresso
+* nutrição
+* câmera nutri
+* FitAI Coach
+* integrações de IA
+* salvamento local
+* responsividade
+* performance
+* rotas
+* estados de loading
+* erros silenciosos
+* tratamento de exceções
+
+Adicionar:
+
+* error boundaries onde fizer sentido
+* fallbacks
+* mensagens de erro amigáveis
+* proteção contra travamentos
+
+---
+
+11. SEGURANÇA E PRIVACIDADE
+
+---
+
+Reforçar segurança e privacidade do app inteiro.
+
+Especialmente:
+
+* câmera nutri só com consentimento
+* não armazenar imagem sem necessidade
+* validação de entradas
+* autosave seguro
+* proteção contra perda de dados
+* confirmação antes de ações destrutivas
+
+---
+
+12. TESTES OBRIGATÓRIOS
+
+---
+
+Depois de implementar, validar estes fluxos:
+
+* abrir o app no celular
+* iniciar treino
+* registrar séries
+* finalizar treino
+* salvar histórico
+* ver progresso
+* usar offline
+* abrir FitAI Coach
+* enviar mensagem
+* receber resposta via Gemini
+* abrir câmera nutri
+* tirar ou enviar foto
+* receber análise nutricional
+* editar a refeição
+* salvar refeição
+* voltar a usar o app sem travamentos
+
+---
+
+13. RESULTADO FINAL
+
+---
+
+Quero que o app fique:
+
+* mais bonito
+* mais rápido
+* mais estável
+* mais premium
+* mais inteligente
+* menos dependente de IA pesada
+* mais prático no dia a dia
+
+Não quero simplificação.
+Quero evolução profissional do app atual.

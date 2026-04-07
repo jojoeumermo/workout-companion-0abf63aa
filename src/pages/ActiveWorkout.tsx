@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useActiveWorkout, useHistory, usePersonalRecords } from '@/hooks/useStorage';
 import { getExerciseById, exercises as allExercises, muscleGroups } from '@/data/exercises';
 import { CompletedWorkout, CompletedExercise, ActiveSet } from '@/types/workout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { haptic } from '@/lib/haptic';
 
 export default function ActiveWorkoutPage() {
   const navigate = useNavigate();
@@ -65,7 +66,11 @@ export default function ActiveWorkoutPage() {
     if (!showRest || restTimer <= 0) return;
     const id = setInterval(() => {
       setRestTimer(prev => {
-        if (prev <= 1) { setShowRest(false); return 0; }
+        if (prev <= 1) {
+          setShowRest(false);
+          haptic('success');
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
@@ -131,6 +136,7 @@ export default function ActiveWorkoutPage() {
     }
 
     // Complete the set
+    haptic('medium');
     setFlashIndex(setIndex);
     setTimeout(() => setFlashIndex(null), 300);
 
@@ -269,7 +275,25 @@ export default function ActiveWorkoutPage() {
 
   const goToExercise = (index: number) => {
     if (index < 0 || index >= activeWorkout.exercises.length) return;
-    setActiveWorkout(prev => prev ? { ...prev, currentExerciseIndex: index } : prev);
+    haptic('light');
+    setActiveWorkout(prev => {
+      if (!prev) return prev;
+      // Auto-fill sets from previous workout for the destination exercise
+      const exercises = [...prev.exercises];
+      const destEx = exercises[index];
+      const prevData = getPreviousData(destEx.exerciseId);
+      if (prevData && prevData.length > 0) {
+        const newSets = destEx.sets.map((s, si) => {
+          if (!s.completed && s.weight === 0) {
+            const ref = prevData[si] || prevData[prevData.length - 1];
+            return { ...s, weight: ref.weight, reps: ref.reps || s.targetReps };
+          }
+          return s;
+        });
+        exercises[index] = { ...destEx, sets: newSets };
+      }
+      return { ...prev, exercises, currentExerciseIndex: index };
+    });
     setShowRest(false);
   };
 
@@ -491,16 +515,19 @@ export default function ActiveWorkoutPage() {
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            {activeWorkout.exercises.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goToExercise(i)}
-                className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  i === currentIndex ? 'bg-primary' :
-                  activeWorkout.exercises[i].sets.every(s => s.completed) ? 'bg-primary/40' : 'bg-secondary'
-                }`}
-              />
-            ))}
+            {activeWorkout.exercises.map((ex, i) => {
+              const done = ex.sets.every(s => s.completed);
+              return (
+                <button
+                  key={i}
+                  onClick={() => goToExercise(i)}
+                  className={`relative h-1.5 flex-1 rounded-full transition-all ${
+                    i === currentIndex ? 'bg-primary scale-y-[1.5]' :
+                    done ? 'bg-primary/50' : 'bg-secondary'
+                  }`}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

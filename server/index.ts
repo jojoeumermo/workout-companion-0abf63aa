@@ -3,25 +3,45 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const isDev = process.env.NODE_ENV !== "production";
 
 app.use(cors());
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "5mb" }));
 
-const SYSTEM_PROMPT = `Você é o FitAI Coach — um treinador pessoal virtual extremamente experiente e inteligente. 
+function getGemini() {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY não configurado. Adicione a chave da API do Gemini nas configurações do projeto (https://aistudio.google.com/apikey).");
+  return new GoogleGenerativeAI(key);
+}
+
+function friendlyError(err: unknown): { message: string; status: number } {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (msg.includes("API_KEY") || msg.includes("not configured")) {
+    return { status: 500, message: msg };
+  }
+  if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate")) {
+    return { status: 429, message: "Limite de requisições excedido. Aguarde alguns instantes e tente novamente." };
+  }
+  if (msg.includes("503") || msg.includes("502") || msg.toLowerCase().includes("unavailable")) {
+    return { status: 503, message: "Serviço de IA temporariamente indisponível. Tente novamente em instantes." };
+  }
+  return { status: 500, message: `Erro ao conectar com a IA: ${msg.slice(0, 120)}` };
+}
+
+const COACH_SYSTEM = `Você é o FitAI Coach — um treinador pessoal virtual extremamente experiente e inteligente.
 
 ## Suas Capacidades:
 - **Criação de rotinas**: Gere rotinas completas com exercícios, séries, repetições, peso sugerido e tempo de descanso
 - **Programas de treino**: Crie programas de múltiplas semanas com periodização (adaptação → progressão → intensidade → deload)
 - **Análise de progresso**: Analise volume, frequência, evolução de carga e identifique tendências
 - **Progressão de carga**: Sugira aumentos de peso baseados no histórico real
-- **Detecção de overtraining**: Identifique sinais de excesso de treino (volume alto demais, queda de performance, treinos consecutivos)
-- **Substituição de exercícios**: Sugira alternativas mantendo o mesmo grupo muscular e padrão de movimento
-- **Divisão de treino**: Recomende divisões ideais (PPL, Upper/Lower, ABC, Full Body) baseadas na frequência do usuário
+- **Detecção de overtraining**: Identifique sinais de excesso de treino
+- **Substituição de exercícios**: Sugira alternativas mantendo o mesmo grupo muscular
+- **Divisão de treino**: Recomende divisões ideais baseadas na frequência do usuário
 - **Insights**: Identifique músculos sub-treinados, desbalanceamentos e oportunidades de melhoria
 
 ## Regras:
@@ -34,52 +54,70 @@ const SYSTEM_PROMPT = `Você é o FitAI Coach — um treinador pessoal virtual e
   |-----------|--------|------|----------|
 - Quando analisar dados, cite números específicos do usuário
 - Se não houver dados suficientes, peça mais informações
-- Para periodização, explique cada fase claramente
 - Alerte sobre overtraining quando detectar sinais (volume >20% acima da média, >5 dias consecutivos)`;
 
-function friendlyErrorMessage(err: unknown): { message: string; status: number } {
-  if (err instanceof OpenAI.APIError) {
-    if (err.status === 429) {
-      const isQuota = String(err.message).includes("quota") || String(err.message).includes("insufficient_quota");
-      if (isQuota) {
-        return {
-          status: 402,
-          message: "Cota da API OpenAI esgotada. Adicione créditos em platform.openai.com/settings/billing para continuar usando o FitAI Coach.",
-        };
-      }
-      return {
-        status: 429,
-        message: "Muitas requisições. Aguarde alguns segundos e tente novamente.",
-      };
-    }
-    if (err.status === 401) {
-      return {
-        status: 401,
-        message: "Chave da API OpenAI inválida. Verifique a configuração do OPENAI_API_KEY.",
-      };
-    }
-    if (err.status === 503 || err.status === 502) {
-      return {
-        status: 503,
-        message: "Serviço de IA temporariamente indisponível. Tente novamente em alguns instantes.",
-      };
-    }
-  }
-  const msg = err instanceof Error ? err.message : String(err);
-  return {
-    status: 500,
-    message: `Erro ao conectar com a IA: ${msg.slice(0, 120)}`,
-  };
-}
-
-app.post("/api/analyze-meal", async (req, res) => {
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-  if (!OPENAI_API_KEY) {
-    res.status(500).json({ error: "OPENAI_API_KEY não configurado." });
-    return;
-  }
-
+// AI Coach - streaming endpoint
+app.post("/api/ai-coach", async (req, res) => {
   try {
+    const genAI = getGemini();
+    const { messages, context } = req.body as {
+      messages: { role: "user" | "assistant"; content: string }[];
+      context?: string;
+    };
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      res.status(400).json({ error: "Nenhuma mensagem fornecida." });
+      return;
+    }
+
+    const systemContent = COACH_SYSTEM + (context
+      ? `\n\n## Dados Reais do Usuário:\n${context}`
+      : "\n\nO usuário ainda não tem dados de treino registrados.");
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: systemContent,
+    });
+
+    // Convert message history to Gemini format
+    const history = messages.slice(0, -1).map(m => ({
+      role: m.role === "assistant" ? "model" as const : "user" as const,
+      parts: [{ text: m.content }],
+    }));
+
+    const chat = model.startChat({ history });
+    const lastMessage = messages[messages.length - 1].content;
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const result = await chat.sendMessageStream(lastMessage);
+
+    for await (const chunk of result.stream) {
+      const text = chunk.text();
+      if (text) {
+        res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`);
+      }
+    }
+
+    res.write("data: [DONE]\n\n");
+    res.end();
+  } catch (err: unknown) {
+    const { message, status } = friendlyError(err);
+    console.error(`[ai-coach] ${status}:`, message);
+    if (!res.headersSent) {
+      res.status(status).json({ error: message });
+    } else {
+      res.end();
+    }
+  }
+});
+
+// Meal analysis endpoint
+app.post("/api/analyze-meal", async (req, res) => {
+  try {
+    const genAI = getGemini();
     const { imageBase64, description } = req.body as { imageBase64?: string; description?: string };
 
     if (!imageBase64 && !description) {
@@ -87,33 +125,30 @@ app.post("/api/analyze-meal", async (req, res) => {
       return;
     }
 
-    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const systemMessage = {
-      role: "system" as const,
-      content: `Você é um nutricionista especialista. Analise a refeição e retorne APENAS um JSON válido (sem markdown, sem backticks) com esta estrutura exata:
+    const prompt = `Você é um nutricionista especialista. Analise a refeição e retorne APENAS um JSON válido (sem markdown, sem backticks) com esta estrutura exata:
 {
   "items": [{"name": "nome do alimento", "portion": "porção estimada", "calories": 0, "protein": 0, "carbs": 0, "fat": 0, "fiber": 0}],
   "totals": {"calories": 0, "protein": 0, "carbs": 0, "fat": 0, "fiber": 0},
   "confidence": "alta|media|baixa",
   "tips": "dica nutricional curta"
 }
-Valores em gramas (exceto calorias em kcal). Se não conseguir identificar, estime com base na descrição. Seja preciso mas realista.`,
-    };
+Valores em gramas (exceto calorias em kcal). Seja preciso mas realista.
 
-    const userContent: any[] = [];
-    if (description) userContent.push({ type: "text", text: `Analise esta refeição e estime os macronutrientes: ${description}` });
+${description ? `Descrição: ${description}` : "Analise a imagem desta refeição."}`;
+
+    let result;
     if (imageBase64) {
-      if (!description) userContent.push({ type: "text", text: "Analise esta refeição e estime os macronutrientes." });
-      userContent.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${imageBase64}` } });
+      result = await model.generateContent([
+        { inlineData: { data: imageBase64, mimeType: "image/jpeg" } },
+        prompt,
+      ]);
+    } else {
+      result = await model.generateContent(prompt);
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [systemMessage, { role: "user", content: userContent }],
-    });
-
-    const content = completion.choices[0]?.message?.content || "";
+    const content = result.response.text();
     let parsed;
     try {
       const cleaned = content.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
@@ -126,65 +161,9 @@ Valores em gramas (exceto calorias em kcal). Se não conseguir identificar, esti
 
     res.json(parsed);
   } catch (err: unknown) {
-    const { message, status } = friendlyErrorMessage(err);
+    const { message, status } = friendlyError(err);
     console.error(`[analyze-meal] ${status}:`, message);
     res.status(status).json({ error: message });
-  }
-});
-
-app.post("/api/ai-coach", async (req, res) => {
-  if (!process.env.OPENAI_API_KEY) {
-    res.status(500).json({ error: "OPENAI_API_KEY não configurado. Adicione a chave de API nas configurações do projeto." });
-    return;
-  }
-
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-  try {
-    const { messages, context } = req.body as {
-      messages: { role: "user" | "assistant"; content: string }[];
-      context?: string;
-    };
-
-    if (!Array.isArray(messages) || messages.length === 0) {
-      res.status(400).json({ error: "Nenhuma mensagem fornecida." });
-      return;
-    }
-
-    const systemContent =
-      SYSTEM_PROMPT +
-      (context
-        ? `\n\n## Dados Reais do Usuário:\n${context}`
-        : "\n\nO usuário ainda não tem dados de treino registrados.");
-
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      stream: true,
-      messages: [{ role: "system", content: systemContent }, ...messages],
-    });
-
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    for await (const chunk of stream) {
-      const delta = chunk.choices[0]?.delta?.content;
-      if (delta) {
-        res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: delta } }] })}\n\n`);
-      }
-      if (chunk.choices[0]?.finish_reason) {
-        res.write("data: [DONE]\n\n");
-      }
-    }
-    res.end();
-  } catch (err: unknown) {
-    const { message, status } = friendlyErrorMessage(err);
-    console.error(`[ai-coach] ${status}:`, message);
-    if (!res.headersSent) {
-      res.status(status).json({ error: message });
-    } else {
-      res.end();
-    }
   }
 });
 
