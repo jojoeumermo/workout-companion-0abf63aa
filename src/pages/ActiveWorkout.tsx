@@ -454,43 +454,39 @@ export default function ActiveWorkoutPage() {
       <AnimatePresence>
         {newPR && (
           <motion.div
-            initial={{ opacity: 0, y: -50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -50, scale: 0.95 }}
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
             className="fixed top-4 left-4 right-4 z-50"
           >
-            <div className="max-w-lg mx-auto rounded-2xl p-4 flex items-center gap-3 shadow-premium" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}>
-              <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
-                <Trophy size={20} className="text-primary-foreground" />
-              </div>
+            <div className="max-w-lg mx-auto bg-primary text-primary-foreground rounded-2xl p-4 flex items-center gap-3 shadow-lg">
+              <Trophy size={24} />
               <div className="flex-1">
-                <p className="font-bold text-sm text-primary-foreground">🔥 Novo Recorde!</p>
-                <p className="text-xs text-primary-foreground/80">{newPR.exerciseName} — {newPR.type}: {newPR.value}</p>
+                <p className="font-bold text-sm">🔥 Novo Recorde Pessoal!</p>
+                <p className="text-xs opacity-90">{newPR.exerciseName} — {newPR.type}: {newPR.value}</p>
               </div>
-              <button onClick={() => setNewPR(null)} className="text-primary-foreground/60"><X size={18} /></button>
+              <button onClick={() => setNewPR(null)}><X size={18} /></button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <header className="px-5 pt-14 pb-3 glass-strong border-b border-border/30">
+      <header className="px-5 pt-14 pb-3">
         <div className="max-w-lg mx-auto flex items-center justify-between">
-          <button onClick={() => { setActiveWorkout(null); navigate('/treinos'); }} className="w-10 h-10 rounded-xl bg-secondary/80 flex items-center justify-center hover:bg-secondary transition-colors">
+          <button onClick={() => { setActiveWorkout(null); navigate('/treinos'); }} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center">
             <ArrowLeft size={20} />
           </button>
           <div className="text-center">
-            <p className="text-sm font-bold tracking-tight">{activeWorkout.name}</p>
-            <div className="flex items-center gap-3 text-xs font-mono mt-0.5">
-              <span className="text-primary font-semibold">{formatTime(elapsed)}</span>
-              <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-              <span className="text-muted-foreground">Ex {formatTime(exerciseElapsed)}</span>
+            <p className="text-sm font-semibold">{activeWorkout.name}</p>
+            <div className="flex items-center gap-3 text-xs font-mono">
+              <span className="text-primary">{formatTime(elapsed)}</span>
+              <span className="text-muted-foreground">Ex: {formatTime(exerciseElapsed)}</span>
             </div>
           </div>
           <button
             onClick={finishWorkout}
-            className="px-4 py-2.5 rounded-xl text-sm font-bold active:scale-95 transition-transform"
-            style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))', color: 'hsl(var(--primary-foreground))' }}
+            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
           >
             Finalizar
           </button>
@@ -498,24 +494,21 @@ export default function ActiveWorkoutPage() {
       </header>
 
       {/* Live Stats Bar */}
-      <div className="px-5 py-3 border-b border-border/20">
+      <div className="px-5 pb-2">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-between mb-2.5">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground font-body">
-              Exercício <span className="text-foreground font-semibold">{currentIndex + 1}</span> de {totalExercises}
+              Exercício {currentIndex + 1} de {totalExercises}
             </span>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-lg">
-                <TrendingUp size={12} className="text-primary" />
-                <span className="text-xs font-bold text-primary font-body">
-                  {liveVolume > 1000 ? `${(liveVolume / 1000).toFixed(1)}t` : `${liveVolume}kg`}
-                </span>
-              </div>
+              <span className="text-xs font-medium text-primary font-body">
+                Volume: {liveVolume > 1000 ? `${(liveVolume / 1000).toFixed(1)}t` : `${liveVolume}kg`}
+              </span>
               <div className="flex gap-1">
-                <button onClick={() => setShowNotes(true)} className="w-8 h-8 rounded-lg bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                <button onClick={() => setShowNotes(true)} className="w-8 h-8 rounded-lg bg-card flex items-center justify-center text-muted-foreground">
                   <MessageSquare size={14} />
                 </button>
-                <button onClick={() => setShowAddExercise(true)} className="w-8 h-8 rounded-lg bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                <button onClick={() => setShowAddExercise(true)} className="w-8 h-8 rounded-lg bg-card flex items-center justify-center text-muted-foreground">
                   <Plus size={14} />
                 </button>
               </div>
@@ -524,15 +517,13 @@ export default function ActiveWorkoutPage() {
           <div className="flex items-center gap-1.5">
             {activeWorkout.exercises.map((ex, i) => {
               const done = ex.sets.every(s => s.completed);
-              const partial = ex.sets.some(s => s.completed);
               return (
                 <button
                   key={i}
                   onClick={() => goToExercise(i)}
-                  className={`relative flex-1 rounded-full transition-all duration-300 ${
-                    i === currentIndex ? 'bg-primary h-2' :
-                    done ? 'bg-primary/50 h-1.5' :
-                    partial ? 'bg-primary/25 h-1.5' : 'bg-secondary h-1.5'
+                  className={`relative h-1.5 flex-1 rounded-full transition-all ${
+                    i === currentIndex ? 'bg-primary scale-y-[1.5]' :
+                    done ? 'bg-primary/50' : 'bg-secondary'
                   }`}
                 />
               );
@@ -542,7 +533,7 @@ export default function ActiveWorkoutPage() {
       </div>
 
       {/* Exercise Content */}
-      <div className="flex-1 px-5 pb-32 pt-4">
+      <div className="flex-1 px-5 pb-32">
         <div className="max-w-lg mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -550,14 +541,13 @@ export default function ActiveWorkoutPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
               className="space-y-4"
             >
               {/* Exercise name & actions */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <h2 className="text-xl font-extrabold tracking-tight">{exercise?.name}</h2>
-                  <p className="text-sm text-muted-foreground font-body mt-0.5">{exercise?.muscleGroup} • {exercise?.equipment}</p>
+                  <h2 className="text-xl font-bold">{exercise?.name}</h2>
+                  <p className="text-sm text-muted-foreground font-body">{exercise?.muscleGroup} • {exercise?.equipment}</p>
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => setShowReplaceExercise(true)} className="w-9 h-9 rounded-xl bg-card flex items-center justify-center text-muted-foreground" title="Substituir">
@@ -573,7 +563,7 @@ export default function ActiveWorkoutPage() {
 
               {/* Previous workout data */}
               {previousSets && previousSets.length > 0 && (
-                <div className="bg-secondary/50 rounded-xl px-4 py-3 space-y-1 border border-border/20">
+                <div className="bg-card/50 rounded-xl px-4 py-3 space-y-1">
                   <p className="text-xs text-muted-foreground font-body font-medium">Treino anterior</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-0.5">
                     {previousSets.map((s, i) => (
@@ -587,7 +577,7 @@ export default function ActiveWorkoutPage() {
 
               {/* Sets */}
               <div className="space-y-2">
-                <div className="grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 px-2 text-[10px] text-muted-foreground font-body uppercase tracking-wider font-semibold">
+                <div className="grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 px-2 text-xs text-muted-foreground font-body">
                   <span>Série</span>
                   <span className="text-center">Peso (kg)</span>
                   <span className="text-center">Reps</span>
@@ -598,11 +588,11 @@ export default function ActiveWorkoutPage() {
                   <motion.div
                     key={i}
                     layout
-                    className={`grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 items-center rounded-xl px-2 py-2.5 transition-all duration-200 ${
-                      set.completed ? 'bg-primary/8 border border-primary/20' : 'card-premium'
+                    className={`grid grid-cols-[36px_1fr_1fr_44px_36px] gap-2 items-center rounded-xl px-2 py-2 transition-all ${
+                      set.completed ? 'bg-primary/5 border border-primary/20' : 'bg-card'
                     } ${flashIndex === i ? 'animate-set-flash' : ''}`}
                   >
-                    <span className={`text-sm font-bold text-center ${set.completed ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
+                    <span className="text-sm font-semibold text-center text-muted-foreground">{i + 1}</span>
                     <div className="relative">
                       <input
                         type="number"
@@ -610,10 +600,10 @@ export default function ActiveWorkoutPage() {
                         value={set.weight || ''}
                         onChange={e => updateSet(i, 'weight', parseFloat(e.target.value) || 0)}
                         placeholder={previousSets?.[i] ? `${previousSets[i].weight}` : '0'}
-                        className={`w-full bg-secondary/80 rounded-lg px-3 py-2.5 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-ring transition-all ${set.completed ? 'text-primary bg-primary/5' : 'text-foreground'}`}
+                        className={`w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-ring ${set.completed ? 'text-primary' : ''}`}
                       />
                       {!set.completed && (
-                        <button onClick={() => copyPrevWeight(i)} className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+                        <button onClick={() => copyPrevWeight(i)} className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground">
                           <Copy size={11} />
                         </button>
                       )}
@@ -624,22 +614,19 @@ export default function ActiveWorkoutPage() {
                       value={set.reps || ''}
                       onChange={e => updateSet(i, 'reps', parseInt(e.target.value) || 0)}
                       placeholder={`${set.targetReps}`}
-                      className={`w-full bg-secondary/80 rounded-lg px-3 py-2.5 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-ring transition-all ${set.completed ? 'text-primary bg-primary/5' : 'text-foreground'}`}
+                      className={`w-full bg-secondary rounded-lg px-3 py-2.5 text-center text-sm font-medium outline-none focus:ring-2 focus:ring-ring ${set.completed ? 'text-primary' : ''}`}
                     />
                     <button
                       onClick={() => toggleSetCompletion(i)}
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                        set.completed
-                          ? 'text-primary-foreground'
-                          : 'bg-secondary/80 text-muted-foreground hover:text-foreground'
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                        set.completed ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
                       }`}
-                      style={set.completed ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' } : {}}
                     >
                       <Check size={18} />
                     </button>
                     <button
                       onClick={() => removeSet(i)}
-                      className="w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground/30 hover:text-destructive transition-colors"
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive"
                     >
                       <X size={14} />
                     </button>
@@ -649,7 +636,7 @@ export default function ActiveWorkoutPage() {
                 {/* Add Set Button */}
                 <button
                   onClick={addSet}
-                  className="w-full border border-dashed border-border/60 rounded-xl py-3 text-muted-foreground text-xs font-body flex items-center justify-center gap-1.5 hover:border-primary/40 hover:text-primary transition-all"
+                  className="w-full border border-dashed border-border rounded-xl py-2.5 text-muted-foreground text-xs font-body flex items-center justify-center gap-1.5 hover:border-primary hover:text-primary transition-colors"
                 >
                   <Plus size={14} /> Adicionar Série
                 </button>
@@ -660,30 +647,27 @@ export default function ActiveWorkoutPage() {
       </div>
 
       {/* Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 glass-strong border-t border-border/30 safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border safe-bottom">
         <div className="max-w-lg mx-auto px-5 py-4">
           {showRest ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Timer size={16} className="text-primary" />
-                  </div>
-                  Descanso
+                <span className="text-sm font-semibold flex items-center gap-2">
+                  <Timer size={16} className="text-primary" /> Descanso
                 </span>
-                <span className="text-3xl font-extrabold font-mono text-primary tracking-tight">{formatTime(restTimer)}</span>
+                <span className="text-2xl font-bold font-mono text-primary">{formatTime(restTimer)}</span>
               </div>
-              <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all duration-1000 ease-linear"
-                  style={{ width: `${(restTimer / restTotal) * 100}%`, background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.6))' }}
+                  className="h-full bg-primary rounded-full transition-all duration-1000 ease-linear"
+                  style={{ width: `${(restTimer / restTotal) * 100}%` }}
                 />
               </div>
               <div className="flex items-center justify-center gap-2">
-                <button onClick={() => setRestTimer(prev => Math.max(0, prev - 15))} className="px-3.5 py-2 bg-secondary rounded-xl text-xs font-semibold active:scale-95 transition-transform">-15s</button>
-                <button onClick={() => setRestTimer(prev => prev + 15)} className="px-3.5 py-2 bg-secondary rounded-xl text-xs font-semibold active:scale-95 transition-transform">+15s</button>
-                <button onClick={() => setRestTimer(prev => prev + 60)} className="px-3.5 py-2 bg-secondary rounded-xl text-xs font-semibold active:scale-95 transition-transform">+1min</button>
-                <button onClick={() => setShowRest(false)} className="px-5 py-2 rounded-xl text-xs font-bold active:scale-95 transition-transform text-primary-foreground" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}>Pular</button>
+                <button onClick={() => setRestTimer(prev => Math.max(0, prev - 15))} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">-15s</button>
+                <button onClick={() => setRestTimer(prev => prev + 15)} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">+15s</button>
+                <button onClick={() => setRestTimer(prev => prev + 60)} className="px-3 py-1.5 bg-secondary rounded-lg text-xs font-medium">+1min</button>
+                <button onClick={() => setShowRest(false)} className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold">Pular</button>
               </div>
             </div>
           ) : (
@@ -691,7 +675,7 @@ export default function ActiveWorkoutPage() {
               <button
                 onClick={() => goToExercise(currentIndex - 1)}
                 disabled={currentIndex === 0}
-                className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-20 active:scale-95 transition-all"
+                className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-30"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -700,11 +684,10 @@ export default function ActiveWorkoutPage() {
                   if (isLastExercise && allCompleted) finishWorkout();
                   else goToExercise(currentIndex + 1);
                 }}
-                className="flex-1 rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 active:scale-[0.97] transition-transform text-primary-foreground"
-                style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))', boxShadow: '0 4px 16px -4px hsl(var(--primary) / 0.3)' }}
+                className="flex-1 bg-primary text-primary-foreground rounded-xl py-3.5 font-semibold flex items-center justify-center gap-2"
               >
                 {isLastExercise ? (
-                  allCompleted ? '✨ Finalizar Treino' : 'Próximo'
+                  allCompleted ? 'Finalizar Treino' : 'Próximo'
                 ) : (
                   <>Próximo <ChevronRight size={18} /></>
                 )}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, UtensilsCrossed, Camera, Scale, Droplets, Clock } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, UtensilsCrossed, Camera, Scale, Droplets } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useNutritionGoals, useBodyWeight, useWaterLog } from '@/hooks/useStorage';
@@ -17,11 +17,11 @@ const themes: Record<string, string> = {
 };
 
 const stagger = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 12 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
+    transition: { delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
   }),
 };
 
@@ -75,46 +75,37 @@ export default function Dashboard() {
   const weeklyGoal = goals.find(g => g.type === 'weekly_frequency');
   const goalProgress = weeklyGoal ? Math.min(weekCount / weeklyGoal.target, 1) : null;
 
-  const avgDuration = history.length > 0
-    ? Math.round(history.reduce((s, w) => s + w.duration, 0) / history.length / 60)
-    : 0;
-
   return (
     <PageShell>
       <div className="pt-14 space-y-5 max-w-lg mx-auto pb-4">
         {/* Header */}
         <motion.div custom={0} variants={stagger} initial="hidden" animate="show" className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <p className="text-muted-foreground font-body text-sm tracking-wide">Pronto para treinar?</p>
+            <p className="text-muted-foreground font-body text-sm">Pronto para treinar?</p>
             <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
           </div>
           <button
             onClick={() => navigate('/configuracoes')}
-            className="w-11 h-11 rounded-2xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all active:scale-95 hover:border-primary/20"
+            className="w-11 h-11 rounded-2xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors active:scale-95"
           >
             <Settings size={20} />
           </button>
         </motion.div>
 
-        {/* Primary CTA */}
+        {/* Start Buttons */}
         <motion.div custom={1} variants={stagger} initial="hidden" animate="show" className="space-y-3">
           <button
             onClick={() => navigate('/treinos')}
-            className="w-full relative overflow-hidden rounded-2xl p-5 flex items-center justify-between active:scale-[0.97] transition-transform"
-            style={{
-              background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%)',
-              boxShadow: '0 8px 32px -8px hsl(var(--primary) / 0.4)',
-            }}
+            className="w-full bg-primary text-primary-foreground rounded-2xl p-5 flex items-center justify-between active:scale-[0.97] transition-transform shadow-glow-strong"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-            <div className="text-left relative z-10">
-              <span className="text-lg font-bold block text-primary-foreground">Iniciar Treino</span>
-              <span className="text-sm opacity-80 font-body text-primary-foreground">
+            <div className="text-left">
+              <span className="text-lg font-bold block">Iniciar Treino</span>
+              <span className="text-sm opacity-80 font-body">
                 {templates.length > 0 ? `${templates.length} rotinas salvas` : 'Crie sua primeira rotina'}
               </span>
             </div>
-            <div className="w-14 h-14 rounded-2xl bg-primary-foreground/15 backdrop-blur-sm flex items-center justify-center relative z-10">
-              <Play size={28} fill="currentColor" className="text-primary-foreground" />
+            <div className="w-14 h-14 rounded-2xl bg-primary-foreground/15 backdrop-blur-sm flex items-center justify-center">
+              <Play size={28} fill="currentColor" />
             </div>
           </button>
           <div className="grid grid-cols-3 gap-2.5">
@@ -126,12 +117,12 @@ export default function Dashboard() {
               <button
                 key={label}
                 onClick={action}
-                className="card-premium rounded-2xl p-3.5 flex flex-col items-center gap-2.5 active:scale-[0.96] transition-all hover:border-primary/25 group"
+                className="bg-card text-foreground rounded-2xl p-3.5 flex flex-col items-center gap-2.5 active:scale-[0.96] transition-all border border-border/40 hover:border-primary/20 hover:shadow-glow"
               >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-                  <Icon size={18} className="text-primary" />
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Icon size={17} className="text-primary" />
                 </div>
-                <span className="font-semibold text-[11px] text-foreground">{label}</span>
+                <span className="font-semibold text-[11px]">{label}</span>
               </button>
             ))}
           </div>
@@ -147,12 +138,12 @@ export default function Dashboard() {
             <button
               key={sub}
               onClick={() => navigate(route)}
-              className="card-premium rounded-2xl p-3.5 text-left active:scale-[0.96] transition-all hover:border-primary/20"
+              className="bg-card rounded-2xl p-3.5 text-left active:scale-[0.96] transition-all border border-border/40 hover:border-primary/20"
             >
               <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center mb-2.5`}>
                 <Icon size={15} className={color} />
               </div>
-              <p className="text-xl font-extrabold leading-none tracking-tight">{value}</p>
+              <p className="text-lg font-bold leading-none">{value}</p>
               <p className="text-[10px] text-muted-foreground font-body mt-1">{sub}</p>
             </button>
           ))}
@@ -160,60 +151,42 @@ export default function Dashboard() {
 
         {/* Weekly Goal */}
         {goalProgress !== null && weeklyGoal && (
-          <motion.div custom={3} variants={stagger} initial="hidden" animate="show" className="card-premium rounded-2xl p-4 space-y-3">
+          <motion.div custom={3} variants={stagger} initial="hidden" animate="show" className="bg-card rounded-2xl p-4 space-y-3 border border-border/40">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Target size={16} className="text-primary" />
+                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Target size={15} className="text-primary" />
                 </div>
-                <div>
-                  <span className="font-semibold text-sm block">Meta Semanal</span>
-                  <span className="text-[10px] text-muted-foreground font-body">
-                    {goalProgress >= 1 ? '🎉 Meta atingida!' : `${weeklyGoal.target - weekCount} treinos restantes`}
-                  </span>
-                </div>
+                <span className="font-semibold text-sm">Meta Semanal</span>
               </div>
-              <span className="text-lg font-extrabold text-primary">{weekCount}/{weeklyGoal.target}</span>
+              <span className="text-sm font-bold text-primary">{weekCount}/{weeklyGoal.target}</span>
             </div>
-            <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${goalProgress * 100}%` }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
-                className="h-full rounded-full"
-                style={{
-                  background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))',
-                }}
+                className="h-full bg-primary rounded-full"
               />
             </div>
           </motion.div>
         )}
 
-        {/* Stats Grid */}
+        {/* Stats */}
         <motion.div custom={4} variants={stagger} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
-          <div className="card-premium rounded-2xl p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Flame size={18} className="text-primary" />
-              </div>
-              <span className="text-[10px] font-medium text-muted-foreground font-body uppercase tracking-wider">Semana</span>
+          <div className="bg-card rounded-2xl p-5 space-y-2 border border-border/40">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Flame size={18} className="text-primary" />
             </div>
-            <div>
-              <p className="text-3xl font-extrabold tracking-tight">{weekCount}</p>
-              <p className="text-xs text-muted-foreground font-body mt-0.5">treinos realizados</p>
-            </div>
+            <p className="text-3xl font-extrabold tracking-tight">{weekCount}</p>
+            <p className="text-xs text-muted-foreground font-body">treinos esta semana</p>
           </div>
-          <div className="card-premium rounded-2xl p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <TrendingUp size={18} className="text-primary" />
-              </div>
-              <span className="text-[10px] font-medium text-muted-foreground font-body uppercase tracking-wider">Volume</span>
+          <div className="bg-card rounded-2xl p-5 space-y-2 border border-border/40">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <TrendingUp size={18} className="text-primary" />
             </div>
-            <div>
-              <p className="text-3xl font-extrabold tracking-tight">{weekVolume > 1000 ? `${(weekVolume / 1000).toFixed(1)}t` : `${weekVolume}kg`}</p>
-              <p className="text-xs text-muted-foreground font-body mt-0.5">volume semanal</p>
-            </div>
+            <p className="text-3xl font-extrabold tracking-tight">{weekVolume > 1000 ? `${(weekVolume / 1000).toFixed(1)}t` : `${weekVolume}kg`}</p>
+            <p className="text-xs text-muted-foreground font-body">volume esta semana</p>
           </div>
         </motion.div>
 
@@ -224,14 +197,14 @@ export default function Dashboard() {
           initial="hidden"
           animate="show"
           onClick={() => navigate('/ai-coach')}
-          className="w-full card-premium rounded-2xl p-4 flex items-center justify-between active:scale-[0.97] transition-all hover:border-primary/20 group"
+          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.97] transition-all border border-border/40 hover:border-primary/20 group"
         >
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-              <Bot size={20} className="text-primary" />
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:shadow-glow transition-shadow">
+              <Bot size={18} className="text-primary" />
             </div>
             <div className="text-left">
-              <span className="font-bold text-sm block">FitAI Coach</span>
+              <span className="font-semibold text-sm block">FitAI Coach</span>
               <span className="text-[11px] text-muted-foreground font-body">Pergunte sobre treino ou nutrição</span>
             </div>
           </div>
@@ -256,18 +229,20 @@ export default function Dashboard() {
                   initial="hidden"
                   animate="show"
                   onClick={() => navigate(`/historico/${w.id}`)}
-                  className="w-full card-premium rounded-2xl p-4 text-left active:scale-[0.97] transition-all hover:border-primary/20"
+                  className="w-full bg-card rounded-2xl p-4 text-left active:scale-[0.97] transition-all border border-border/40 hover:border-primary/20"
                 >
-                  <div className="flex items-center justify-between mb-2.5">
-                    <span className="font-bold text-[15px]">{w.name}</span>
-                    <span className="text-xs text-muted-foreground font-body bg-secondary px-2 py-0.5 rounded-md">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold">{w.name}</span>
+                    <span className="text-xs text-muted-foreground font-body">
                       {new Date(w.completedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground font-body">
-                    <span className="flex items-center gap-1.5"><Dumbbell size={12} /> {w.exercises.length} exercícios</span>
-                    <span className="flex items-center gap-1.5"><Clock size={12} /> {Math.round(w.duration / 60)} min</span>
-                    <span className="text-primary font-semibold ml-auto">{w.totalVolume.toLocaleString()}kg</span>
+                    <span className="flex items-center gap-1"><Dumbbell size={12} /> {w.exercises.length} exercícios</span>
+                    <span className="text-border">•</span>
+                    <span>{Math.round(w.duration / 60)} min</span>
+                    <span className="text-border">•</span>
+                    <span className="text-primary font-medium">{w.totalVolume.toLocaleString()}kg</span>
                   </div>
                 </motion.button>
               ))}
