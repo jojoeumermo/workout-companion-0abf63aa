@@ -542,7 +542,7 @@ export default function ActiveWorkoutPage() {
       </div>
 
       {/* Exercise Content */}
-      <div className="flex-1 px-5 pb-32">
+      <div className="flex-1 px-5 pb-32 pt-4">
         <div className="max-w-lg mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -550,13 +550,14 @@ export default function ActiveWorkoutPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
               className="space-y-4"
             >
               {/* Exercise name & actions */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold">{exercise?.name}</h2>
-                  <p className="text-sm text-muted-foreground font-body">{exercise?.muscleGroup} • {exercise?.equipment}</p>
+                  <h2 className="text-xl font-extrabold tracking-tight">{exercise?.name}</h2>
+                  <p className="text-sm text-muted-foreground font-body mt-0.5">{exercise?.muscleGroup} • {exercise?.equipment}</p>
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => setShowReplaceExercise(true)} className="w-9 h-9 rounded-xl bg-card flex items-center justify-center text-muted-foreground" title="Substituir">
@@ -572,7 +573,7 @@ export default function ActiveWorkoutPage() {
 
               {/* Previous workout data */}
               {previousSets && previousSets.length > 0 && (
-                <div className="bg-card/50 rounded-xl px-4 py-3 space-y-1">
+                <div className="bg-secondary/50 rounded-xl px-4 py-3 space-y-1 border border-border/20">
                   <p className="text-xs text-muted-foreground font-body font-medium">Treino anterior</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-0.5">
                     {previousSets.map((s, i) => (
