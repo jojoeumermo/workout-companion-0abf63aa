@@ -164,7 +164,7 @@ export default function Settings() {
 
   return (
     <PageShell>
-      <div className="pt-14 pb-28 space-y-5 max-w-lg mx-auto">
+      <div className="pt-16 pb-28 space-y-5 max-w-lg mx-auto">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl bg-card flex items-center justify-center active:scale-95 transition-transform">
             <ArrowLeft size={18} />

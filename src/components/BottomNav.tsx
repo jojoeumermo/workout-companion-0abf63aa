@@ -12,8 +12,11 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border/40 safe-bottom">
-      <div className="flex items-center justify-around h-[68px] max-w-lg mx-auto px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border/30">
+      <div
+        className="flex items-center justify-around h-[72px] max-w-lg mx-auto px-3"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)' }}
+      >
         {tabs.map(({ to, icon: Icon, label }) => (
           <RouterNavLink
             key={to}
@@ -21,7 +24,7 @@ export default function BottomNav() {
             end={to === '/'}
             onClick={() => haptic('light')}
             className={({ isActive }) =>
-              `relative flex flex-col items-center justify-center w-[52px] h-[52px] rounded-2xl transition-all duration-250 gap-1 ${
+              `relative flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-250 gap-1 ${
                 isActive ? 'text-primary' : 'text-muted-foreground'
               }`
             }

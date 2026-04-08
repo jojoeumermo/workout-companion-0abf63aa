@@ -163,7 +163,7 @@ export default function Workouts() {
         <Plus size={20} />
       </button>
     }>
-      <div className="space-y-4 max-w-lg mx-auto">
+      <div className="space-y-5 max-w-lg mx-auto pt-2">
         {/* Free Workout */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
