@@ -14,6 +14,9 @@ const themes: Record<string, string> = {
   purple: '270 70% 60%',
   red: '0 75% 55%',
   cyan: '180 70% 45%',
+  pink: '330 75% 60%',
+  amber: '40 90% 50%',
+  teal: '160 60% 45%',
 };
 
 const stagger = {

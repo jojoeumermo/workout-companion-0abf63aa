@@ -177,3 +177,53 @@ export function useWaterLog() {
 
   return { water, getTodayWater, addWater, setDayWater, getWaterForDate };
 }
+
+export interface UserProfile {
+  height: number;
+  age: number;
+  sex: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  neck: number;
+  waist: number;
+  hip: number;
+}
+
+export function useUserProfile() {
+  return useLocalStorage<UserProfile>('user-profile', {
+    height: 0,
+    age: 0,
+    sex: 'male',
+    activityLevel: 'moderate',
+    neck: 0,
+    waist: 0,
+    hip: 0,
+  });
+}
+
+export function useWaterGoal() {
+  return useLocalStorage<number>('water-goal', 2500);
+}
+
+export interface CustomExercise {
+  id: string;
+  name: string;
+  muscleGroup: string;
+  equipment: string;
+  description: string;
+  instructions: string[];
+  isCustom: true;
+}
+
+export function useCustomExercises() {
+  const [exercises, setExercises] = useLocalStorage<CustomExercise[]>('custom-exercises', []);
+
+  const addExercise = useCallback((ex: Omit<CustomExercise, 'id' | 'isCustom'>) => {
+    setExercises(prev => [...prev, { ...ex, id: `custom-${Date.now()}`, isCustom: true }]);
+  }, [setExercises]);
+
+  const removeExercise = useCallback((id: string) => {
+    setExercises(prev => prev.filter(e => e.id !== id));
+  }, [setExercises]);
+
+  return { exercises, addExercise, removeExercise };
+}

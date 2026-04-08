@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Scale } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Scale, Settings2, GlassWater } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useMeals, useNutritionGoals, useWaterLog } from '@/hooks/useStorage';
+import { useMeals, useNutritionGoals, useWaterLog, useWaterGoal } from '@/hooks/useStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { haptic } from '@/lib/haptic';
@@ -17,7 +17,6 @@ const MEAL_TYPE_LABELS: Record<string, string> = {
 };
 
 const WATER_PRESETS = [150, 200, 300, 500];
-const WATER_GOAL_ML = 2500;
 
 export default function Nutrition() {
   const navigate = useNavigate();
@@ -25,10 +24,15 @@ export default function Nutrition() {
   const { meals, deleteMeal } = useMeals();
   const [goals, setGoals] = useNutritionGoals();
   const { getTodayWater, addWater, getWaterForDate } = useWaterLog();
+  const [waterGoal, setWaterGoal] = useWaterGoal();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showGoals, setShowGoals] = useState(false);
   const [tempGoals, setTempGoals] = useState(goals);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [showWaterSettings, setShowWaterSettings] = useState(false);
+  const [tempWaterGoal, setTempWaterGoal] = useState(waterGoal);
+  const [customWaterMl, setCustomWaterMl] = useState('');
+  const [macroMode, setMacroMode] = useState<'grams' | 'percent'>('grams');
 
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
   const todayWater = isToday ? getTodayWater() : getWaterForDate(selectedDate);
@@ -56,8 +60,9 @@ export default function Nutrition() {
     : new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
 
   const macroBar = (current: number, goal: number, color: string) => {
-    const pct = Math.min((current / goal) * 100, 100);
-    const over = (current / goal) > 1;
+    const safeGoal = goal > 0 ? goal : 1;
+    const pct = Math.min((current / safeGoal) * 100, 100);
+    const over = (current / safeGoal) > 1;
     return (
       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
         <div className={`h-full rounded-full transition-all ${over ? 'bg-red-400' : color}`} style={{ width: `${pct}%` }} />
@@ -71,8 +76,34 @@ export default function Nutrition() {
     toast({ title: 'Refeição removida' });
   };
 
-  const waterPct = Math.min((todayWater / WATER_GOAL_ML) * 100, 100);
+  const safeWaterGoal = waterGoal > 0 ? waterGoal : 1;
+  const waterPct = Math.min((todayWater / safeWaterGoal) * 100, 100);
   const waterGlasses = Math.round(todayWater / 250);
+
+  const addCustomWater = () => {
+    const ml = parseInt(customWaterMl);
+    if (ml > 0 && ml <= 5000) {
+      addWater(ml);
+      haptic('light');
+      setCustomWaterMl('');
+    }
+  };
+
+  const calcMacroPercent = (grams: number, calPerGram: number) => {
+    if (tempGoals.calories <= 0) return 0;
+    return Math.round((grams * calPerGram / tempGoals.calories) * 100);
+  };
+
+  const setMacroFromPercent = (field: 'protein' | 'carbs' | 'fat', percent: number) => {
+    const calPerGram = field === 'fat' ? 9 : 4;
+    const grams = Math.round((percent / 100) * tempGoals.calories / calPerGram);
+    setTempGoals(prev => ({ ...prev, [field]: grams }));
+  };
+
+  const calorieBalance = useMemo(() => {
+    const remaining = goals.calories - dayTotals.calories;
+    return remaining;
+  }, [goals.calories, dayTotals.calories]);
 
   return (
     <PageShell title="Nutrição">
@@ -107,6 +138,17 @@ export default function Nutrition() {
             {macroBar(dayTotals.calories, goals.calories, 'bg-orange-400')}
           </div>
 
+          {/* Calorie balance */}
+          <div className={`text-center py-2 rounded-xl text-xs font-semibold ${
+            calorieBalance > 0 ? 'bg-green-500/10 text-green-400' : calorieBalance < -200 ? 'bg-red-500/10 text-red-400' : 'bg-yellow-500/10 text-yellow-400'
+          }`}>
+            {calorieBalance > 0
+              ? `${Math.round(calorieBalance)} kcal restantes`
+              : calorieBalance === 0
+              ? 'Meta atingida!'
+              : `${Math.abs(Math.round(calorieBalance))} kcal acima da meta`}
+          </div>
+
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Proteína', current: Math.round(dayTotals.protein * 10) / 10, goal: goals.protein, unit: 'g', color: 'bg-red-400' },
@@ -132,9 +174,17 @@ export default function Nutrition() {
                 <Droplets size={16} className="text-blue-400" />
                 <h3 className="font-semibold text-sm">Água</h3>
               </div>
-              <div className="text-right">
-                <span className="text-sm font-bold text-blue-400">{(todayWater / 1000).toFixed(2).replace('.', ',')}L</span>
-                <span className="text-xs text-muted-foreground font-body"> / {(WATER_GOAL_ML / 1000).toFixed(1).replace('.', ',')}L</span>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <span className="text-sm font-bold text-blue-400">{(todayWater / 1000).toFixed(2).replace('.', ',')}L</span>
+                  <span className="text-xs text-muted-foreground font-body"> / {(waterGoal / 1000).toFixed(1).replace('.', ',')}L</span>
+                </div>
+                <button
+                  onClick={() => { setTempWaterGoal(waterGoal); setShowWaterSettings(true); }}
+                  className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground active:scale-90 transition-transform"
+                >
+                  <Settings2 size={12} />
+                </button>
               </div>
             </div>
 
@@ -147,8 +197,8 @@ export default function Nutrition() {
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground font-body">
-                <span>{waterGlasses} 🥛 copos de 250ml</span>
-                <span>{Math.max(0, WATER_GOAL_ML - todayWater)}ml restantes</span>
+                <span>{waterGlasses} copos de 250ml</span>
+                <span>{Math.max(0, waterGoal - todayWater)}ml restantes</span>
               </div>
             </div>
 
@@ -168,6 +218,25 @@ export default function Nutrition() {
                 className="w-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground active:scale-95 transition-transform"
               >
                 <Minus size={14} />
+              </button>
+            </div>
+
+            {/* Custom water amount */}
+            <div className="flex gap-2">
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Quantidade (ml)"
+                value={customWaterMl}
+                onChange={e => setCustomWaterMl(e.target.value)}
+                className="flex-1 bg-secondary rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-400/40 placeholder:text-muted-foreground/50"
+              />
+              <button
+                onClick={addCustomWater}
+                disabled={!customWaterMl || parseInt(customWaterMl) <= 0}
+                className="bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl px-4 py-2 text-xs font-semibold disabled:opacity-40 active:scale-95 transition-transform flex items-center gap-1"
+              >
+                <GlassWater size={12} /> Adicionar
               </button>
             </div>
           </motion.div>
@@ -246,35 +315,146 @@ export default function Nutrition() {
         </div>
       </div>
 
-      {/* Goals dialog */}
+      {/* Goals dialog - enhanced with % mode */}
       <Dialog open={showGoals} onOpenChange={setShowGoals}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
             <DialogTitle>Metas Diárias</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
-            {[
-              { label: 'Calorias (kcal)', field: 'calories' as const },
-              { label: 'Proteína (g)', field: 'protein' as const },
-              { label: 'Carboidratos (g)', field: 'carbs' as const },
-              { label: 'Gordura (g)', field: 'fat' as const },
-            ].map(({ label, field }) => (
-              <div key={field} className="space-y-1">
-                <label className="text-xs text-muted-foreground font-body">{label}</label>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  value={tempGoals[field]}
-                  onChange={e => setTempGoals(prev => ({ ...prev, [field]: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
-                />
-              </div>
-            ))}
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={() => setMacroMode('grams')}
+                className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${macroMode === 'grams' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+              >
+                Gramas
+              </button>
+              <button
+                onClick={() => setMacroMode('percent')}
+                className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${macroMode === 'percent' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+              >
+                Percentual
+              </button>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Calorias (kcal)</label>
+              <input
+                type="number"
+                inputMode="decimal"
+                value={tempGoals.calories}
+                onChange={e => setTempGoals(prev => ({ ...prev, calories: parseInt(e.target.value) || 0 }))}
+                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            {macroMode === 'grams' ? (
+              <>
+                {[
+                  { label: 'Proteína (g)', field: 'protein' as const },
+                  { label: 'Carboidratos (g)', field: 'carbs' as const },
+                  { label: 'Gordura (g)', field: 'fat' as const },
+                ].map(({ label, field }) => (
+                  <div key={field} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-muted-foreground font-body">{label}</label>
+                      <span className="text-[10px] text-muted-foreground/60 font-body">
+                        {calcMacroPercent(tempGoals[field], field === 'fat' ? 9 : 4)}%
+                      </span>
+                    </div>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      value={tempGoals[field]}
+                      onChange={e => setTempGoals(prev => ({ ...prev, [field]: parseInt(e.target.value) || 0 }))}
+                      className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                {[
+                  { label: 'Proteína (%)', field: 'protein' as const, calPerGram: 4 },
+                  { label: 'Carboidratos (%)', field: 'carbs' as const, calPerGram: 4 },
+                  { label: 'Gordura (%)', field: 'fat' as const, calPerGram: 9 },
+                ].map(({ label, field, calPerGram }) => {
+                  const pct = calcMacroPercent(tempGoals[field], calPerGram);
+                  return (
+                    <div key={field} className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs text-muted-foreground font-body">{label}</label>
+                        <span className="text-[10px] text-muted-foreground/60 font-body">
+                          = {tempGoals[field]}g
+                        </span>
+                      </div>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={pct}
+                        onChange={e => setMacroFromPercent(field, parseInt(e.target.value) || 0)}
+                        className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    </div>
+                  );
+                })}
+                {(() => {
+                  const totalPct = calcMacroPercent(tempGoals.protein, 4) + calcMacroPercent(tempGoals.carbs, 4) + calcMacroPercent(tempGoals.fat, 9);
+                  return totalPct !== 100 ? (
+                    <p className={`text-[10px] font-body ${Math.abs(totalPct - 100) > 5 ? 'text-red-400' : 'text-yellow-400'}`}>
+                      Total: {totalPct}% (ideal: 100%)
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-green-400 font-body">Total: 100%</p>
+                  );
+                })()}
+              </>
+            )}
+
             <button
               onClick={() => { setGoals(tempGoals); setShowGoals(false); toast({ title: 'Metas atualizadas!' }); }}
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm"
             >
               Salvar Metas
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Water settings dialog */}
+      <Dialog open={showWaterSettings} onOpenChange={setShowWaterSettings}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>Meta de Água Diária</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Meta diária (ml)</label>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={tempWaterGoal}
+                onChange={e => setTempWaterGoal(parseInt(e.target.value) || 0)}
+                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p className="text-[10px] text-muted-foreground/60 font-body">= {(tempWaterGoal / 1000).toFixed(1)} litros</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[2000, 2500, 3000, 3500, 4000].map(ml => (
+                <button
+                  key={ml}
+                  onClick={() => setTempWaterGoal(ml)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${tempWaterGoal === ml ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-secondary text-muted-foreground'}`}
+                >
+                  {ml / 1000}L
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => { setWaterGoal(Math.max(100, tempWaterGoal)); setShowWaterSettings(false); toast({ title: 'Meta de água atualizada!' }); }}
+              className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm"
+            >
+              Salvar
             </button>
           </div>
         </DialogContent>

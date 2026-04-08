@@ -231,8 +231,29 @@ export const equipmentList: Equipment[] = [
   'Kettlebell', 'Elástico', 'Smith Machine', 'Banco', 'Outro',
 ];
 
+export function getCustomExercises(): Exercise[] {
+  try {
+    const raw = localStorage.getItem('custom-exercises');
+    if (!raw) return [];
+    return JSON.parse(raw).map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      muscleGroup: c.muscleGroup as MuscleGroup,
+      secondaryMuscles: [],
+      equipment: c.equipment as Equipment,
+      description: c.description || '',
+      instructions: c.instructions || [],
+      image: '',
+    }));
+  } catch { return []; }
+}
+
+export function getAllExercises(): Exercise[] {
+  return [...exercises, ...getCustomExercises()];
+}
+
 export const getExerciseById = (id: string): Exercise | undefined =>
-  exercises.find(e => e.id === id);
+  getAllExercises().find(e => e.id === id);
 
 export const getExercisesByMuscle = (muscle: MuscleGroup): Exercise[] =>
-  exercises.filter(e => e.muscleGroup === muscle);
+  getAllExercises().filter(e => e.muscleGroup === muscle);

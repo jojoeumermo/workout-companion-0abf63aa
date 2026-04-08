@@ -314,7 +314,7 @@ export default function NutritionCamera() {
               {isAnalyzing ? (
                 <>
                   <Loader2 size={20} className="animate-spin" />
-                  Analisando com Gemini...
+                  Analisando com IA...
                 </>
               ) : (
                 <>

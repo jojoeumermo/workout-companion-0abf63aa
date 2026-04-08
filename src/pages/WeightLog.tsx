@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Scale, TrendingDown, TrendingUp, Minus, Trash2, Calendar } from 'lucide-react';
+import { ArrowLeft, Scale, TrendingDown, TrendingUp, Minus, Trash2, Calendar, Activity, User, Settings2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine } from 'recharts';
 import PageShell from '@/components/PageShell';
-import { useBodyWeight } from '@/hooks/useStorage';
+import { useBodyWeight, useUserProfile, UserProfile } from '@/hooks/useStorage';
 import { haptic } from '@/lib/haptic';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const QUICK_ADJUSTMENTS = [
   { label: '-1', delta: -1 },
@@ -15,12 +16,67 @@ const QUICK_ADJUSTMENTS = [
   { label: '+1', delta: 1 },
 ];
 
+const ACTIVITY_LABELS: Record<string, string> = {
+  sedentary: 'Sedentário',
+  light: 'Leve',
+  moderate: 'Moderado',
+  active: 'Ativo',
+  very_active: 'Muito Ativo',
+};
+
+const ACTIVITY_MULTIPLIERS: Record<string, number> = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  very_active: 1.9,
+};
+
+function calcBMI(weight: number, heightCm: number) {
+  if (!weight || !heightCm) return null;
+  const heightM = heightCm / 100;
+  const bmi = weight / (heightM * heightM);
+  let category = '';
+  if (bmi < 18.5) category = 'Abaixo do peso';
+  else if (bmi < 25) category = 'Peso normal';
+  else if (bmi < 30) category = 'Sobrepeso';
+  else category = 'Obesidade';
+  return { value: Math.round(bmi * 10) / 10, category };
+}
+
+function calcBodyFat(sex: 'male' | 'female', waist: number, neck: number, height: number, hip: number) {
+  if (!waist || !neck || !height) return null;
+  if (sex === 'male') {
+    if (waist <= neck) return null;
+    const bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+    if (!isFinite(bf)) return null;
+    return Math.max(2, Math.min(60, Math.round(bf * 10) / 10));
+  } else {
+    if (!hip) return null;
+    if (waist + hip <= neck) return null;
+    const bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(height)) - 450;
+    if (!isFinite(bf)) return null;
+    return Math.max(8, Math.min(60, Math.round(bf * 10) / 10));
+  }
+}
+
+function calcBMR(sex: 'male' | 'female', weight: number, heightCm: number, age: number) {
+  if (!weight || !heightCm || !age) return null;
+  if (sex === 'male') {
+    return Math.round(10 * weight + 6.25 * heightCm - 5 * age + 5);
+  }
+  return Math.round(10 * weight + 6.25 * heightCm - 5 * age - 161);
+}
+
 export default function WeightLog() {
   const navigate = useNavigate();
   const { entries, addWeight, removeWeight, latest } = useBodyWeight();
+  const [profile, setProfile] = useUserProfile();
   const [inputWeight, setInputWeight] = useState('');
   const [inputNote, setInputNote] = useState('');
   const [period, setPeriod] = useState<30 | 90 | 365>(30);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const [tempProfile, setTempProfile] = useState<UserProfile>(profile);
 
   const today = new Date().toISOString().split('T')[0];
   const todayEntry = entries.find(e => e.date === today);
@@ -85,6 +141,22 @@ export default function WeightLog() {
     ? filteredEntries.reduce((s, e) => s + e.weight, 0) / filteredEntries.length
     : null;
 
+  const currentWeight = latest?.weight ?? 0;
+  const bmi = calcBMI(currentWeight, profile.height);
+  const bodyFat = calcBodyFat(profile.sex, profile.waist, profile.neck, profile.height, profile.hip);
+  const bmr = calcBMR(profile.sex, currentWeight, profile.height, profile.age);
+  const tdee = bmr ? Math.round(bmr * (ACTIVITY_MULTIPLIERS[profile.activityLevel] || 1.55)) : null;
+  const leanMass = bodyFat !== null && currentWeight ? Math.round(currentWeight * (1 - bodyFat / 100) * 10) / 10 : null;
+  const fatMass = bodyFat !== null && currentWeight ? Math.round(currentWeight * (bodyFat / 100) * 10) / 10 : null;
+
+  const hasProfile = profile.height > 0 && profile.age > 0;
+
+  const saveProfile = () => {
+    setProfile(tempProfile);
+    setShowProfileDialog(false);
+    toast.success('Perfil salvo!');
+  };
+
   return (
     <PageShell>
       <div
@@ -99,10 +171,16 @@ export default function WeightLog() {
           >
             <ArrowLeft size={18} />
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-bold leading-tight">Peso Corporal</h1>
             <p className="text-xs text-muted-foreground font-body">Acompanhe sua evolução</p>
           </div>
+          <button
+            onClick={() => { setTempProfile(profile); setShowProfileDialog(true); }}
+            className="w-10 h-10 rounded-xl bg-card border border-border/30 flex items-center justify-center active:scale-90 transition-transform shrink-0"
+          >
+            <User size={18} className="text-muted-foreground" />
+          </button>
         </div>
 
         {/* Stats row */}
@@ -128,6 +206,89 @@ export default function WeightLog() {
           </motion.div>
         )}
 
+        {/* Body composition */}
+        {hasProfile && currentWeight > 0 && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity size={15} className="text-primary" />
+                <h3 className="font-semibold text-sm">Composição Corporal</h3>
+              </div>
+              <button
+                onClick={() => { setTempProfile(profile); setShowProfileDialog(true); }}
+                className="text-xs text-primary font-medium"
+              >
+                Editar Perfil
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {bmi && (
+                <div className="bg-secondary rounded-xl p-3 space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-body">IMC</p>
+                  <p className="text-lg font-bold text-primary">{bmi.value}</p>
+                  <p className={`text-[10px] font-medium ${
+                    bmi.category === 'Peso normal' ? 'text-green-400' :
+                    bmi.category === 'Abaixo do peso' ? 'text-yellow-400' : 'text-red-400'
+                  }`}>{bmi.category}</p>
+                </div>
+              )}
+              {bodyFat !== null && (
+                <div className="bg-secondary rounded-xl p-3 space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-body">Gordura Corp.</p>
+                  <p className="text-lg font-bold text-primary">{bodyFat}%</p>
+                  <p className="text-[10px] text-muted-foreground font-body">Navy Method</p>
+                </div>
+              )}
+              {bmr && (
+                <div className="bg-secondary rounded-xl p-3 space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-body">TMB</p>
+                  <p className="text-lg font-bold text-primary">{bmr}</p>
+                  <p className="text-[10px] text-muted-foreground font-body">kcal/dia</p>
+                </div>
+              )}
+              {tdee && (
+                <div className="bg-secondary rounded-xl p-3 space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-body">TDEE</p>
+                  <p className="text-lg font-bold text-primary">{tdee}</p>
+                  <p className="text-[10px] text-muted-foreground font-body">kcal/dia ({ACTIVITY_LABELS[profile.activityLevel]})</p>
+                </div>
+              )}
+              {leanMass !== null && (
+                <div className="bg-secondary rounded-xl p-3 space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-body">Massa Magra</p>
+                  <p className="text-lg font-bold text-green-400">{leanMass} kg</p>
+                </div>
+              )}
+              {fatMass !== null && (
+                <div className="bg-secondary rounded-xl p-3 space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-body">Massa Gorda</p>
+                  <p className="text-lg font-bold text-yellow-400">{fatMass} kg</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Setup prompt if no profile */}
+        {!hasProfile && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-primary/5 border border-primary/20 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Activity size={16} className="text-primary" />
+              <h3 className="font-semibold text-sm">Composição Corporal</h3>
+            </div>
+            <p className="text-xs text-muted-foreground font-body">
+              Configure seu perfil para ver IMC, gordura corporal, metabolismo basal e TDEE.
+            </p>
+            <button
+              onClick={() => { setTempProfile(profile); setShowProfileDialog(true); }}
+              className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5 text-xs font-semibold active:scale-95 transition-transform"
+            >
+              Configurar Perfil
+            </button>
+          </motion.div>
+        )}
+
         {/* Weight entry card */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between">
@@ -140,7 +301,6 @@ export default function WeightLog() {
             )}
           </div>
 
-          {/* Big number input */}
           <div className="relative">
             <input
               type="number"
@@ -153,7 +313,6 @@ export default function WeightLog() {
             <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body pointer-events-none">kg</span>
           </div>
 
-          {/* Quick adjust buttons */}
           <div className="grid grid-cols-4 gap-2.5">
             {QUICK_ADJUSTMENTS.map(({ label, delta }) => (
               <button
@@ -170,7 +329,6 @@ export default function WeightLog() {
             ))}
           </div>
 
-          {/* Note */}
           <input
             type="text"
             placeholder="Observação (ex: pós-treino, manhã em jejum...)"
@@ -179,7 +337,6 @@ export default function WeightLog() {
             className="w-full bg-secondary rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/50"
           />
 
-          {/* Save button */}
           <button
             onClick={handleSave}
             disabled={!inputWeight.trim() || parseFloat(inputWeight) < 20}
@@ -294,6 +451,121 @@ export default function WeightLog() {
           </div>
         )}
       </div>
+
+      {/* Profile dialog */}
+      <Dialog open={showProfileDialog} onOpenChange={setShowProfileDialog}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Perfil Corporal</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <p className="text-xs text-muted-foreground font-body">
+              Dados usados para calcular IMC, gordura corporal (Navy Method), metabolismo basal (Mifflin-St Jeor) e TDEE.
+            </p>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-body">Altura (cm)</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="170"
+                  value={tempProfile.height || ''}
+                  onChange={e => setTempProfile(p => ({ ...p, height: parseInt(e.target.value) || 0 }))}
+                  className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-body">Idade</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="25"
+                  value={tempProfile.age || ''}
+                  onChange={e => setTempProfile(p => ({ ...p, age: parseInt(e.target.value) || 0 }))}
+                  className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Sexo biológico</label>
+              <div className="grid grid-cols-2 gap-2">
+                {(['male', 'female'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setTempProfile(p => ({ ...p, sex: s }))}
+                    className={`py-2.5 rounded-xl text-xs font-semibold transition-all ${tempProfile.sex === s ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+                  >
+                    {s === 'male' ? 'Masculino' : 'Feminino'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Nível de atividade</label>
+              <div className="flex flex-wrap gap-1.5">
+                {(['sedentary', 'light', 'moderate', 'active', 'very_active'] as const).map(a => (
+                  <button
+                    key={a}
+                    onClick={() => setTempProfile(p => ({ ...p, activityLevel: a }))}
+                    className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${tempProfile.activityLevel === a ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+                  >
+                    {ACTIVITY_LABELS[a]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-border/40 pt-3 mt-2">
+              <p className="text-xs text-muted-foreground font-body mb-2">Medidas para gordura corporal (Navy Method)</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-muted-foreground font-body">Pescoço (cm)</label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="38"
+                    value={tempProfile.neck || ''}
+                    onChange={e => setTempProfile(p => ({ ...p, neck: parseFloat(e.target.value) || 0 }))}
+                    className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-muted-foreground font-body">Cintura (cm)</label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="80"
+                    value={tempProfile.waist || ''}
+                    onChange={e => setTempProfile(p => ({ ...p, waist: parseFloat(e.target.value) || 0 }))}
+                    className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-muted-foreground font-body">Quadril (cm)</label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="95"
+                    value={tempProfile.hip || ''}
+                    onChange={e => setTempProfile(p => ({ ...p, hip: parseFloat(e.target.value) || 0 }))}
+                    className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={saveProfile}
+              className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm mt-2"
+            >
+              Salvar Perfil
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

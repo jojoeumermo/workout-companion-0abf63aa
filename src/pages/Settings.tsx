@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Download, Upload, Palette, Trash2, FileJson, FileText, ArrowLeft, Scale, Ruler } from 'lucide-react';
+import { Download, Upload, Palette, Trash2, FileJson, FileText, ArrowLeft, Scale, Ruler, User, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useHistory, useTemplates, usePersonalRecords, useGoals, useTheme } from '@/hooks/useStorage';
+import { useHistory, useTemplates, usePersonalRecords, useGoals, useTheme, useUserProfile, UserProfile } from '@/hooks/useStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
@@ -14,6 +14,9 @@ const themes = [
   { id: 'purple', label: 'Roxo', primary: '270 70% 60%', accent: '270 70% 60%' },
   { id: 'red', label: 'Vermelho', primary: '0 75% 55%', accent: '0 75% 55%' },
   { id: 'cyan', label: 'Ciano', primary: '180 70% 45%', accent: '180 70% 45%' },
+  { id: 'pink', label: 'Rosa', primary: '330 75% 60%', accent: '330 75% 60%' },
+  { id: 'amber', label: 'Âmbar', primary: '40 90% 50%', accent: '40 90% 50%' },
+  { id: 'teal', label: 'Verde-azul', primary: '160 60% 45%', accent: '160 60% 45%' },
 ];
 
 const MEASUREMENT_KEYS = [
@@ -28,6 +31,14 @@ const MEASUREMENT_KEYS = [
   { key: 'calf', label: 'Panturrilha (cm)' },
 ];
 
+const ACTIVITY_LABELS: Record<string, string> = {
+  sedentary: 'Sedentário',
+  light: 'Leve',
+  moderate: 'Moderado',
+  active: 'Ativo',
+  very_active: 'Muito Ativo',
+};
+
 type Measurements = Record<string, string>;
 
 function loadMeasurements(): Measurements {
@@ -41,10 +52,13 @@ export default function Settings() {
   const { records } = usePersonalRecords();
   const { goals } = useGoals();
   const [theme, setTheme] = useTheme();
+  const [profile, setProfile] = useUserProfile();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showMeasurements, setShowMeasurements] = useState(false);
   const [measurements, setMeasurements] = useState<Measurements>(loadMeasurements);
   const [tempMeasurements, setTempMeasurements] = useState<Measurements>(loadMeasurements);
+  const [showProfile, setShowProfile] = useState(false);
+  const [tempProfile, setTempProfile] = useState<UserProfile>(profile);
 
   const applyTheme = (themeId: string) => {
     const t = themes.find(t => t.id === themeId);
@@ -61,7 +75,7 @@ export default function Settings() {
 
   const exportJSON = () => {
     const data = {
-      version: 2,
+      version: 3,
       exportedAt: new Date().toISOString(),
       templates: JSON.parse(localStorage.getItem('workout-templates') || '[]'),
       history: JSON.parse(localStorage.getItem('workout-history') || '[]'),
@@ -72,9 +86,13 @@ export default function Settings() {
       nutritionGoals: JSON.parse(localStorage.getItem('nutrition-goals') || 'null'),
       bodyWeight: JSON.parse(localStorage.getItem('body-weight') || '[]'),
       waterLog: JSON.parse(localStorage.getItem('water-log') || '{}'),
+      waterGoal: JSON.parse(localStorage.getItem('water-goal') || '2500'),
       measurements: JSON.parse(localStorage.getItem('body-measurements') || '{}'),
       folders: JSON.parse(localStorage.getItem('workout-folders') || '[]'),
       theme: localStorage.getItem('app-theme') || 'green',
+      userProfile: JSON.parse(localStorage.getItem('user-profile') || 'null'),
+      customExercises: JSON.parse(localStorage.getItem('custom-exercises') || '[]'),
+      trainingPrograms: JSON.parse(localStorage.getItem('training-programs') || '[]'),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -106,6 +124,24 @@ export default function Settings() {
     toast.success('CSV exportado!');
   };
 
+  const exportNutritionCSV = () => {
+    const meals = JSON.parse(localStorage.getItem('meal-history') || '[]');
+    const rows = ['Data,Hora,Tipo,Alimento,Calorias,Proteína(g),Carboidratos(g),Gordura(g)'];
+    meals.forEach((m: any) => {
+      m.items?.forEach((item: any) => {
+        rows.push(`${m.date},${m.time},${m.type},${item.name},${item.calories},${item.protein},${item.carbs},${item.fat}`);
+      });
+    });
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fitai-nutricao-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('CSV de nutrição exportado!');
+  };
+
   const importJSON = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -126,9 +162,13 @@ export default function Settings() {
           if (data.nutritionGoals) localStorage.setItem('nutrition-goals', JSON.stringify(data.nutritionGoals));
           if (data.bodyWeight) localStorage.setItem('body-weight', JSON.stringify(data.bodyWeight));
           if (data.waterLog) localStorage.setItem('water-log', JSON.stringify(data.waterLog));
+          if (data.waterGoal) localStorage.setItem('water-goal', JSON.stringify(data.waterGoal));
           if (data.measurements) localStorage.setItem('body-measurements', JSON.stringify(data.measurements));
           if (data.folders) localStorage.setItem('workout-folders', JSON.stringify(data.folders));
           if (data.theme) localStorage.setItem('app-theme', data.theme);
+          if (data.userProfile) localStorage.setItem('user-profile', JSON.stringify(data.userProfile));
+          if (data.customExercises) localStorage.setItem('custom-exercises', JSON.stringify(data.customExercises));
+          if (data.trainingPrograms) localStorage.setItem('training-programs', JSON.stringify(data.trainingPrograms));
           toast.success('Backup restaurado! Recarregando...');
           setTimeout(() => window.location.reload(), 1000);
         } catch {
@@ -144,7 +184,8 @@ export default function Settings() {
     const keys = [
       'workout-templates', 'workout-history', 'personal-records', 'workout-goals',
       'favorite-exercises', 'active-workout', 'meal-history', 'nutrition-goals',
-      'body-weight', 'water-log', 'body-measurements', 'workout-folders',
+      'body-weight', 'water-log', 'water-goal', 'body-measurements', 'workout-folders',
+      'user-profile', 'custom-exercises', 'training-programs',
     ];
     keys.forEach(k => localStorage.removeItem(k));
     toast.success('Todos os dados apagados! Recarregando...');
@@ -158,9 +199,17 @@ export default function Settings() {
     toast.success('Medidas salvas!');
   };
 
+  const saveProfile = () => {
+    setProfile(tempProfile);
+    setShowProfile(false);
+    toast.success('Perfil salvo!');
+  };
+
   const mealsCount = JSON.parse(localStorage.getItem('meal-history') || '[]').length;
   const weightCount = JSON.parse(localStorage.getItem('body-weight') || '[]').length;
+  const customExCount = JSON.parse(localStorage.getItem('custom-exercises') || '[]').length;
   const hasMeasurements = Object.values(measurements).some(v => v !== '');
+  const hasProfile = profile.height > 0 && profile.age > 0;
 
   return (
     <PageShell>
@@ -175,8 +224,46 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* User Profile */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <User size={16} className="text-primary" />
+              <h3 className="font-semibold text-sm">Perfil Corporal</h3>
+            </div>
+            <button
+              onClick={() => { setTempProfile(profile); setShowProfile(true); }}
+              className="text-xs text-primary font-medium"
+            >
+              {hasProfile ? 'Editar' : 'Configurar'}
+            </button>
+          </div>
+          {hasProfile ? (
+            <div className="grid grid-cols-4 gap-2">
+              <div className="bg-secondary rounded-xl p-2 text-center">
+                <p className="text-sm font-bold">{profile.height}cm</p>
+                <p className="text-[9px] text-muted-foreground font-body">Altura</p>
+              </div>
+              <div className="bg-secondary rounded-xl p-2 text-center">
+                <p className="text-sm font-bold">{profile.age}</p>
+                <p className="text-[9px] text-muted-foreground font-body">Idade</p>
+              </div>
+              <div className="bg-secondary rounded-xl p-2 text-center">
+                <p className="text-sm font-bold">{profile.sex === 'male' ? 'M' : 'F'}</p>
+                <p className="text-[9px] text-muted-foreground font-body">Sexo</p>
+              </div>
+              <div className="bg-secondary rounded-xl p-2 text-center">
+                <p className="text-sm font-bold">{ACTIVITY_LABELS[profile.activityLevel]?.charAt(0)}</p>
+                <p className="text-[9px] text-muted-foreground font-body">Atividade</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground font-body">Configure altura, idade e sexo para cálculos de composição corporal.</p>
+          )}
+        </motion.div>
+
         {/* Theme */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Palette size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Tema de Cor</h3>
@@ -227,7 +314,7 @@ export default function Settings() {
             <Scale size={16} className="text-primary" />
             <div className="text-left">
               <p className="text-sm font-medium">Peso Corporal</p>
-              <p className="text-xs text-muted-foreground font-body">{weightCount} registros • ver histórico e gráfico</p>
+              <p className="text-xs text-muted-foreground font-body">{weightCount} registros</p>
             </div>
           </button>
         </motion.div>
@@ -238,27 +325,34 @@ export default function Settings() {
             <Download size={16} className="text-primary" />
             <h3 className="font-semibold text-sm">Backup & Exportação</h3>
           </div>
-          <p className="text-[10px] text-muted-foreground font-body">Inclui treinos, refeições, peso corporal, medidas e configurações.</p>
+          <p className="text-[10px] text-muted-foreground font-body">Inclui treinos, refeições, peso corporal, medidas, perfil e configurações.</p>
           <div className="space-y-2">
             <button onClick={exportJSON} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
               <FileJson size={18} className="text-primary" />
               <div className="text-left">
                 <p className="font-medium text-sm">Exportar Backup Completo (JSON)</p>
-                <p className="text-xs text-muted-foreground font-body">Todos os dados — treinos, nutrição, peso</p>
+                <p className="text-xs text-muted-foreground font-body">Todos os dados</p>
               </div>
             </button>
             <button onClick={exportCSV} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
               <FileText size={18} className="text-primary" />
               <div className="text-left">
-                <p className="font-medium text-sm">Exportar Histórico (CSV)</p>
-                <p className="text-xs text-muted-foreground font-body">Para planilhas e análise externa</p>
+                <p className="font-medium text-sm">Exportar Treinos (CSV)</p>
+                <p className="text-xs text-muted-foreground font-body">Histórico de treinos para planilha</p>
+              </div>
+            </button>
+            <button onClick={exportNutritionCSV} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
+              <FileText size={18} className="text-primary" />
+              <div className="text-left">
+                <p className="font-medium text-sm">Exportar Nutrição (CSV)</p>
+                <p className="text-xs text-muted-foreground font-body">Histórico de refeições para planilha</p>
               </div>
             </button>
             <button onClick={importJSON} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
               <Upload size={18} className="text-primary" />
               <div className="text-left">
                 <p className="font-medium text-sm">Importar Backup</p>
-                <p className="text-xs text-muted-foreground font-body">Restaurar todos os dados de um arquivo</p>
+                <p className="text-xs text-muted-foreground font-body">Restaurar todos os dados</p>
               </div>
             </button>
           </div>
@@ -274,6 +368,7 @@ export default function Settings() {
             <div className="flex justify-between"><span>Metas ativas</span><span className="text-foreground font-medium">{goals.length}</span></div>
             <div className="flex justify-between"><span>Refeições registradas</span><span className="text-foreground font-medium">{mealsCount}</span></div>
             <div className="flex justify-between"><span>Registros de peso</span><span className="text-foreground font-medium">{weightCount}</span></div>
+            <div className="flex justify-between"><span>Exercícios personalizados</span><span className="text-foreground font-medium">{customExCount}</span></div>
           </div>
         </motion.div>
 
@@ -288,6 +383,65 @@ export default function Settings() {
           </button>
         </motion.div>
       </div>
+
+      {/* Profile dialog */}
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Perfil Corporal</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-body">Altura (cm)</label>
+                <input type="number" inputMode="numeric" placeholder="170" value={tempProfile.height || ''} onChange={e => setTempProfile(p => ({ ...p, height: parseInt(e.target.value) || 0 }))} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-body">Idade</label>
+                <input type="number" inputMode="numeric" placeholder="25" value={tempProfile.age || ''} onChange={e => setTempProfile(p => ({ ...p, age: parseInt(e.target.value) || 0 }))} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Sexo biológico</label>
+              <div className="grid grid-cols-2 gap-2">
+                {(['male', 'female'] as const).map(s => (
+                  <button key={s} onClick={() => setTempProfile(p => ({ ...p, sex: s }))} className={`py-2.5 rounded-xl text-xs font-semibold transition-all ${tempProfile.sex === s ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+                    {s === 'male' ? 'Masculino' : 'Feminino'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Nível de atividade</label>
+              <div className="flex flex-wrap gap-1.5">
+                {(['sedentary', 'light', 'moderate', 'active', 'very_active'] as const).map(a => (
+                  <button key={a} onClick={() => setTempProfile(p => ({ ...p, activityLevel: a }))} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${tempProfile.activityLevel === a ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+                    {ACTIVITY_LABELS[a]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="border-t border-border/40 pt-3">
+              <p className="text-xs text-muted-foreground font-body mb-2">Medidas para gordura corporal (Navy Method)</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-muted-foreground font-body">Pescoço (cm)</label>
+                  <input type="number" inputMode="decimal" placeholder="38" value={tempProfile.neck || ''} onChange={e => setTempProfile(p => ({ ...p, neck: parseFloat(e.target.value) || 0 }))} className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-muted-foreground font-body">Cintura (cm)</label>
+                  <input type="number" inputMode="decimal" placeholder="80" value={tempProfile.waist || ''} onChange={e => setTempProfile(p => ({ ...p, waist: parseFloat(e.target.value) || 0 }))} className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-muted-foreground font-body">Quadril (cm)</label>
+                  <input type="number" inputMode="decimal" placeholder="95" value={tempProfile.hip || ''} onChange={e => setTempProfile(p => ({ ...p, hip: parseFloat(e.target.value) || 0 }))} className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                </div>
+              </div>
+            </div>
+            <button onClick={saveProfile} className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm mt-2">Salvar Perfil</button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Measurements dialog */}
       <Dialog open={showMeasurements} onOpenChange={setShowMeasurements}>

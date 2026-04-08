@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useActiveWorkout, useHistory, usePersonalRecords } from '@/hooks/useStorage';
-import { getExerciseById, exercises as allExercises, muscleGroups } from '@/data/exercises';
+import { getExerciseById, getAllExercises, muscleGroups } from '@/data/exercises';
 import { CompletedWorkout, CompletedExercise, ActiveSet } from '@/types/workout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { haptic } from '@/lib/haptic';
@@ -357,6 +357,7 @@ export default function ActiveWorkoutPage() {
   const allCompleted = hasExercises && activeWorkout.exercises.every(ex => ex.sets.every(s => s.completed));
   const isLastExercise = currentIndex === totalExercises - 1;
 
+  const allExercises = getAllExercises();
   const filteredExercises = allExercises.filter(e => {
     if (exerciseSearch && !e.name.toLowerCase().includes(exerciseSearch.toLowerCase())) return false;
     if (muscleFilter && e.muscleGroup !== muscleFilter) return false;

@@ -1,0 +1,459 @@
+IMPORTANTE
+
+Este aplicativo já está bom em várias partes.
+NÃO recrie o projeto do zero.
+NÃO remova nenhuma funcionalidade existente.
+NÃO simplifique o app.
+Quero EVOLUIR e CORRIGIR o app atual.
+
+O foco agora é funcionalidade real, estabilidade, utilidade e refinamento final.
+Não quero mudanças aleatórias.
+Quero que você execute exatamente as prioridades abaixo, em ordem.
+
+OBJETIVO GERAL
+
+Finalizar o app de forma profissional, funcional e robusta.
+Quero corrigir o que ainda não está 100%, melhorar muito a experiência do usuário e deixar o app mais imersivo, mais completo e mais confiável.
+
+A IA pode ficar por último nesta sessão, porque o principal é o app ser funcional.
+O app só deve ser considerado concluído quando tudo abaixo estiver realmente funcionando.
+
+==================================================
+
+1. NUTRIÇÃO — MELHORAR MUITO
+   ==================================================
+
+A área de nutrição precisa ficar muito mais forte e útil.
+
+---
+
+1.1 ÁGUA
+
+Quero poder:
+
+- alterar minha meta diária de ingestão de água
+- adicionar livremente a quantidade que eu bebi
+
+IMPORTANTE:
+
+- manter os botões bonitos que já existem, como +150ml, +200ml etc
+- além desses botões, adicionar uma opção manual para eu digitar ou escolher livremente a quantidade de água ingerida
+
+---
+
+1.2 CALORIAS E MACROS NO ESTILO MYFITNESSPAL
+
+Quero que a lógica de calorias e macronutrientes seja feita corretamente.
+
+Exemplo:
+Se a meta for 1920 kcal, deve ser possível definir os macros de forma coerente, por porcentagem ou por gramas, como no MyFitnessPal.
+
+Exemplo de referência:
+
+- Carboidratos: 240g = 50%
+- Gorduras: 64g = 30%
+- Proteínas: 96g = 20%
+- Total = 100%
+
+Quero que a área de nutrição permita:
+
+- mudar a meta de calorias
+- definir macros por porcentagem
+- definir macros por gramas
+- mostrar claramente o total percentual
+- garantir que os macronutrientes somem 100%
+- mostrar validação visual se não somarem 100%
+- recalcular automaticamente quando mudar os valores
+
+Quero uma experiência parecida com MyFitnessPal.
+
+---
+
+1.3 META BASE + ALIMENTOS + EXERCÍCIOS
+
+Quero a lógica nutricional assim:
+
+- Meta base: calorias alvo do dia
+- Alimentos: calorias consumidas
+- Exercícios: calorias gastas estimadas com base nos treinos registrados
+
+Exemplo visual:
+Meta base
+1920
+
+Alimentos
+0
+
+Exercícios
+0
+
+Saldo final do dia
+
+Quero que o app estime calorias gastas com base nos exercícios das rotinas e treinos registrados.
+Isso não precisa ser clínico, mas deve ser útil e coerente.
+
+---
+
+1.4 BIBLIOTECA DE ALIMENTOS
+
+Como a câmera nutri ainda não está 100%, quero uma biblioteca manual de alimentos, estilo MyFitnessPal.
+
+Adicionar uma biblioteca de alimentos com dados nutricionais, incluindo quando possível:
+
+- nome
+- calorias
+- carboidratos
+- proteínas
+- gorduras
+- fibras
+- porção base
+
+Quero poder:
+
+- pesquisar alimentos
+- adicionar alimentos manualmente
+- registrar refeições com base nessa biblioteca
+- ajustar quantidade/porção
+- salvar no histórico alimentar
+
+---
+
+1.5 GRÁFICOS DE NUTRIÇÃO
+
+Adicionar gráficos na área de nutrição, mostrando:
+
+- proteínas consumidas
+- carboidratos consumidos
+- gorduras consumidas
+- calorias consumidas
+- comparação com meta
+
+Quero gráficos bonitos, claros e fáceis de entender.
+
+---
+
+1.6 MAIS MELHORIAS DE NUTRIÇÃO
+
+Adicionar outras melhorias úteis na nutrição, como:
+
+- histórico por dia
+- resumo semanal
+- refeições salvas
+- refeições favoritas
+- suplementos
+- medicamentos
+- observações por refeição
+- edição manual fácil
+- metas mais claras
+- visual mais profissional
+
+==================================================
+2. PESO CORPORAL — EVOLUÇÃO CORPORAL COMPLETA
+
+A área de peso corporal precisa ficar muito mais completa.
+
+Quero:
+
+- registro de peso
+- histórico melhorado
+- acompanhamento visual da evolução
+
+Adicionar ou melhorar:
+
+- gráfico de peso
+- histórico mais bonito e útil
+- IMC
+- água corporal
+- metabolismo basal
+- massa gorda
+- massa muscular esquelética
+- outros indicadores corporais úteis
+
+Também quero uma espécie de bioimpedância digital aproximada dentro do app.
+
+Ou seja:
+quero poder inserir medidas e dados corporais e o app calcular estimativas úteis.
+
+Por exemplo:
+
+- peso
+- altura
+- cintura
+- pescoço
+- quadril
+- idade
+- sexo
+- nível de atividade
+
+E a partir disso estimar:
+
+- percentual de gordura
+- massa magra
+- metabolismo basal
+- composição corporal aproximada
+
+Sei que é aproximado, e isso pode ser informado ao usuário.
+
+==================================================
+3. PROGRAMAS — TORNAR ÚTIL DE VERDADE
+
+A aba de Programas na Home está praticamente inútil.
+
+Quero que ela vire uma funcionalidade realmente útil.
+
+Adicionar:
+
+- opção de personalizar com IA
+- opção de personalizar manualmente
+- abrir programas
+- ver os exercícios do programa
+- editar programa
+- acompanhar programa
+- iniciar programa
+- programas mais claros e estruturados
+
+Quero que os programas tenham cara de funcionalidade real, não só de placeholder.
+
+Pense em uma boa estrutura para isso e implemente de forma útil.
+
+==================================================
+4. TREINO LIVRE — CONSERTAR DE VERDADE
+
+A área de treino livre não está funcional.
+
+Problemas:
+
+- não está indo corretamente para o histórico
+- não está salvando direito
+
+Quero corrigir isso completamente.
+
+O treino livre deve:
+
+- iniciar corretamente
+- salvar corretamente
+- ir para o histórico
+- alimentar progresso
+- contar para estatísticas
+- se comportar como treino real
+
+==================================================
+5. EXERCÍCIOS PERSONALIZADOS
+
+Eu já pedi isso várias vezes e ainda não foi adicionado.
+
+Na aba de exercícios, quero a opção de adicionar exercícios personalizados.
+
+Quero poder cadastrar:
+
+- nome do exercício
+- grupo muscular
+- equipamento ou sem equipamento
+- descrição
+- como executar
+- foto opcional
+- observações
+
+Esse exercício deve seguir o padrão da biblioteca do app e aparecer normalmente junto dos outros.
+
+==================================================
+6. SONS E FOTOS NOS EXERCÍCIOS
+
+Quero:
+
+- sons no app
+- fotos nos exercícios
+
+Sons:
+Adicionar sons opcionais para:
+
+- fim do descanso
+- série concluída
+- treino concluído
+- recorde batido
+
+Adicionar controle disso nas configurações.
+
+Fotos:
+Quero que os exercícios tenham imagens.
+Se possível, usar imagens no estilo anatomia 3D / boneco demonstrando o exercício.
+
+==================================================
+7. MAIS IMERSÃO E CONTROLE DO USUÁRIO
+
+Quero mais imersão e controle total do usuário no app.
+
+Adicionar:
+
+- escolha de diversas cores para o app
+- personalização visual mais forte
+- exportar histórico em PDF
+- exportar histórico em CSV
+- mais opções úteis nas configurações
+
+Pense em mais opções de configurações que façam sentido para um app assim, por exemplo:
+
+- aparência
+- sons
+- vibração
+- metas
+- unidades
+- timers
+- privacidade
+- backup
+- importação/exportação
+- preferências do treino
+- preferências da nutrição
+
+Quero mais imersão e sensação de controle.
+
+==================================================
+8. SISTEMA DE METAS BEM FEITO
+
+Quero o sistema de metas bem feito.
+
+Adicionar ou melhorar metas como:
+
+- meta de treinos por semana
+- meta de calorias
+- meta de proteína
+- meta de água
+- meta de peso corporal
+- meta por exercício
+- meta de constância
+- meta mensal
+
+Quero que isso seja medido de forma clara, visual e útil.
+
+==================================================
+9. MARGENS, BORDAS E LAYOUT
+
+As bordas ainda estão muito coladas nas extremidades.
+
+Quero:
+
+- mais padding lateral
+- mais respiro nas telas
+- mais distância entre conteúdo e bordas
+- cards mais bem posicionados
+- correção em todas as telas, especialmente onde isso ainda estiver feio
+
+Também quero corrigir qualquer componente que esteja ultrapassando ou encostando demais nas margens, incluindo a área de peso corporal.
+
+==================================================
+10. FITAI CHAT E IA
+
+Neste momento, a IA não é a primeira prioridade, mas ainda quero que você revise isso ao final.
+
+Contexto:
+O FitAI Chat funcionou e depois parou.
+O agent tinha colocado algum uso de quota do próprio Replit em vez de uma solução estável.
+
+Quero que, no final desta sessão, você revise isso com muito cuidado.
+
+Objetivo:
+
+- diagnosticar corretamente
+- corrigir a integração da IA
+- garantir que o chat realmente funcione antes de encerrar
+
+Mas só faça isso depois que as partes funcionais principais acima estiverem resolvidas.
+
+Não quero suposição.
+Quero diagnóstico real e teste real.
+
+==================================================
+11. VARREDURA FINAL TOTAL
+
+No final, quero uma varredura completa em busca de:
+
+- bugs
+- fluxos incompletos
+- funções que não estão 100%
+- falhas de salvamento
+- problemas de layout
+- problemas de integração
+- problemas silenciosos
+
+Corrigir tudo que encontrar.
+
+O agente só deve parar quando:
+
+- corrigir tudo que estiver quebrado
+- estabilizar o app
+- garantir que as funcionalidades listadas acima estão funcionando
+
+==================================================
+12. TESTES OBRIGATÓRIOS
+
+Antes de considerar concluído, testar de verdade:
+
+Nutrição:
+
+- alterar meta de água
+- adicionar água manualmente
+- manter botões +150ml, +200ml etc
+- alterar meta de calorias
+- definir macros por gramas
+- definir macros por porcentagem
+- garantir total de 100%
+- usar biblioteca de alimentos
+- registrar refeição
+- ver gráficos
+- ver alimentos e exercícios no resumo calórico
+
+Peso corporal:
+
+- registrar peso
+- ver histórico
+- ver gráfico
+- usar bioimpedância digital aproximada
+- ver indicadores corporais
+
+Programas:
+
+- abrir programa
+- criar programa manual
+- personalizar
+- visualizar exercícios
+
+Treino livre:
+
+- iniciar treino livre
+- salvar treino livre
+- ver no histórico
+
+Exercícios:
+
+- criar exercício personalizado
+- adicionar foto
+
+Configurações:
+
+- mudar cor do app
+- exportar PDF
+- exportar CSV
+- testar opções novas
+
+IA:
+
+- abrir FitAI Chat
+- enviar mensagem
+- receber resposta
+
+==================================================
+13. RESULTADO FINAL
+
+Quero que o app fique muito mais completo, robusto, bonito, funcional e útil.
+
+O foco desta sessão é:
+
+- melhorar MUITO a nutrição
+- melhorar MUITO o peso corporal
+- tornar programas úteis
+- corrigir treino livre
+- adicionar exercícios personalizados
+- dar mais controle ao usuário
+- corrigir margens
+- finalizar tudo com varredura total
+- e só no fim garantir que a IA do chat volte a funcionar

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
 import { WorkoutTemplate, WorkoutExercise, ActiveWorkout, SetConfig } from '@/types/workout';
-import { exercises as allExercises, getExerciseById, muscleGroups } from '@/data/exercises';
+import { getAllExercises, getExerciseById, muscleGroups } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function Workouts() {
@@ -146,6 +146,7 @@ export default function Workouts() {
     updateExerciseSets(exIndex, sets);
   };
 
+  const allExercises = getAllExercises();
   const filteredExercises = allExercises.filter(e => {
     if (muscleFilter && e.muscleGroup !== muscleFilter) return false;
     if (search && !e.name.toLowerCase().includes(search.toLowerCase())) return false;
