@@ -114,6 +114,27 @@ app.post("/api/ai-coach", async (req, res) => {
   }
 });
 
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const msg = err instanceof Error ? err.message : String(err);
+      const isRateLimit = msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate");
+      if (isRateLimit && attempt < maxRetries) {
+        const delay = (attempt + 1) * 2000; // 2s, 4s
+        console.log(`[rate-limit] Retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 // Meal analysis endpoint
 app.post("/api/analyze-meal", async (req, res) => {
   try {
@@ -138,15 +159,15 @@ Valores em gramas (exceto calorias em kcal). Seja preciso mas realista.
 
 ${description ? `Descrição: ${description}` : "Analise a imagem desta refeição."}`;
 
-    let result;
-    if (imageBase64) {
-      result = await model.generateContent([
-        { inlineData: { data: imageBase64, mimeType: "image/jpeg" } },
-        prompt,
-      ]);
-    } else {
-      result = await model.generateContent(prompt);
-    }
+    const result = await withRetry(() => {
+      if (imageBase64) {
+        return model.generateContent([
+          { inlineData: { data: imageBase64, mimeType: "image/jpeg" } },
+          prompt,
+        ]);
+      }
+      return model.generateContent(prompt);
+    });
 
     const content = result.response.text();
     let parsed;

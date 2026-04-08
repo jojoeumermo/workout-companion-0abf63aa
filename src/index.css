@@ -56,6 +56,8 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
+    /* iOS viewport height */
+    min-height: 100dvh;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -75,11 +77,23 @@
 
 @layer utilities {
   .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
   }
-  
+
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Use this for main page top padding (status bar + a bit extra) */
+  .page-top {
+    padding-top: max(env(safe-area-inset-top, 0px), 14px);
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 14px) + 44px);
+  }
+
+  /* Consistent horizontal page padding */
+  .page-x {
+    padding-left: max(env(safe-area-inset-left, 0px), 20px);
+    padding-right: max(env(safe-area-inset-right, 0px), 20px);
   }
 
   /* Premium glass effect */
