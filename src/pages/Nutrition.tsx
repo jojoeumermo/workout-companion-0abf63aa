@@ -76,7 +76,7 @@ export default function Nutrition() {
 
   return (
     <PageShell title="Nutrição">
-      <div className="max-w-lg mx-auto space-y-4">
+      <div className="max-w-lg mx-auto space-y-5 pt-2">
         {/* Date selector */}
         <div className="flex items-center justify-between">
           <button onClick={() => changeDate(-1)} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center active:scale-95 transition-transform">

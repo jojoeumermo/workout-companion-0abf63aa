@@ -81,7 +81,7 @@ export default function Dashboard() {
 
   return (
     <PageShell>
-      <div className="pt-14 space-y-5 max-w-lg mx-auto pb-4">
+      <div className="pt-16 space-y-5 max-w-lg mx-auto pb-6">
         {/* Header */}
         <motion.div custom={0} variants={stagger} initial="hidden" animate="show" className="flex items-center justify-between">
           <div className="space-y-0.5">

@@ -88,14 +88,14 @@ export default function WeightLog() {
   return (
     <PageShell>
       <div
-        className="pb-28 space-y-4 max-w-lg mx-auto"
+        className="pb-28 space-y-5 max-w-lg mx-auto"
         style={{ paddingTop: 'max(calc(env(safe-area-inset-top, 0px) + 60px), 72px)' }}
       >
         {/* Header */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="w-9 h-9 rounded-xl bg-card flex items-center justify-center active:scale-90 transition-transform shrink-0"
+            className="w-10 h-10 rounded-xl bg-card border border-border/30 flex items-center justify-center active:scale-90 transition-transform shrink-0"
           >
             <ArrowLeft size={18} />
           </button>
@@ -107,7 +107,7 @@ export default function WeightLog() {
 
         {/* Stats row */}
         {stats && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2.5">
             {[
               { icon: Scale, label: 'atual', value: stats.current != null ? `${stats.current}` : '--', color: 'text-primary' },
               { icon: TrendingDown, label: 'mínimo', value: `${stats.min}`, color: 'text-green-400' },
@@ -119,8 +119,8 @@ export default function WeightLog() {
                 color: stats.change30 !== null && stats.change30 < 0 ? 'text-green-400' : stats.change30 !== null && stats.change30 > 0 ? 'text-red-400' : 'text-muted-foreground',
               },
             ].map(({ icon: Icon, label, value, color }) => (
-              <div key={label} className="bg-card rounded-2xl p-3 text-center space-y-1">
-                <Icon size={13} className={`mx-auto ${color}`} />
+              <div key={label} className="card-premium rounded-2xl p-3.5 text-center space-y-1.5">
+                <Icon size={14} className={`mx-auto ${color}`} />
                 <p className={`text-sm font-bold leading-none ${color}`}>{value}</p>
                 <p className="text-[9px] text-muted-foreground font-body">{label}</p>
               </div>
@@ -129,7 +129,7 @@ export default function WeightLog() {
         )}
 
         {/* Weight entry card */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="card-premium rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Scale size={15} className="text-primary" />
@@ -154,7 +154,7 @@ export default function WeightLog() {
           </div>
 
           {/* Quick adjust buttons */}
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2.5">
             {QUICK_ADJUSTMENTS.map(({ label, delta }) => (
               <button
                 key={label}
@@ -176,7 +176,7 @@ export default function WeightLog() {
             placeholder="Observação (ex: pós-treino, manhã em jejum...)"
             value={inputNote}
             onChange={e => setInputNote(e.target.value)}
-            className="w-full bg-secondary rounded-xl px-4 py-2.5 text-sm font-body outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/50"
+            className="w-full bg-secondary rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/50"
           />
 
           {/* Save button */}
@@ -191,10 +191,10 @@ export default function WeightLog() {
 
         {/* Chart */}
         {chartData.length > 1 && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="bg-card rounded-2xl p-5 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="card-premium rounded-2xl p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm">Evolução</h3>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 {([30, 90, 365] as const).map(p => (
                   <button
                     key={p}
@@ -238,7 +238,7 @@ export default function WeightLog() {
 
         {/* History */}
         {entries.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="space-y-2">
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="space-y-2.5">
             <h3 className="font-semibold text-sm px-0.5">Histórico</h3>
             <AnimatePresence>
               {[...entries].reverse().slice(0, 30).map(entry => {
@@ -249,7 +249,7 @@ export default function WeightLog() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="bg-card rounded-xl px-4 py-3 flex items-center justify-between"
+                    className="card-premium rounded-xl px-4 py-3.5 flex items-center justify-between"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -265,14 +265,14 @@ export default function WeightLog() {
                         <p className="text-xs text-muted-foreground font-body mt-0.5 truncate">{entry.note}</p>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0 ml-3">
+                    <div className="flex items-center gap-2.5 shrink-0 ml-3">
                       <span className="text-lg font-bold text-primary">{entry.weight}</span>
                       <span className="text-xs text-muted-foreground font-body">kg</span>
                       <button
                         onClick={() => { removeWeight(entry.date); haptic('light'); toast.success('Removido'); }}
-                        className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground active:scale-90 transition-transform"
+                        className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground active:scale-90 transition-transform"
                       >
-                        <Trash2 size={11} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </motion.div>
@@ -283,9 +283,14 @@ export default function WeightLog() {
         )}
 
         {entries.length === 0 && (
-          <div className="text-center py-12 space-y-3">
-            <Scale size={48} className="text-muted-foreground/15 mx-auto" />
-            <p className="text-sm text-muted-foreground font-body">Nenhum peso registrado ainda.<br />Registre agora para começar a acompanhar.</p>
+          <div className="text-center py-16 space-y-4">
+            <div className="w-20 h-20 rounded-3xl bg-card border border-border/30 mx-auto flex items-center justify-center">
+              <Scale size={36} className="text-muted-foreground/20" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-semibold text-muted-foreground">Nenhum peso registrado</p>
+              <p className="text-xs text-muted-foreground/60 font-body">Registre agora para acompanhar sua evolução</p>
+            </div>
           </div>
         )}
       </div>
