@@ -12,7 +12,7 @@ const isDev = process.env.NODE_ENV !== "production";
 app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 
-const GEMINI_MODEL = "gemini-1.5-flash";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2, baseDelay = 2000): Promise<T> {
   let lastErr: unknown;

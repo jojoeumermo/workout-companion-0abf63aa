@@ -236,9 +236,9 @@ nav a, nav button {
   -webkit-user-select: none;
 }
 
-/* Prevent horizontal overflow globally */
-html, body {
-  overflow-x: hidden;
+/* Prevent horizontal overflow without blocking vertical scroll */
+body {
+  overflow-x: clip;
   max-width: 100vw;
 }
 

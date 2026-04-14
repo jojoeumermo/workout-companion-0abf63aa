@@ -1,0 +1,55 @@
+Surgiram 2 bugs graves depois da última atualização. Quero corrigir isso sem remover nenhuma funcionalidade existente e sem quebrar o restante do app.
+
+IMPORTANTE:
+- não remover nenhuma função existente
+- não recriar o app
+- não mexer no visual sem necessidade
+- foco total em corrigir regressões
+- preservar a lógica atual do app
+
+PROBLEMA 1: O app não está mais scrollando para baixo no PC
+Depois das últimas correções, o app ficou sem scroll vertical no desktop/PC.
+
+Quero que você investigue e corrija isso.
+
+Verificar:
+- se overflow foi aplicado globalmente em html, body, #root ou containers principais
+- se overflow-x: hidden acabou afetando o overflow-y
+- se algum wrapper/layout principal ficou com height fixa errada
+- se algum container está prendendo o scroll da página
+- se alguma tela está usando h-screen/min-h-screen de forma incorreta
+
+Objetivo:
+- restaurar o scroll vertical normal no PC
+- manter o bloqueio apenas do overflow horizontal indesejado
+- não quebrar o comportamento mobile
+
+PROBLEMA 2: A IA quebrou novamente após a migração para Gemini
+Quero diagnosticar e corrigir a integração da IA.
+
+Verificar:
+- se a GEMINI_API_KEY está sendo lida corretamente
+- se o backend/rota da IA está funcionando
+- se houve erro de importação ou configuração do SDK
+- se o modelo Gemini escolhido está correto
+- se a resposta da API está no formato esperado pelo chat
+- se existe erro de streaming, parse, JSON ou runtime
+- se o frontend do FitAI Coach está recebendo a resposta corretamente
+- se há erro no console ou no server log
+
+Corrigir para que:
+- o FitAI Coach volte a responder normalmente
+- a IA continue usando API externa, sem depender do Replit Agent
+- o app não quebre caso a API falhe
+- apareça mensagem amigável se houver erro
+
+Também:
+- revisar rapidamente as rotas de análise por foto e análise pós-treino, se estiverem usando Gemini, para garantir que não ficaram quebradas
+
+ENTREGA:
+No final, me diga:
+- o que causava o bug do scroll no PC
+- o que causava a quebra da IA
+- quais arquivos foram alterados
+- se o app agora está usando somente Gemini
+- se ainda existe algum ponto de risco
