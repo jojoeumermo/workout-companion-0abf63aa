@@ -1,0 +1,84 @@
+Quero focar nas próximas melhorias mais importantes do app, sem remover nenhuma funcionalidade existente e sem quebrar o que já funciona.
+
+IMPORTANTE:
+- não remover funções existentes
+- não recriar o app
+- não mexer desnecessariamente no que já está bom
+- preservar design atual
+- preservar lógica atual
+- foco em funcionalidade real, estabilidade e melhorias úteis
+
+OBJETIVO:
+Transformar áreas que hoje estão incompletas ou superficiais em funcionalidades reais e bem integradas, e também diagnosticar claramente onde os dados do app estão sendo salvos hoje.
+
+1. DIAGNÓSTICO DE PERSISTÊNCIA DE DADOS
+Antes de qualquer mudança grande, quero um diagnóstico claro sobre onde os dados do app estão sendo salvos atualmente.
+
+Verificar e me informar:
+- localStorage
+- IndexedDB
+- banco de dados
+- API/backend
+- qualquer outra camada de persistência existente
+
+Quero saber especificamente onde estão sendo salvos:
+- histórico de treino
+- progresso
+- água
+- rotinas
+- programas
+- nome do usuário
+- nutrição
+- fotos/imagens, se houver
+
+2. PROGRAMAS DE TREINO FUNCIONAIS
+Hoje a área de programas precisa funcionar de verdade.
+
+Implementar:
+- clicar em um programa abre detalhes
+- iniciar programa aplica ou cria a rotina correspondente
+- programas pré-definidos já disponíveis no app
+- quando a IA gerar um programa, ele deve ser salvo automaticamente na aba Programas
+- permitir visualizar, iniciar e editar programas gerados
+
+3. ROTINAS 100% FUNCIONAIS
+Corrigir e melhorar:
+- rotinas clicáveis
+- abrir detalhes da rotina sem bug
+- iniciar rotina corretamente
+- editar rotina
+- reorganizar exercícios
+- melhorar fluxo de gerenciamento
+
+4. IMAGENS NOS EXERCÍCIOS
+Quero imagens reais nos exercícios.
+
+Implementar:
+- adicionar imagem para exercícios da biblioteca
+- se algum exercício não tiver imagem, permitir upload manual
+- adicionar opção de imagem também ao criar exercício personalizado
+- manter o visual bonito e organizado
+
+5. NOME DO USUÁRIO
+Implementar:
+- campo para nome nas configurações
+- salvar de forma persistente
+- refletir automaticamente na home, por exemplo: “Olá, João”
+
+6. VIBRAÇÃO / FEEDBACK TÁTIL
+Adicionar vibração no mobile em eventos importantes:
+- concluir série
+- iniciar treino
+- fim do cronômetro
+- finalizar treino
+
+7. REVISÃO GERAL
+Fazer uma revisão nessas áreas para garantir que tudo funcione bem no mobile e no desktop.
+
+ENTREGA:
+No final, me diga:
+- onde os dados estão sendo salvos hoje
+- quais arquivos foram alterados
+- quais bugs foram corrigidos
+- quais funcionalidades foram implementadas
+- o que ainda pode ser melhorado depois

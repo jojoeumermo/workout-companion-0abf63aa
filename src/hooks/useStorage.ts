@@ -214,6 +214,7 @@ export interface CustomExercise {
   description: string;
   instructions: string[];
   isCustom: true;
+  image?: string;
 }
 
 export function useCustomExercises() {

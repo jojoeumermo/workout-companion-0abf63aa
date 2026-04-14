@@ -355,6 +355,7 @@ export default function ActiveWorkoutPage() {
     setSummaryPRs(prs);
     setSummaryPreviousWorkout(previousWorkout);
     setAiAnalysis(null);
+    haptic('heavy');
     setShowSummary(true);
   };
 

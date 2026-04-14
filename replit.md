@@ -28,8 +28,8 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - Nutrition tracking with macros (grams/percent toggle), calorie balance indicator, editable water goal, custom ml input, and meal history
 - Body weight tracking with chart, quick-adjust buttons, and history
 - Body composition: BMI, body fat % (US Navy method), BMR (Mifflin-St Jeor), TDEE, lean/fat mass
-- Custom exercises: create/delete with CUSTOM badge, merged with built-in 175+ exercises
-- Training programs: create/activate/start with template linking, preset program library
+- Custom exercises: create/delete with CUSTOM badge, image upload (base64, up to 2MB stored in localStorage), merged with built-in 175+ exercises; muscle-group color coding throughout (red=Peito, blue=Costas, purple=Ombros, green=Bíceps, etc.)
+- Training programs: create/activate/start with template linking, preset program library with hero image cards and detail dialogs; AI-generated programs can be saved directly from AICoach
 - Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, AI Insights panel (stagnation alerts, overtraining risk, progress predictions)
 - Settings: 9 color themes, user profile (height/age/sex/activity/body measurements), body measurements, complete backup/export (JSON + CSV for workouts & nutrition)
 - iOS safe-area support for Capacitor apps

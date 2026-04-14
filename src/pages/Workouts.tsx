@@ -7,6 +7,7 @@ import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
 import { WorkoutTemplate, WorkoutExercise, ActiveWorkout, SetConfig } from '@/types/workout';
 import { getAllExercises, getExerciseById, muscleGroups } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { haptic } from '@/lib/haptic';
 
 export default function Workouts() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export default function Workouts() {
       })),
     };
     setActiveWorkout(active);
+    haptic('medium');
     navigate('/treino-ativo');
   };
 
@@ -53,6 +55,7 @@ export default function Workouts() {
       exercises: [],
     };
     setActiveWorkout(active);
+    haptic('medium');
     navigate('/treino-ativo');
   };
 

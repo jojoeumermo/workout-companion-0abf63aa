@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Bot, User, Sparkles, Dumbbell, TrendingUp, Zap, Trash2, Target, Brain, AlertTriangle, Calendar } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Dumbbell, TrendingUp, Zap, Trash2, Target, Brain, AlertTriangle, Calendar, BookOpen, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import PageShell from '@/components/PageShell';
@@ -7,6 +7,9 @@ import { apiFetch } from '@/lib/api';
 import { useHistory, usePersonalRecords, useTemplates, useBodyWeight } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { buildWorkoutContextForAI, detectStagnation, detectOvertraining, getWeeklyStats } from '@/lib/workoutAnalysis';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { haptic } from '@/lib/haptic';
+import { toast } from 'sonner';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -21,10 +24,47 @@ const QUICK_PROMPTS = [
   { icon: Sparkles, label: 'Previsão de evolução', prompt: 'Com base na minha progressão de carga histórica nos principais exercícios, estime minha evolução nas próximas 4-8 semanas e dê recomendações para acelerar os ganhos.' },
 ];
 
+function isProgramLikeContent(content: string): boolean {
+  const lower = content.toLowerCase();
+  const keywords = ['semana', 'programa', 'rotina', 'divisão', 'periodiza', 'peito', 'costas', 'perna', 'ombro'];
+  const hasKeywords = keywords.filter(k => lower.includes(k)).length >= 2;
+  const hasTable = content.includes('|') || content.includes('##') || content.includes('**Dia');
+  const isLong = content.length > 400;
+  return (hasKeywords && isLong) || hasTable;
+}
+
+function saveProgram(name: string, goal: string, weeks: number, content: string) {
+  try {
+    const existing = JSON.parse(localStorage.getItem('training-programs') || '[]');
+    const program = {
+      id: `prog-${Date.now()}`,
+      name,
+      weeks,
+      goal,
+      level: 'Personalizado',
+      daysPerWeek: 4,
+      description: content.slice(0, 400).replace(/[#*|]/g, '').trim() + '...',
+      schedule: [],
+      currentWeek: 0,
+      status: 'available',
+    };
+    localStorage.setItem('training-programs', JSON.stringify([...existing, program]));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function AICoach() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveTargetIdx, setSaveTargetIdx] = useState<number | null>(null);
+  const [saveName, setSaveName] = useState('');
+  const [saveGoal, setSaveGoal] = useState('Hipertrofia');
+  const [saveWeeks, setSaveWeeks] = useState(8);
+  const [savedIndices, setSavedIndices] = useState<Set<number>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,11 +84,9 @@ export default function AICoach() {
   const buildContext = () => {
     const parts: string[] = [];
 
-    // Rich AI context from workoutAnalysis utility
     const richContext = buildWorkoutContextForAI(history);
     parts.push(richContext);
 
-    // Personal records
     if (records.length > 0) {
       parts.push('\nRecordes pessoais (PRs):');
       records
@@ -60,7 +98,6 @@ export default function AICoach() {
         });
     }
 
-    // Volume by muscle (all time)
     const muscleVol: Record<string, number> = {};
     history.forEach(w => w.exercises.forEach(e => {
       const ex = getExerciseById(e.exerciseId);
@@ -76,7 +113,6 @@ export default function AICoach() {
       });
     }
 
-    // Stagnation detection
     if (history.length >= 3) {
       const stagnation = detectStagnation(history, 3);
       if (stagnation.length > 0) {
@@ -86,7 +122,6 @@ export default function AICoach() {
         });
       }
 
-      // Overtraining detection
       const ot = detectOvertraining(history);
       if (ot.risk !== 'low') {
         parts.push(`\nRisco de overtraining: ${ot.risk.toUpperCase()}`);
@@ -94,7 +129,6 @@ export default function AICoach() {
         if (ot.suggestions.length > 0) parts.push('Sugestões: ' + ot.suggestions.join('; '));
       }
 
-      // Weekly stats
       const weeklyStats = getWeeklyStats(history);
       if (weeklyStats.totalWorkouts > 0) {
         parts.push(`\nEstatísticas da semana atual: ${weeklyStats.totalWorkouts} treinos, ${weeklyStats.totalVolume}kg volume, ${Math.round(weeklyStats.avgDuration / 60)}min duração média`);
@@ -105,14 +139,12 @@ export default function AICoach() {
       }
     }
 
-    // Body weight trend
     if (weightEntries.length > 0) {
       const recent = weightEntries.slice(-5);
       const trend = recent.length >= 2 ? (recent[recent.length - 1].weight - recent[0].weight).toFixed(1) : null;
       parts.push(`\nPeso corporal: atual ${recent[recent.length - 1].weight}kg${trend ? `, tendência ${Number(trend) >= 0 ? '+' : ''}${trend}kg nos últimos registros` : ''}`);
     }
 
-    // Templates
     if (templates.length > 0) {
       parts.push('\nRotinas salvas do usuário:');
       templates.forEach(t => {
@@ -240,10 +272,30 @@ export default function AICoach() {
     }
   };
 
+  const openSaveDialog = (idx: number) => {
+    setSaveTargetIdx(idx);
+    setSaveName(`Programa FitAI — ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`);
+    setShowSaveDialog(true);
+  };
+
+  const handleSaveProgram = () => {
+    if (!saveName.trim()) { toast.error('Nome obrigatório'); return; }
+    const content = saveTargetIdx !== null ? messages[saveTargetIdx]?.content || '' : '';
+    const ok = saveProgram(saveName.trim(), saveGoal, saveWeeks, content);
+    if (ok) {
+      if (saveTargetIdx !== null) setSavedIndices(prev => new Set([...prev, saveTargetIdx]));
+      setShowSaveDialog(false);
+      haptic('success');
+      toast.success('Programa salvo! Acesse na aba Programas.');
+    } else {
+      toast.error('Erro ao salvar programa');
+    }
+  };
+
   return (
     <PageShell title="FitAI Coach" rightAction={
       messages.length > 0 ? (
-        <button onClick={() => setMessages([])} className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center text-destructive">
+        <button onClick={() => { setMessages([]); setSavedIndices(new Set()); }} className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center text-destructive">
           <Trash2 size={18} />
         </button>
       ) : undefined
@@ -299,21 +351,42 @@ export default function AICoach() {
                       <Bot size={16} className="text-primary" />
                     </div>
                   )}
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                      msg.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card'
-                    }`}
-                  >
-                    {msg.role === 'assistant' ? (
-                      <div className="prose prose-sm prose-invert max-w-none [&_p]:text-sm [&_p]:font-body [&_li]:text-sm [&_li]:font-body [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:text-xs [&_pre]:bg-secondary [&_pre]:rounded-lg [&_table]:text-xs [&_th]:px-2 [&_td]:px-2">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <div className="flex-1 max-w-[85%] space-y-2">
+                    <div
+                      className={`rounded-2xl px-4 py-3 ${
+                        msg.role === 'user'
+                          ? 'bg-primary text-primary-foreground ml-auto'
+                          : 'bg-card'
+                      }`}
+                    >
+                      {msg.role === 'assistant' ? (
+                        <div className="prose prose-sm prose-invert max-w-none [&_p]:text-sm [&_p]:font-body [&_li]:text-sm [&_li]:font-body [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_code]:text-xs [&_pre]:bg-secondary [&_pre]:rounded-lg [&_table]:text-xs [&_th]:px-2 [&_td]:px-2">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="text-sm font-body">{msg.content}</p>
+                      )}
+                    </div>
+
+                    {/* Save as program button for AI messages */}
+                    {msg.role === 'assistant' && !isLoading && isProgramLikeContent(msg.content) && (
+                      <div className="flex">
+                        {savedIndices.has(i) ? (
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 text-green-400 rounded-lg text-xs font-bold border border-green-500/20">
+                            <Check size={12} /> Programa Salvo!
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => openSaveDialog(i)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold border border-primary/20 active:scale-95 transition-transform hover:bg-primary/20"
+                          >
+                            <BookOpen size={12} /> Salvar como Programa
+                          </button>
+                        )}
                       </div>
-                    ) : (
-                      <p className="text-sm font-body">{msg.content}</p>
                     )}
                   </div>
+
                   {msg.role === 'user' && (
                     <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center shrink-0 mt-1">
                       <User size={16} className="text-muted-foreground" />
@@ -365,6 +438,58 @@ export default function AICoach() {
           </div>
         </div>
       </div>
+
+      {/* Save as Program Dialog */}
+      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>Salvar como Programa</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <p className="text-xs text-muted-foreground font-body">O programa será salvo na aba Programas e você poderá ativá-lo quando quiser.</p>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Nome do programa</label>
+              <input
+                type="text"
+                value={saveName}
+                onChange={e => setSaveName(e.target.value)}
+                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-body">Duração (semanas)</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={saveWeeks}
+                  onChange={e => setSaveWeeks(parseInt(e.target.value) || 4)}
+                  className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-body">Objetivo</label>
+                <select
+                  value={saveGoal}
+                  onChange={e => setSaveGoal(e.target.value)}
+                  className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                >
+                  {['Hipertrofia', 'Força', 'Resistência', 'Emagrecimento', 'Saúde'].map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <button
+              onClick={handleSaveProgram}
+              disabled={!saveName.trim()}
+              className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <BookOpen size={16} /> Salvar Programa
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageShell>
   );
 }

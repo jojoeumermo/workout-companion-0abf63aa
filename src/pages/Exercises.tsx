@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Heart, ChevronRight, Plus, Trash2 } from 'lucide-react';
+import { Search, Heart, ChevronRight, Plus, Trash2, ImagePlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { exercises as builtinExercises, muscleGroups, equipmentList, getAllExercises } from '@/data/exercises';
@@ -8,6 +8,7 @@ import { useFavorites, useCustomExercises } from '@/hooks/useStorage';
 import { MuscleGroup, Equipment, Exercise } from '@/types/workout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { haptic } from '@/lib/haptic';
+import { getMuscleColor } from '@/lib/muscleColors';
 import { toast } from 'sonner';
 
 const stagger = {
@@ -34,7 +35,9 @@ export default function Exercises() {
     equipment: 'Barra' as string,
     description: '',
     instructions: '',
+    image: '',
   });
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const allExercises = getAllExercises();
 
@@ -53,6 +56,20 @@ export default function Exercises() {
         return acc;
       }, {});
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Imagem muito grande. Máximo: 2MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      setNewExercise(prev => ({ ...prev, image: ev.target?.result as string || '' }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCreate = () => {
     if (!newExercise.name.trim()) {
       toast.error('Nome é obrigatório');
@@ -64,8 +81,9 @@ export default function Exercises() {
       equipment: newExercise.equipment,
       description: newExercise.description.trim(),
       instructions: newExercise.instructions.split('\n').filter(l => l.trim()),
+      image: newExercise.image || undefined,
     });
-    setNewExercise({ name: '', muscleGroup: 'Peito', equipment: 'Barra', description: '', instructions: '' });
+    setNewExercise({ name: '', muscleGroup: 'Peito', equipment: 'Barra', description: '', instructions: '', image: '' });
     setShowCreate(false);
     haptic('success');
     toast.success('Exercício criado!');
@@ -107,15 +125,18 @@ export default function Exercises() {
             >
               Todos
             </button>
-            {muscleGroups.map(mg => (
-              <button
-                key={mg}
-                onClick={() => setMuscleFilter(muscleFilter === mg ? '' : mg)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${muscleFilter === mg ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
-              >
-                {mg}
-              </button>
-            ))}
+            {muscleGroups.map(mg => {
+              const color = getMuscleColor(mg);
+              return (
+                <button
+                  key={mg}
+                  onClick={() => setMuscleFilter(muscleFilter === mg ? '' : mg)}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${muscleFilter === mg ? `${color.bg} ${color.text} border ${color.border}` : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+                >
+                  {mg}
+                </button>
+              );
+            })}
           </div>
           <div className="flex flex-wrap gap-2.5 overflow-x-auto pb-1 scrollbar-none">
             {equipmentList.map(eq => (
@@ -135,61 +156,81 @@ export default function Exercises() {
 
         {/* List */}
         <div className="space-y-6 pb-6">
-        {Object.entries(grouped).map(([group, exs]) => (
-          <div key={group} className="space-y-3">
-            <h3 className="text-sm font-black text-muted-foreground uppercase tracking-widest px-1">{group}</h3>
-            <div className="space-y-2.5">
-              {exs.map((ex, i) => (
-                <motion.div
-                  key={ex.id}
-                  custom={i}
-                  variants={stagger}
-                  initial="hidden"
-                  animate="show"
-                >
-                  <div
-                    className="w-full card-premium rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.97] transition-transform cursor-pointer"
-                    onClick={() => navigate(`/exercicio/${ex.id}`)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && navigate(`/exercicio/${ex.id}`)}
-                  >
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black shrink-0 shadow-inner ${isCustom(ex.id) ? 'bg-primary/15 text-primary' : 'bg-secondary text-primary'}`}>
-                      {isCustom(ex.id) ? '★' : ex.name.charAt(0)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-base truncate">{ex.name}</p>
-                        {isCustom(ex.id) && (
-                          <span className="text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-bold shrink-0 tracking-widest">CUSTOM</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground font-bold mt-1 tracking-wide">{ex.equipment}</p>
-                    </div>
-                    {isCustom(ex.id) && (
-                      <button
-                        onClick={e => { e.stopPropagation(); removeCustom(ex.id); haptic('light'); toast.success('Exercício removido'); }}
-                        className="p-2.5 shrink-0 active:scale-90 transition-transform rounded-lg hover:bg-destructive/10"
-                      >
-                        <Trash2 size={18} className="text-destructive" />
-                      </button>
-                    )}
-                    <span
-                      onClick={e => { e.stopPropagation(); toggleFavorite(ex.id); }}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); toggleFavorite(ex.id); } }}
-                      className="p-2.5 shrink-0 active:scale-90 transition-transform rounded-lg hover:bg-secondary"
+        {Object.entries(grouped).map(([group, exs]) => {
+          const color = getMuscleColor(group);
+          return (
+            <div key={group} className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className={`w-2.5 h-2.5 rounded-full ${color.bg.replace('/15', '')} border ${color.border}`} style={{ background: `currentColor` }} />
+                <h3 className={`text-xs font-black uppercase tracking-widest ${color.text}`}>{group}</h3>
+                <div className="flex-1 h-px bg-border/30" />
+                <span className="text-[10px] text-muted-foreground font-body">{exs.length}</span>
+              </div>
+              <div className="space-y-2.5">
+                {exs.map((ex, i) => {
+                  const c = getMuscleColor(ex.muscleGroup);
+                  const customEx = customExercises.find(ce => ce.id === ex.id);
+                  const hasImage = customEx?.image;
+                  return (
+                    <motion.div
+                      key={ex.id}
+                      custom={i}
+                      variants={stagger}
+                      initial="hidden"
+                      animate="show"
                     >
-                      <Heart size={20} className={`transition-colors ${isFavorite(ex.id) ? 'text-primary fill-primary drop-shadow-[0_0_6px_rgba(var(--primary),0.5)]' : 'text-muted-foreground/40'}`} />
-                    </span>
-                    <ChevronRight size={20} className="text-muted-foreground/30 shrink-0" />
-                  </div>
-                </motion.div>
-              ))}
+                      <div
+                        className="w-full card-premium rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.97] transition-transform cursor-pointer"
+                        onClick={() => navigate(`/exercicio/${ex.id}`)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={e => e.key === 'Enter' && navigate(`/exercicio/${ex.id}`)}
+                      >
+                        {hasImage ? (
+                          <div className="w-14 h-14 rounded-xl shrink-0 overflow-hidden">
+                            <img src={hasImage} alt={ex.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black shrink-0 shadow-inner border ${c.bg} ${c.text} ${c.border}`}>
+                            {isCustom(ex.id) ? '★' : ex.name.charAt(0)}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-base truncate">{ex.name}</p>
+                            {isCustom(ex.id) && (
+                              <span className="text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-bold shrink-0 tracking-widest">CUSTOM</span>
+                            )}
+                          </div>
+                          <p className={`text-xs font-bold mt-1 tracking-wide ${c.text}`}>{ex.muscleGroup}</p>
+                          <p className="text-[10px] text-muted-foreground font-body mt-0.5">{ex.equipment}</p>
+                        </div>
+                        {isCustom(ex.id) && (
+                          <button
+                            onClick={e => { e.stopPropagation(); removeCustom(ex.id); haptic('light'); toast.success('Exercício removido'); }}
+                            className="p-2.5 shrink-0 active:scale-90 transition-transform rounded-lg hover:bg-destructive/10"
+                          >
+                            <Trash2 size={18} className="text-destructive" />
+                          </button>
+                        )}
+                        <span
+                          onClick={e => { e.stopPropagation(); toggleFavorite(ex.id); haptic('light'); }}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); toggleFavorite(ex.id); } }}
+                          className="p-2.5 shrink-0 active:scale-90 transition-transform rounded-lg hover:bg-secondary"
+                        >
+                          <Heart size={20} className={`transition-colors ${isFavorite(ex.id) ? 'text-primary fill-primary drop-shadow-[0_0_6px_rgba(var(--primary),0.5)]' : 'text-muted-foreground/40'}`} />
+                        </span>
+                        <ChevronRight size={20} className="text-muted-foreground/30 shrink-0" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         </div>
 
         {filtered.length === 0 && (
@@ -215,6 +256,32 @@ export default function Exercises() {
             <DialogTitle>Novo Exercício</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
+
+            {/* Image upload */}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Foto do exercício (opcional)</label>
+              <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
+              {newExercise.image ? (
+                <div className="relative">
+                  <img src={newExercise.image} alt="Preview" className="w-full h-32 object-cover rounded-xl" />
+                  <button
+                    onClick={() => setNewExercise(prev => ({ ...prev, image: '' }))}
+                    className="absolute top-2 right-2 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => imageInputRef.current?.click()}
+                  className="w-full h-24 border-2 border-dashed border-border/50 rounded-xl flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                  <ImagePlus size={20} />
+                  <span className="text-xs font-body">Toque para adicionar foto</span>
+                </button>
+              )}
+            </div>
+
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground font-body">Nome *</label>
               <input
@@ -229,15 +296,18 @@ export default function Exercises() {
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground font-body">Grupo Muscular</label>
               <div className="flex flex-wrap gap-1.5">
-                {muscleGroups.map(mg => (
-                  <button
-                    key={mg}
-                    onClick={() => setNewExercise(prev => ({ ...prev, muscleGroup: mg }))}
-                    className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${newExercise.muscleGroup === mg ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
-                  >
-                    {mg}
-                  </button>
-                ))}
+                {muscleGroups.map(mg => {
+                  const c = getMuscleColor(mg);
+                  return (
+                    <button
+                      key={mg}
+                      onClick={() => setNewExercise(prev => ({ ...prev, muscleGroup: mg }))}
+                      className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all border ${newExercise.muscleGroup === mg ? `${c.bg} ${c.text} ${c.border}` : 'bg-secondary text-muted-foreground border-transparent'}`}
+                    >
+                      {mg}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
