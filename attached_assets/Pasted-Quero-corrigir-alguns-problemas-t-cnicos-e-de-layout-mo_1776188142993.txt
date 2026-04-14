@@ -1,0 +1,132 @@
+Quero corrigir alguns problemas técnicos e de layout mobile no app atual, além de remover a dependência do Replit Agent para a IA, migrando para uma API externa.
+
+IMPORTANTE:
+- não remover nenhuma função existente
+- não quebrar funcionalidades atuais
+- não alterar lógica de treino, histórico ou dados
+- preservar o design atual
+- fazer mudanças pontuais e diretas
+- manter tudo funcionando como está, apenas corrigir e melhorar
+
+--------------------------------
+
+OBJETIVOS:
+1. Corrigir bugs mobile e layout
+2. Corrigir comportamento da navbar
+3. Corrigir tela de nutrição
+4. REMOVER dependência da IA do Replit Agent
+5. Migrar FitAI Coach para API externa (Gemini)
+
+--------------------------------
+
+1. CORRIGIR BUG DE LINK/ÂNCORA (NAVBAR)
+
+Problema:
+Ao clicar e segurar na navbar inferior, o celular trata como link arrastável e tenta abrir no navegador.
+
+Corrigir:
+- remover comportamento de link arrastável
+- revisar uso de <a>, href, Link
+- impedir preview de link no long press
+- desativar drag de URL
+- ajustar comportamento de touch
+- revisar propriedades como:
+  user-select
+  -webkit-touch-callout
+  draggable
+- manter clique normal funcionando
+
+--------------------------------
+
+2. CORRIGIR TELA DE NUTRIÇÃO (MOBILE)
+
+Problemas:
+- elementos fora da margem
+- overflow lateral
+- botão de adicionar água muito grande
+- layout desorganizado
+
+Corrigir:
+- padding lateral consistente
+- remover scroll horizontal
+- ajustar largura dos containers
+- reduzir tamanho do botão de adicionar água
+- deixar responsivo e proporcional
+- garantir que tudo caiba perfeitamente na tela
+
+--------------------------------
+
+3. CORRIGIR MODAIS
+
+- impedir que ultrapassem largura da tela
+- aplicar max-width
+- centralizar corretamente
+- remover qualquer overflow horizontal
+
+--------------------------------
+
+4. REVISÃO GERAL MOBILE
+
+- verificar outros overflows
+- verificar outros elementos com comportamento de link
+- corrigir sem alterar lógica do app
+
+--------------------------------
+
+5. REMOVER DEPENDÊNCIA DO REPLIT AGENT (IA)
+
+Problema:
+O FitAI Coach atualmente consome créditos do Replit Agent.
+
+Quero:
+- remover essa dependência completamente
+- impedir qualquer uso do Agent para respostas
+
+--------------------------------
+
+6. MIGRAR IA PARA API (GEMINI)
+
+Implementar:
+
+- usar Google Gemini API
+- usar variável de ambiente:
+  GEMINI_API_KEY
+
+Tarefas:
+- identificar onde o FitAI Coach usa o Replit Agent
+- substituir por chamada à API do Gemini
+- usar modelo leve (ex: gemini-1.5-flash)
+- manter respostas em português
+- manter comportamento atual do chat
+
+--------------------------------
+
+7. TRATAMENTO DE ERRO (IA)
+
+- se API falhar:
+  mostrar mensagem amigável
+- não quebrar o app
+- não travar o chat
+
+--------------------------------
+
+OBJETIVO FINAL
+
+Quero um app:
+- sem bugs mobile
+- sem overflow lateral
+- com navbar funcionando como app real
+- com nutrição ajustada
+- com IA funcionando via API (não Replit)
+- sem consumo de créditos do Replit ao usar o app
+
+--------------------------------
+
+ENTREGA
+
+Me diga:
+- quais arquivos foram alterados
+- o que causava o bug da navbar
+- o que foi corrigido na nutrição
+- onde integrar a GEMINI_API_KEY
+- se ainda existe alguma dependência do Replit Agent

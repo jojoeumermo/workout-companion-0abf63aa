@@ -228,6 +228,25 @@
   width: 0px;
 }
 
+/* Prevent link drag / long-press callout on mobile */
+nav a, nav button {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* All dialogs/modals stay within screen */
+[role="dialog"] {
+  max-width: calc(100vw - 2rem) !important;
+}
+
 /* Rest timer bar animation */
 @keyframes timer-deplete {
   from { width: 100%; }

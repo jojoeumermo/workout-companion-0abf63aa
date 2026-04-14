@@ -3,7 +3,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import OpenAI from "openai";
+import { GoogleGenerativeAI, type Content } from "@google/generative-ai";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -12,7 +12,7 @@ const isDev = process.env.NODE_ENV !== "production";
 app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 
-const AI_MODEL = "gpt-4o-mini";
+const GEMINI_MODEL = "gemini-1.5-flash";
 
 async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2, baseDelay = 2000): Promise<T> {
   let lastErr: unknown;
@@ -35,23 +35,16 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2, baseDelay = 20
   throw lastErr;
 }
 
-function getOpenAI(): OpenAI {
-  const aiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
-  const aiBase = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-  if (aiKey && aiBase) {
-    return new OpenAI({ apiKey: aiKey, baseURL: aiBase });
-  }
-  const userKey = process.env.OPENAI_API_KEY;
-  if (userKey) {
-    return new OpenAI({ apiKey: userKey });
-  }
-  throw new Error("Nenhuma chave de IA configurada.");
+function getGemini(): GoogleGenerativeAI {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY não configurada.");
+  return new GoogleGenerativeAI(key);
 }
 
 function friendlyError(err: unknown): { message: string; status: number } {
   const msg = err instanceof Error ? err.message : String(err);
-  if (msg.includes("API_KEY") || msg.includes("Incorrect API key") || msg.includes("not configured")) {
-    return { status: 500, message: "Chave da API inválida ou não configurada." };
+  if (msg.includes("API_KEY") || msg.includes("API key") || msg.includes("not configured") || msg.includes("não configurada")) {
+    return { status: 500, message: "Chave da API inválida ou não configurada. Verifique a GEMINI_API_KEY." };
   }
   if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate")) {
     return { status: 429, message: "Limite de requisições atingido. Aguarde 1 minuto e tente novamente." };
@@ -97,13 +90,11 @@ Valores em gramas (exceto calorias em kcal). Seja preciso mas realista.`;
 // Health check
 app.get("/api/health", async (_req, res) => {
   try {
-    const openai = getOpenAI();
-    const r = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [{ role: "user", content: "Diga apenas: OK" }],
-      max_tokens: 10,
-    });
-    res.json({ status: "ok", model: AI_MODEL, response: r.choices[0]?.message?.content?.trim() });
+    const genAI = getGemini();
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    const result = await model.generateContent("Diga apenas: OK");
+    const response = result.response.text().trim();
+    res.json({ status: "ok", model: GEMINI_MODEL, response });
   } catch (err) {
     const { message, status } = friendlyError(err);
     console.error("[health]", err instanceof Error ? err.message : err);
@@ -111,7 +102,7 @@ app.get("/api/health", async (_req, res) => {
   }
 });
 
-// AI Coach - streaming
+// AI Coach - streaming SSE
 app.post("/api/ai-coach", async (req, res) => {
   const { messages, context } = req.body as {
     messages: { role: "user" | "assistant"; content: string }[];
@@ -124,32 +115,35 @@ app.post("/api/ai-coach", async (req, res) => {
   }
 
   try {
-    const openai = getOpenAI();
+    const genAI = getGemini();
+
     const systemContent = COACH_SYSTEM + (context
       ? `\n\n## Dados Reais do Usuário:\n${context}`
       : "\n\nO usuário ainda não tem dados de treino registrados.");
 
-    const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      { role: "system", content: systemContent },
-      ...messages.map(m => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      })),
-    ];
+    const model = genAI.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction: systemContent,
+    });
+
+    // All messages except the last become history; last message is sent now
+    const history: Content[] = messages.slice(0, -1).map(m => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+    const lastMessage = messages[messages.length - 1].content;
+
+    const chat = model.startChat({ history });
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    const stream = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: openaiMessages,
-      stream: true,
-      max_tokens: 2048,
-    });
+    const streamResult = await chat.sendMessageStream(lastMessage);
 
-    for await (const chunk of stream) {
-      const text = chunk.choices[0]?.delta?.content;
+    for await (const chunk of streamResult.stream) {
+      const text = chunk.text();
       if (text) {
         res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`);
       }
@@ -169,7 +163,7 @@ app.post("/api/ai-coach", async (req, res) => {
   }
 });
 
-// Meal analysis
+// Meal analysis (vision)
 app.post("/api/analyze-meal", async (req, res) => {
   const { imageBase64, description } = req.body as { imageBase64?: string; description?: string };
 
@@ -179,26 +173,21 @@ app.post("/api/analyze-meal", async (req, res) => {
   }
 
   try {
-    const openai = getOpenAI();
-    const mealDescription = description ? `Descrição: ${description}` : "Analise a imagem desta refeição.";
-    const fullPrompt = MEAL_PROMPT + "\n\n" + mealDescription;
+    const genAI = getGemini();
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-    const contentParts: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [];
+    const parts: (string | { inlineData: { data: string; mimeType: string } })[] = [];
+
     if (imageBase64) {
-      contentParts.push({
-        type: "image_url",
-        image_url: { url: `data:image/jpeg;base64,${imageBase64}`, detail: "low" },
-      });
+      parts.push({ inlineData: { data: imageBase64, mimeType: "image/jpeg" } });
     }
-    contentParts.push({ type: "text", text: fullPrompt });
 
-    const result = await withRetry(() => openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [{ role: "user", content: contentParts }],
-      max_tokens: 1024,
-    }));
+    const mealDescription = description ? `Descrição: ${description}` : "Analise a imagem desta refeição.";
+    parts.push(MEAL_PROMPT + "\n\n" + mealDescription);
 
-    const text = result.choices[0]?.message?.content || "";
+    const result = await withRetry(() => model.generateContent(parts));
+    const text = result.response.text();
+
     const parsed = parseNutritionResponse(text);
     if (parsed) {
       res.json(parsed);
@@ -275,16 +264,14 @@ Gere um resumo com:
 Seja conciso (máx 150 palavras), direto e específico com os números. Use markdown.`;
 
   try {
-    const openai = getOpenAI();
-    const result = await withRetry(() => openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        { role: "system", content: "Você é um treinador pessoal expert. Analise treinos e dê feedback conciso, motivador e baseado em dados." },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 400,
-    }));
-    const text = result.choices[0]?.message?.content || "";
+    const genAI = getGemini();
+    const model = genAI.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction: "Você é um treinador pessoal expert. Analise treinos e dê feedback conciso, motivador e baseado em dados. Responda sempre em português brasileiro.",
+    });
+
+    const result = await withRetry(() => model.generateContent(prompt));
+    const text = result.response.text();
     res.json({ analysis: text });
   } catch (err) {
     const { message, status } = friendlyError(err);
@@ -312,5 +299,5 @@ if (isDev) {
 
 const port = parseInt(process.env.PORT || "5000");
 app.listen(port, "0.0.0.0", () => {
-  console.log(`Server running on port ${port} | Model: ${AI_MODEL}`);
+  console.log(`Server running on port ${port} | Model: ${GEMINI_MODEL}`);
 });

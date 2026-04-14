@@ -230,17 +230,17 @@ export default function Nutrition() {
               <input
                 type="number"
                 inputMode="numeric"
-                placeholder="Quantidade personalizada (ml)"
+                placeholder="Personalizado (ml)"
                 value={customWaterMl}
                 onChange={e => setCustomWaterMl(e.target.value)}
-                className="flex-1 bg-secondary rounded-xl px-4 py-3.5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-400/40 placeholder:text-muted-foreground/50 placeholder:font-medium"
+                className="flex-1 min-w-0 bg-secondary rounded-xl px-3 py-3.5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-400/40 placeholder:text-muted-foreground/50 placeholder:font-medium"
               />
               <button
                 onClick={addCustomWater}
                 disabled={!customWaterMl || parseInt(customWaterMl) <= 0}
-                className="bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl px-5 py-3.5 text-sm font-black disabled:opacity-40 active:scale-95 transition-transform flex items-center gap-2 hover:bg-blue-500/20"
+                className="bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl px-4 py-3.5 disabled:opacity-40 active:scale-95 transition-transform flex items-center justify-center hover:bg-blue-500/20 shrink-0"
               >
-                <GlassWater size={18} /> Adicionar
+                <GlassWater size={20} />
               </button>
             </div>
           </motion.div>

@@ -8,7 +8,7 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - **Backend**: Express server (`server/index.ts`) running on port 5000
 - **Dev proxy**: Vite proxies `/api` requests to the Express server in development
 - **Data storage**: localStorage (client-side) for all user data (workouts, meals, goals, body weight, water, measurements, custom exercises, programs, user profile)
-- **AI**: Replit AI Integrations (OpenAI `gpt-4o-mini`) via managed billing; falls back to user-provided `OPENAI_API_KEY`
+- **AI**: Google Gemini API (`gemini-1.5-flash`) via `GEMINI_API_KEY` secret — no Replit Agent dependency
 - **Android**: Capacitor (`com.fitai.coach`), build guide in `BUILD_ANDROID.md`
 
 ## Visual Design
