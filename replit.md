@@ -47,15 +47,18 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 
 ## Workflows
 
-- **Start application**: `npm run server` → runs Express on port 5000
-- **Start Vite**: `npm run dev:vite` → runs Vite dev server on port 5173 (proxied to port 80)
+- **Start application**: `npm run server & npm run dev:vite` → runs Express on port 5000 + Vite dev server on port 5173 (proxied via Vite's `/api` proxy)
 
 ## Environment Variables / Secrets
 
-- `AI_INTEGRATIONS_OPENAI_API_KEY` — Replit-managed OpenAI access (primary, auto-configured)
-- `AI_INTEGRATIONS_OPENAI_BASE_URL` — Replit-managed OpenAI base URL (auto-configured)
-- `OPENAI_API_KEY` — User-provided fallback (optional)
-- `GEMINI_API_KEY` — Legacy, no longer used
+- `GEMINI_API_KEY` — Google Gemini API key (required for AI coach, meal analysis, and workout analysis)
+- `DATABASE_URL` — Replit PostgreSQL connection string (auto-configured)
+
+## Notes on Migration
+
+- Supabase has been removed; the app was not using any Supabase database tables
+- All user data is stored in localStorage (offline-first)
+- AI features use Google Gemini directly via the Express server on port 5000
 
 ## localStorage Keys
 
