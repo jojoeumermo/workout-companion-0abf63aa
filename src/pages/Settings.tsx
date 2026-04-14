@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Upload, Palette, Trash2, FileJson, FileText, ArrowLeft, Scale, Ruler, User, Activity } from 'lucide-react';
+import { Download, Upload, Palette, Trash2, FileJson, FileText, ArrowLeft, Scale, Ruler, User, Activity, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
@@ -401,6 +401,10 @@ export default function Settings() {
             <DialogTitle>Perfil Corporal</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Nome</label>
+              <input type="text" placeholder="Seu nome" value={tempProfile.name || ''} onChange={e => setTempProfile(p => ({ ...p, name: e.target.value }))} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground font-body">Altura (cm)</label>
