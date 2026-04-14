@@ -82,7 +82,7 @@ export default function AICoach() {
       if (stagnation.length > 0) {
         parts.push('\nExercícios com estagnação detectada (sem progressão de carga):');
         stagnation.forEach(s => {
-          parts.push(`- ${s.exerciseName}: ${s.workoutCount} treinos em ${s.avgWeight}kg (${s.avgReps} reps médias)`);
+          parts.push(`- ${s.exerciseName}: ${s.workoutCount} treinos em ${s.avgWeight}kg`);
         });
       }
 
@@ -97,9 +97,10 @@ export default function AICoach() {
       // Weekly stats
       const weeklyStats = getWeeklyStats(history);
       if (weeklyStats.totalWorkouts > 0) {
-        parts.push(`\nEstatísticas da semana atual: ${weeklyStats.totalWorkouts} treinos, ${weeklyStats.totalVolume}kg volume, ${weeklyStats.totalSets} séries, ${Math.round(weeklyStats.avgDuration / 60)}min duração média`);
-        if (weeklyStats.muscleGroups.length > 0) {
-          parts.push('Músculos treinados esta semana: ' + weeklyStats.muscleGroups.join(', '));
+        parts.push(`\nEstatísticas da semana atual: ${weeklyStats.totalWorkouts} treinos, ${weeklyStats.totalVolume}kg volume, ${Math.round(weeklyStats.avgDuration / 60)}min duração média`);
+        const muscleKeys = Object.keys(weeklyStats.muscleDistribution || {});
+        if (muscleKeys.length > 0) {
+          parts.push('Músculos treinados esta semana: ' + muscleKeys.join(', '));
         }
       }
     }
