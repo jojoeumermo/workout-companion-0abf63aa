@@ -13,25 +13,16 @@ const tabs = [
 export default function BottomNav() {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-5"
+      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4"
       style={{
-        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 16px)',
         WebkitTouchCallout: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
       }}
     >
-      <div
-        className="w-full max-w-sm border border-white/[0.06]"
-        style={{
-          background: 'linear-gradient(145deg, hsl(225 15% 8% / 0.92) 0%, hsl(225 12% 5% / 0.95) 100%)',
-          backdropFilter: 'blur(32px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
-          borderRadius: '20px',
-          boxShadow: '0 -4px 32px hsl(0 0% 0% / 0.5), 0 0 0 1px hsl(0 0% 100% / 0.03)',
-        }}
-      >
-        <div className="flex items-center justify-around h-[60px] px-1">
+      <div className="float-nav glass-strong border border-border/40 rounded-2xl w-full max-w-sm">
+        <div className="flex items-center justify-around h-16 px-2">
           {tabs.map(({ to, icon: Icon, label }) => (
             <RouterNavLink
               key={to}
@@ -41,24 +32,19 @@ export default function BottomNav() {
               onClick={() => haptic('light')}
               onContextMenu={e => e.preventDefault()}
               className={({ isActive }) =>
-                `relative flex flex-col items-center justify-center flex-1 h-11 rounded-2xl transition-all duration-200 gap-[3px] ${
-                  isActive ? 'text-primary' : 'text-white/35'
+                `relative flex flex-col items-center justify-center flex-1 h-12 rounded-xl transition-all duration-200 gap-0.5 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground/70'
                 }`
               }
               style={{ WebkitTouchCallout: 'none', WebkitUserDrag: 'none' } as React.CSSProperties}
             >
               {({ isActive }) => (
                 <>
-                  {isActive && (
-                    <span
-                      className="absolute inset-0 rounded-2xl"
-                      style={{ background: 'hsl(var(--primary) / 0.08)' }}
-                    />
-                  )}
+                  {isActive && <span className="absolute inset-0 rounded-xl bg-primary/10" />}
                   <Icon
-                    size={19}
-                    strokeWidth={isActive ? 2.4 : 1.5}
-                    className={`relative z-10 transition-all ${isActive ? 'drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]' : ''}`}
+                    size={20}
+                    strokeWidth={isActive ? 2.2 : 1.6}
+                    className={`relative z-10 transition-all ${isActive ? 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]' : ''}`}
                   />
                   <span className={`text-[9px] relative z-10 leading-none ${isActive ? 'font-bold' : 'font-medium'}`}>
                     {label}

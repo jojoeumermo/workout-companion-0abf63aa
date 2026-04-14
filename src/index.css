@@ -147,9 +147,9 @@
 
   /* Premium card with subtle glow */
   .card-premium {
-    background: linear-gradient(145deg, hsl(225 14% 9%) 0%, hsl(225 12% 6%) 100%);
-    border: 1px solid hsl(225 8% 14% / 0.5);
-    box-shadow: 0 4px 16px 0 hsl(0 0% 0% / 0.35), inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
+    background: linear-gradient(145deg, hsl(225 15% 8%) 0%, hsl(225 12% 6%) 100%);
+    border: 1px solid hsl(225 8% 13% / 0.7);
+    box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.3), inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
   }
 
   .light .card-premium {
@@ -178,7 +178,7 @@
   .hero-img-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, hsl(0 0% 2%) 0%, hsl(0 0% 2% / 0.75) 35%, hsl(0 0% 2% / 0.15) 70%, hsl(0 0% 2% / 0.3) 100%);
+    background: linear-gradient(to top, hsl(0 0% 2%) 0%, hsl(0 0% 2% / 0.7) 40%, hsl(0 0% 2% / 0.25) 100%);
   }
 
   .hero-section {
