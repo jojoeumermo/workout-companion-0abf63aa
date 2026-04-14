@@ -42,6 +42,42 @@
     --glow-primary: 0 0 20px hsl(var(--primary) / 0.12);
     --glow-primary-strong: 0 0 30px hsl(var(--primary) / 0.2);
   }
+
+  .light {
+    --background: 0 0% 98%;
+    --foreground: 225 15% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 225 15% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 15% 12%;
+
+    --primary: 130 60% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 10% 94%;
+    --secondary-foreground: 225 12% 30%;
+
+    --muted: 220 10% 94%;
+    --muted-foreground: 220 5% 45%;
+
+    --accent: 130 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 8% 88%;
+    --input: 220 10% 90%;
+    --ring: 130 60% 50%;
+
+    --surface-elevated: 0 0% 100%;
+    --surface-sunken: 220 10% 96%;
+
+    --glow-primary: 0 0 20px hsl(var(--primary) / 0.08);
+    --glow-primary-strong: 0 0 30px hsl(var(--primary) / 0.15);
+  }
 }
 
 @layer base {
@@ -116,12 +152,25 @@
     box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.3), inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
   }
 
+  .light .card-premium {
+    background: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 10% 98%) 100%);
+    border: 1px solid hsl(220 8% 90%);
+    box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.06), inset 0 1px 0 0 hsl(0 0% 100% / 0.8);
+  }
+
   .card-interactive {
     background: linear-gradient(145deg, hsl(225 15% 8%) 0%, hsl(225 12% 6%) 100%);
     border: 1px solid hsl(225 8% 13% / 0.7);
     box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.3), inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
     transition: all 0.2s ease;
   }
+
+  .light .card-interactive {
+    background: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 10% 98%) 100%);
+    border: 1px solid hsl(220 8% 90%);
+    box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.06);
+  }
+
   .card-interactive:active {
     transform: scale(0.97);
   }

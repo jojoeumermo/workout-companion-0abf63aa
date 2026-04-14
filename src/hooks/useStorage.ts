@@ -179,6 +179,7 @@ export function useWaterLog() {
 }
 
 export interface UserProfile {
+  name: string;
   height: number;
   age: number;
   sex: 'male' | 'female';
@@ -190,6 +191,7 @@ export interface UserProfile {
 
 export function useUserProfile() {
   return useLocalStorage<UserProfile>('user-profile', {
+    name: '',
     height: 0,
     age: 0,
     sex: 'male',

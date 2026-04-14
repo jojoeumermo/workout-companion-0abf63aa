@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Upload, Palette, Trash2, FileJson, FileText, ArrowLeft, Scale, Ruler, User, Activity } from 'lucide-react';
+import { Download, Upload, Palette, Trash2, FileJson, FileText, ArrowLeft, Scale, Ruler, User, Activity, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
@@ -264,6 +264,32 @@ export default function Settings() {
           )}
         </motion.div>
 
+        {/* Dark/Light Mode */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.015 }} className="card-premium rounded-2xl p-6 space-y-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                {document.documentElement.classList.contains('light') ? <Sun size={20} className="text-primary" /> : <Moon size={20} className="text-primary" />}
+              </div>
+              <h3 className="font-black text-lg">Aparência</h3>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { document.documentElement.classList.remove('light'); localStorage.setItem('app-mode', 'dark'); }}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${!document.documentElement.classList.contains('light') ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+              >
+                Dark
+              </button>
+              <button
+                onClick={() => { document.documentElement.classList.add('light'); localStorage.setItem('app-mode', 'light'); }}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${document.documentElement.classList.contains('light') ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+              >
+                Light
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Theme */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-6 space-y-5">
           <div className="flex items-center gap-3">
@@ -401,6 +427,10 @@ export default function Settings() {
             <DialogTitle>Perfil Corporal</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-body">Nome</label>
+              <input type="text" placeholder="Seu nome" value={tempProfile.name || ''} onChange={e => setTempProfile(p => ({ ...p, name: e.target.value }))} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground font-body">Altura (cm)</label>
