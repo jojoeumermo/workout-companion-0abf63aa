@@ -33,34 +33,42 @@ function PageLoader() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Sonner />
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<><Dashboard /><BottomNav /></>} />
-            <Route path="/treinos" element={<><Workouts /><BottomNav /></>} />
-            <Route path="/exercicios" element={<><Exercises /><BottomNav /></>} />
-            <Route path="/exercicio/:id" element={<ExerciseDetail />} />
-            <Route path="/historico" element={<><History /><BottomNav /></>} />
-            <Route path="/historico/:id" element={<WorkoutDetail />} />
-            <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
-            <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
-            <Route path="/ai-coach" element={<><ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary><BottomNav /></>} />
-            <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
-            <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
-            <Route path="/nutricao/camera" element={<NutritionCamera />} />
-            <Route path="/configuracoes" element={<><Settings /><BottomNav /></>} />
-            <Route path="/programas" element={<><Programs /><BottomNav /></>} />
-            <Route path="/peso" element={<WeightLog />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Restore light mode on load
+  if (typeof window !== 'undefined') {
+    const mode = localStorage.getItem('app-mode');
+    if (mode === 'light') document.documentElement.classList.add('light');
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Sonner />
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<><Dashboard /><BottomNav /></>} />
+              <Route path="/treinos" element={<><Workouts /><BottomNav /></>} />
+              <Route path="/exercicios" element={<><Exercises /><BottomNav /></>} />
+              <Route path="/exercicio/:id" element={<ExerciseDetail />} />
+              <Route path="/historico" element={<><History /><BottomNav /></>} />
+              <Route path="/historico/:id" element={<WorkoutDetail />} />
+              <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
+              <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
+              <Route path="/ai-coach" element={<ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary>} />
+              <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
+              <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
+              <Route path="/nutricao/camera" element={<NutritionCamera />} />
+              <Route path="/configuracoes" element={<Settings />} />
+              <Route path="/programas" element={<><Programs /><BottomNav /></>} />
+              <Route path="/peso" element={<WeightLog />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
