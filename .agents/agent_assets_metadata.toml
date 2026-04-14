@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "O2tbZ2ivVCLQO99clZU2a"
+uri = "file://public/images/hero-gym.png"
+type = "image"
+title = "Cinematic gym interior"
+
+[[generated]]
+id = "hSSb2Nx4fT_snPbFQqGLJ"
+uri = "file://public/images/hero-lift.png"
+type = "image"
+title = "Athlete lifting barbell"
+
+[[generated]]
+id = "E7N8T1LtVkSUu9n4ZryrK"
+uri = "file://public/images/hero-programs.png"
+type = "image"
+title = "Muscular hands barbell"

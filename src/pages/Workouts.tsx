@@ -160,36 +160,36 @@ export default function Workouts() {
 
   return (
     <PageShell title="Treinos" rightAction={
-      <button onClick={openCreate} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-        <Plus size={20} />
+      <button onClick={openCreate} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
+        <Plus size={22} />
       </button>
     }>
-      <div className="space-y-5 max-w-lg mx-auto pt-2">
-        {/* Free Workout */}
-        <motion.button
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+      <div className="space-y-6 max-w-lg mx-auto pt-2">
+        {/* Quick start hero */}
+        <button
           onClick={startFreeWorkout}
-          className="w-full bg-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.97] transition-all border border-dashed border-border/50 hover:border-primary/20"
+          className="hero-section w-full rounded-2xl overflow-hidden card-interactive"
+          style={{ height: '110px' }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Zap size={18} className="text-primary" />
-            </div>
+          <img src="/images/hero-lift.png" alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105" style={{ filter: 'brightness(0.4)' }} />
+          <div className="hero-img-overlay" />
+          <div className="absolute inset-0 flex items-center justify-between px-6 z-10">
             <div className="text-left">
-              <span className="font-semibold text-sm block">Treino Livre</span>
-              <span className="text-xs text-muted-foreground font-body">Adicione exercícios na hora</span>
+              <p className="text-white font-black text-2xl tracking-tight">Treino Livre</p>
+              <p className="text-white/70 font-body text-sm mt-0.5 font-medium">Sem rotina, treino rápido</p>
+            </div>
+            <div className="w-14 h-14 rounded-2xl bg-primary/90 flex items-center justify-center shadow-glow-strong">
+              <Zap size={28} className="text-primary-foreground" fill="currentColor" />
             </div>
           </div>
-          <ChevronRight size={18} className="text-muted-foreground" />
-        </motion.button>
+        </button>
 
         {/* Folder Tabs */}
         {usedFolders.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
             <button
               onClick={() => setActiveFolder('')}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!activeFolder ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+              className={`whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 ${!activeFolder ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
             >
               Todos
             </button>
@@ -197,15 +197,16 @@ export default function Workouts() {
               <button
                 key={f}
                 onClick={() => setActiveFolder(activeFolder === f ? '' : f)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${activeFolder === f ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'}`}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center gap-2 ${activeFolder === f ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
               >
-                <FolderOpen size={12} /> {f}
+                <FolderOpen size={16} /> {f}
               </button>
             ))}
           </div>
         )}
 
         {/* Templates */}
+        <div className="space-y-4">
         <AnimatePresence>
           {displayTemplates.map((t, i) => (
             <motion.div
@@ -213,61 +214,71 @@ export default function Workouts() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-card rounded-2xl p-5 space-y-4 border border-border/40"
+              className="card-premium rounded-2xl p-6 space-y-5"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-bold text-lg">{t.name}</h3>
-                  <p className="text-sm text-muted-foreground font-body mt-1">
-                    {t.exercises.length} exercícios
-                    {t.folder && <span className="ml-2 text-xs">• {t.folder}</span>}
-                  </p>
+                  <h3 className="font-black text-xl tracking-tight leading-tight">{t.name}</h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase">
+                      {t.exercises.length} EXERCÍCIOS
+                    </span>
+                    {t.folder && (
+                      <span className="bg-secondary text-muted-foreground px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase">
+                        {t.folder}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => openEdit(t)} className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground">
-                    <Edit3 size={16} />
+                <div className="flex gap-2 shrink-0 ml-4">
+                  <button onClick={() => openEdit(t)} className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:bg-secondary/80 transition-colors active:scale-95">
+                    <Edit3 size={18} />
                   </button>
-                  <button onClick={() => deleteTemplate(t.id)} className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center text-destructive">
-                    <Trash2 size={16} />
+                  <button onClick={() => deleteTemplate(t.id)} className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-destructive hover:bg-destructive/10 transition-colors active:scale-95">
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {t.exercises.slice(0, 3).map((e, j) => {
                   const ex = getExerciseById(e.exerciseId);
                   return ex ? (
                     <div key={j} className="flex items-center gap-3 text-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      <span className="text-secondary-foreground font-body">{ex.name}</span>
-                      <span className="text-muted-foreground font-body ml-auto">{e.sets.length}×{e.sets[0]?.targetReps || 10}</span>
+                      <div className="w-2 h-2 rounded-full bg-primary/80 shrink-0" />
+                      <span className="text-secondary-foreground font-semibold truncate">{ex.name}</span>
+                      <span className="text-muted-foreground font-bold ml-auto shrink-0 bg-secondary px-2 py-0.5 rounded-md">{e.sets.length}×{e.sets[0]?.targetReps || 10}</span>
                     </div>
                   ) : null;
                 })}
                 {t.exercises.length > 3 && (
-                  <p className="text-xs text-muted-foreground font-body">+{t.exercises.length - 3} mais</p>
+                  <p className="text-xs text-muted-foreground font-bold pl-5 pt-1">+{t.exercises.length - 3} MAIS</p>
                 )}
               </div>
 
               <button
                 onClick={() => startWorkout(t)}
-                className="w-full bg-primary text-primary-foreground rounded-xl py-3 font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-base shadow-glow"
               >
-                <Play size={18} fill="currentColor" />
-                Iniciar
+                <Play size={20} fill="currentColor" />
+                Iniciar Rotina
               </button>
             </motion.div>
           ))}
         </AnimatePresence>
+        </div>
 
         {templates.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-card mx-auto flex items-center justify-center">
-              <Plus size={28} className="text-muted-foreground" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 space-y-5">
+            <div className="w-20 h-20 rounded-3xl bg-secondary mx-auto flex items-center justify-center shadow-inner">
+              <Plus size={32} className="text-muted-foreground/50" />
             </div>
-            <p className="text-muted-foreground font-body">Crie sua primeira rotina de treino</p>
-            <button onClick={openCreate} className="bg-primary text-primary-foreground rounded-xl px-6 py-3 font-semibold">
-              Criar Rotina
+            <div>
+              <p className="text-xl font-bold">Nenhuma Rotina</p>
+              <p className="text-sm text-muted-foreground font-body mt-1">Crie sua primeira rotina de treino estruturada</p>
+            </div>
+            <button onClick={openCreate} className="bg-primary text-primary-foreground rounded-xl px-8 py-3.5 font-bold shadow-glow active:scale-95 transition-transform">
+              Criar Nova Rotina
             </button>
           </motion.div>
         )}

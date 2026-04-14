@@ -1,0 +1,251 @@
+Quero fazer um redesign visual premium no app atual, inspirado nessa direção estética de app fitness: dark, impactante, moderno, mobile-first, com banners grandes, imagens fortes, cards escuros elegantes, tipografia marcante e sensação de aplicativo premium.
+
+IMPORTANTE:
+- não remover nenhuma funcionalidade existente
+- não quebrar nenhuma lógica atual
+- não alterar fluxos já implementados
+- não desfazer nenhuma integração existente
+- não recriar o projeto do zero
+- não simplificar o app
+- preservar totalmente as funções atuais, incluindo rotinas, programas, treino ativo, histórico, progresso, FitAI Coach, câmera com IA e demais features já existentes
+- fazer apenas redesign visual, refinamento de layout, hierarquia, componentes e experiência de interface
+- se alguma mudança visual exigir ajuste técnico, fazer o ajuste mínimo necessário sem alterar o comportamento do app
+
+OBJETIVO:
+Transformar o app atual em uma experiência visual premium de fitness, com aparência semelhante a apps modernos de academia de alto padrão:
+- dark mode refinado
+- banners hero com imagens fortes
+- cards grandes e elegantes
+- tipografia pesada e impactante
+- navegação mobile premium
+- visual cinematográfico
+- interface limpa, imersiva e profissional
+
+DIREÇÃO VISUAL GERAL
+
+1. Estética geral
+Quero um visual:
+- dark premium
+- moderno
+- forte
+- atlético
+- luxuoso
+- mobile-first
+- com cara de app real de fitness premium
+
+O app deve parecer mais sofisticado, mais impactante e mais profissional.
+
+Evitar aparência de dashboard genérico ou web app simples.
+
+2. Cores
+Aplicar uma paleta dark premium:
+- fundo principal preto ou cinza muito escuro
+- superfícies em cinza escuro refinado
+- texto principal branco
+- texto secundário em cinza suave
+- verde fitness ou verde neon como cor de destaque principal
+- destaques discretos e consistentes
+- evitar excesso de cores sem função
+
+3. Tipografia
+Refinar toda a tipografia do app:
+- títulos maiores
+- títulos mais fortes
+- melhor hierarquia visual
+- subtítulos menores e elegantes
+- textos mais bem espaçados
+- mais contraste entre heading, subtítulo e meta informação
+
+Quero nomes de treinos, programas e seções com mais presença visual.
+
+4. Layout
+Melhorar layout do app inteiro:
+- mais respiro entre seções
+- alinhamento mais refinado
+- maior sensação de profundidade
+- uso mais inteligente de espaçamento
+- blocos mais organizados
+- melhor leitura visual no celular
+- melhor sensação de fluxo entre seções
+
+5. Home / tela inicial
+Quero que a home fique muito mais premium e impactante.
+
+A home deve ter:
+- banner principal grande no topo com imagem forte e overlay escuro
+- saudação personalizada com nome do usuário
+- frase motivacional curta logo abaixo
+- destaque visual para último plano realizado
+- seção de programas em cards grandes e visuais
+- seções organizadas com mais apelo visual
+- sensação de app premium e não apenas lista simples de dados
+
+Quero a home mais cinematográfica, mais bonita e mais parecida com um app profissional.
+
+6. Hero banners
+Adicionar ou refinar banners grandes nas telas principais:
+- imagens fortes de treino/bodybuilding/fitness
+- overlay escuro para manter leitura
+- texto grande sobre a imagem
+- uso estratégico de contraste
+- aparência editorial premium
+
+Esses banners devem existir principalmente em:
+- home
+- programas
+- divisão semanal
+- detalhes de rotina
+- tela de treino
+
+7. Programas de treino
+Refinar a seção de programas para ficar mais visual e premium.
+
+Quero:
+- cards horizontais grandes
+- imagens de fundo fortes
+- nome do programa em destaque
+- subtítulo menor
+- informações curtas como foco ou duração
+- carrossel bonito e fluido
+- cards com cantos arredondados e acabamento premium
+- overlay escuro nas imagens para melhorar legibilidade
+
+8. Divisão semanal / rotinas
+Quero que a tela de divisão semanal fique mais parecida com um app premium.
+
+Melhorias:
+- header com imagem forte no topo
+- título da seção mais bonito
+- cards escuros elegantes para cada dia
+- miniatura/imagem em cada card quando fizer sentido
+- seta ou affordance visual clara
+- distinção elegante entre dias de treino e dias de descanso
+- visual limpo, forte e organizado
+
+9. Tela de detalhes da rotina / treino
+Quero uma tela de rotina muito mais refinada.
+
+Melhorias:
+- grande imagem/banner no topo
+- nome da rotina em destaque grande
+- lista de exercícios mais visual
+- cards bonitos para exercícios
+- metadados organizados
+- botão “Iniciar treino” grande, premium e bem destacado
+- melhor espaçamento entre exercícios
+- aparência de app mobile real
+
+10. Cards
+Refinar todos os cards do app.
+
+Quero cards com:
+- fundo escuro elegante
+- bordas arredondadas
+- sombra ou profundidade discreta
+- melhor espaçamento interno
+- visual mais premium
+- alinhamento mais consistente
+- melhor contraste entre conteúdo principal e secundário
+
+11. Barra inferior de navegação
+Quero uma barra inferior muito mais premium.
+
+Melhorias:
+- barra flutuante
+- fundo escuro refinado
+- arredondamento forte
+- ícones bem espaçados
+- destaque claro para aba ativa
+- melhor acabamento visual
+- mais sensação de app mobile premium
+
+12. Botões
+Refinar botões do app inteiro:
+- botão principal mais forte e chamativo
+- cantos arredondados
+- melhor altura
+- mais presença visual
+- botões secundários mais discretos e elegantes
+- CTA principal com aparência premium
+
+13. Inputs, filtros e chips
+Refinar:
+- campos de busca
+- filtros
+- chips
+- selects
+- inputs de formulário
+
+Quero esses elementos mais modernos, mais refinados e mais consistentes com o restante da UI dark premium.
+
+14. Imagens
+Usar imagens fortes e impactantes nas principais áreas do app, mas com consistência.
+
+Aplicar:
+- overlay escuro
+- tratamento visual uniforme
+- proporções bonitas
+- recortes bons no mobile
+- harmonia entre banners, miniaturas e cards
+
+15. Sensação visual
+Quero que o app transmita:
+- força
+- disciplina
+- performance
+- exclusividade
+- modernidade
+- alto padrão
+
+16. Responsividade
+O redesign deve ser totalmente mobile-first.
+Quero excelente resultado em celular, sem quebrar no desktop.
+
+17. Performance
+Mesmo com esse redesign visual:
+- manter boa performance
+- evitar excesso de efeitos pesados
+- evitar travamentos
+- otimizar imagens e componentes
+
+18. Preservação total da lógica
+Reforçando:
+- não alterar regras do treino
+- não alterar histórico
+- não alterar progresso
+- não alterar programas
+- não alterar FitAI Coach
+- não alterar câmera com IA
+- não alterar fluxos já implementados
+- não mexer na arquitetura funcional sem necessidade
+
+Quero redesign visual sem regressão funcional.
+
+19. Refino das telas prioritárias
+Priorizar redesign visual destas áreas:
+- home
+- programas
+- divisão semanal
+- detalhes da rotina
+- treino ativo
+- biblioteca de exercícios
+- barra inferior
+- componentes globais
+
+20. Resultado esperado
+O resultado final deve parecer:
+- mais premium
+- mais forte visualmente
+- mais moderno
+- mais escuro e sofisticado
+- mais mobile
+- mais próximo de um app fitness profissional real
+
+21. Entrega
+Ao final, me diga:
+- quais telas foram alteradas visualmente
+- quais componentes foram refinados
+- se alguma alteração tocou lógica funcional
+- quais pontos ainda podem ser refinados depois em uma fase 2
+
+Faça esse redesign diretamente no app atual, preservando tudo que já existe e elevando a interface para um nível visual premium.

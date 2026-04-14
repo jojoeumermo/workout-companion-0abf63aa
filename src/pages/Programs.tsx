@@ -156,39 +156,39 @@ export default function Programs() {
   return (
     <PageShell>
       <div className="pt-14 pb-28 space-y-6 max-w-lg mx-auto">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center active:scale-95 transition-transform">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate(-1)} className="w-11 h-11 rounded-xl bg-card border border-border/50 flex items-center justify-center active:scale-95 transition-transform hover:border-primary/30">
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">Programas de Treino</h1>
-            <p className="text-xs text-muted-foreground font-body">Planos estruturados para resultados</p>
+            <h1 className="text-3xl font-black tracking-tight">Programas de Treino</h1>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">Planos estruturados para resultados</p>
           </div>
-          <button onClick={() => setShowCreate(true)} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary active:scale-95 transition-transform">
-            <Plus size={20} />
+          <button onClick={() => setShowCreate(true)} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
+            <Plus size={22} />
           </button>
         </div>
 
         {/* Active program */}
         {activeProgram && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-primary/5 border border-primary/20 rounded-2xl p-5 space-y-4">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card-premium border-primary/30 rounded-2xl p-6 space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] text-primary font-bold uppercase tracking-wider">Programa Ativo</p>
-                <h3 className="font-bold text-lg mt-1">{activeProgram.name}</h3>
+                <p className="text-[10px] text-primary font-black uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-md inline-block mb-2">Programa Ativo</p>
+                <h3 className="font-black text-2xl tracking-tight leading-none">{activeProgram.name}</h3>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-primary">Semana {activeProgram.currentWeek}</p>
-                <p className="text-[10px] text-muted-foreground font-body">de {activeProgram.weeks}</p>
+                <p className="text-xl font-black text-primary leading-none">Semana {activeProgram.currentWeek}</p>
+                <p className="text-xs text-muted-foreground font-body mt-1">de {activeProgram.weeks}</p>
               </div>
             </div>
-            <div className="flex gap-3 text-xs text-muted-foreground font-body">
-              <span className="flex items-center gap-1"><Target size={12} /> {activeProgram.goal}</span>
-              <span className="flex items-center gap-1"><Calendar size={12} /> {activeProgram.daysPerWeek}x/sem</span>
+            <div className="flex gap-4 text-sm text-muted-foreground font-body">
+              <span className="flex items-center gap-1.5"><Target size={16} /> {activeProgram.goal}</span>
+              <span className="flex items-center gap-1.5"><Calendar size={16} /> {activeProgram.daysPerWeek}x/sem</span>
             </div>
             {activeProgram.schedule.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Treinos do programa:</p>
+              <div className="space-y-3 pt-2">
+                <p className="text-sm font-bold text-muted-foreground">Treinos do programa:</p>
                 {activeProgram.schedule.map((s, i) => {
                   const tmpl = templates.find(t => t.id === s.templateId);
                   if (!tmpl) return null;
@@ -196,18 +196,20 @@ export default function Programs() {
                     <button
                       key={i}
                       onClick={() => startTemplateWorkout(tmpl)}
-                      className="w-full bg-card rounded-xl p-3 flex items-center justify-between active:scale-[0.98] transition-transform"
+                      className="w-full bg-secondary/80 border border-border/50 rounded-xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform hover:border-primary/30"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Dumbbell size={14} className="text-primary" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Dumbbell size={16} className="text-primary" />
                         </div>
                         <div className="text-left">
-                          <p className="text-sm font-medium">{tmpl.name}</p>
-                          <p className="text-[10px] text-muted-foreground font-body">{tmpl.exercises.length} exercícios</p>
+                          <p className="text-base font-bold">{tmpl.name}</p>
+                          <p className="text-xs text-muted-foreground font-body mt-0.5">{tmpl.exercises.length} exercícios</p>
                         </div>
                       </div>
-                      <Play size={14} className="text-primary" />
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                        <Play size={14} className="text-primary" fill="currentColor" />
+                      </div>
                     </button>
                   );
                 })}
@@ -222,51 +224,51 @@ export default function Programs() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.02 }}
           onClick={() => navigate('/ai-coach')}
-          className="w-full bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform"
+          className="w-full card-premium animate-pulse-glow rounded-2xl p-5 flex items-center gap-4 active:scale-[0.98] transition-transform group"
         >
-          <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-            <Bot size={22} className="text-primary" />
+          <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
+            <Bot size={24} className="text-primary" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-semibold text-sm">Gerar Programa com IA</p>
-            <p className="text-xs text-muted-foreground font-body">FitAI cria um programa personalizado</p>
+            <p className="font-black text-lg">Gerar Programa com IA</p>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">FitAI cria um programa personalizado</p>
           </div>
-          <ChevronRight size={18} className="text-primary" />
+          <ChevronRight size={20} className="text-primary group-hover:translate-x-1 transition-transform" />
         </motion.button>
 
         {/* User programs */}
         {programs.filter(p => p.status !== 'active').length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Seus Programas</h2>
+            <h2 className="text-xl font-bold tracking-tight">Seus Programas</h2>
             {programs.filter(p => p.status !== 'active').map((program, i) => (
               <motion.div
                 key={program.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="bg-card rounded-2xl p-5 space-y-3 border border-border/40"
+                className="card-premium rounded-2xl p-5 space-y-4"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-bold">{program.name}</h3>
-                    <div className="flex gap-2 mt-1.5">
-                      <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[10px] font-medium">{program.goal}</span>
-                      <span className="px-2 py-0.5 bg-secondary text-muted-foreground rounded-md text-[10px] font-medium">{program.level}</span>
+                    <h3 className="text-lg font-bold">{program.name}</h3>
+                    <div className="flex gap-2 mt-2">
+                      <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[10px] font-bold tracking-wider uppercase">{program.goal}</span>
+                      <span className="px-2 py-0.5 bg-secondary text-muted-foreground rounded-md text-[10px] font-bold tracking-wider uppercase">{program.level}</span>
                     </div>
                   </div>
-                  <button onClick={() => { removeProgram(program.id); haptic('light'); }} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-destructive">
-                    <Trash2 size={14} />
+                  <button onClick={() => { removeProgram(program.id); haptic('light'); }} className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center text-destructive active:scale-95 transition-transform hover:bg-destructive/10">
+                    <Trash2 size={16} />
                   </button>
                 </div>
-                <div className="flex gap-4 text-xs text-muted-foreground font-body">
-                  <span className="flex items-center gap-1"><Clock size={12} /> {program.weeks} semanas</span>
-                  <span className="flex items-center gap-1"><Target size={12} /> {program.daysPerWeek}x/semana</span>
+                <div className="flex gap-4 text-sm text-muted-foreground font-body">
+                  <span className="flex items-center gap-1.5"><Clock size={14} /> {program.weeks} semanas</span>
+                  <span className="flex items-center gap-1.5"><Target size={14} /> {program.daysPerWeek}x/semana</span>
                 </div>
                 <button
                   onClick={() => { activateProgram(program.id); haptic('success'); toast.success('Programa ativado!'); }}
-                  className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                  className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
                 >
-                  <Play size={16} fill="currentColor" /> Ativar Programa
+                  <Play size={18} fill="currentColor" /> Ativar Programa
                 </button>
               </motion.div>
             ))}
@@ -275,62 +277,64 @@ export default function Programs() {
 
         {/* Preset Programs */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Programas Populares</h2>
-          {presetPrograms.map((program, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 + i * 0.03 }}
-              className="bg-card rounded-2xl p-5 space-y-3"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-bold">{program.name}</h3>
-                  <div className="flex gap-2 mt-1.5">
-                    <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[10px] font-medium">{program.goal}</span>
-                    <span className="px-2 py-0.5 bg-secondary text-muted-foreground rounded-md text-[10px] font-medium">{program.level}</span>
+          <h2 className="text-xl font-bold tracking-tight">Programas Populares</h2>
+          
+          <div className="-mx-5 sm:-mx-6 px-5 sm:px-6">
+            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none" style={{ scrollSnapType: 'x mandatory' }}>
+              {presetPrograms.map((prog, i) => (
+                <div
+                  key={i}
+                  className="hero-section shrink-0 rounded-2xl overflow-hidden card-interactive"
+                  style={{ width: '280px', height: '160px', scrollSnapAlign: 'start' }}
+                  onClick={() => navigate('/ai-coach')}
+                  role="button"
+                >
+                  <img src="/images/hero-programs.png" alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ filter: 'brightness(0.45)' }} />
+                  <div className="hero-img-overlay" />
+                  <div className="absolute inset-0 p-5 flex flex-col justify-between">
+                    <div className="flex gap-2">
+                      <span className="text-[10px] font-bold tracking-wider uppercase bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded-full backdrop-blur-sm">{prog.goal}</span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase bg-white/10 text-white/80 border border-white/15 px-2 py-0.5 rounded-full backdrop-blur-sm">{prog.level}</span>
+                    </div>
+                    <div>
+                      <p className="text-white font-black text-lg leading-tight mb-1.5">{prog.name}</p>
+                      <div className="flex items-center gap-3 text-white/70 font-body text-xs font-medium">
+                        <span className="flex items-center gap-1"><Clock size={12} /> {prog.weeks} sem</span>
+                        <span className="flex items-center gap-1"><Target size={12} /> {prog.daysPerWeek}x/sem</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <p className="text-xs text-muted-foreground font-body">{program.description}</p>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
-                <span className="flex items-center gap-1"><Clock size={12} /> {program.weeks} semanas</span>
-                <span className="flex items-center gap-1"><Target size={12} /> {program.daysPerWeek}x/semana</span>
-              </div>
-              <button
-                onClick={() => navigate('/ai-coach')}
-                className="w-full bg-secondary rounded-xl py-2.5 text-sm font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-foreground"
-              >
-                <Bot size={16} className="text-primary" /> Personalizar com IA
-              </button>
-            </motion.div>
-          ))}
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Your Templates */}
         {templates.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Suas Rotinas</h2>
-            <p className="text-xs text-muted-foreground font-body">Rotinas existentes para organizar em programas</p>
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Suas Rotinas</h2>
+              <p className="text-sm text-muted-foreground font-body mt-0.5">Rotinas existentes para organizar em programas</p>
+            </div>
             {templates.slice(0, 5).map((t, i) => (
               <motion.div
                 key={t.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.03 }}
-                className="bg-card rounded-2xl p-4 flex items-center justify-between border border-border/40"
+                className="card-premium rounded-2xl p-5 flex items-center justify-between"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Dumbbell size={16} className="text-primary" />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Dumbbell size={20} className="text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{t.name}</p>
-                    <p className="text-xs text-muted-foreground font-body">{t.exercises.length} exercícios</p>
+                    <p className="font-bold text-base">{t.name}</p>
+                    <p className="text-sm text-muted-foreground font-body mt-0.5">{t.exercises.length} exercícios</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-muted-foreground" />
+                <ChevronRight size={20} className="text-muted-foreground" />
               </motion.div>
             ))}
           </div>

@@ -11,6 +11,15 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - **AI**: Replit AI Integrations (OpenAI `gpt-4o-mini`) via managed billing; falls back to user-provided `OPENAI_API_KEY`
 - **Android**: Capacitor (`com.fitai.coach`), build guide in `BUILD_ANDROID.md`
 
+## Visual Design
+
+- **Premium dark aesthetic**: near-black background (0 0% 2%), deep card surfaces, green neon accent
+- **Floating pill bottom nav**: elevated, rounded, glass-strong, floating above screen edge
+- **Cinematic hero banners**: gym/lift/programs hero images with dark gradient overlays on Dashboard and Workouts
+- **Inter Black (900)** for all headings; Rubik for body text
+- **Custom utility classes**: `.hero-img-overlay`, `.hero-section`, `.float-nav`, `.section-title`, upgraded `.card-premium`
+- Hero images: `public/images/hero-gym.png`, `hero-lift.png`, `hero-programs.png`
+
 ## Key Features
 
 - Workout tracking with templates, folders, history, personal records, and real-time volume tracking

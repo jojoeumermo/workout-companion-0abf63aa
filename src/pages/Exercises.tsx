@@ -75,35 +75,35 @@ export default function Exercises() {
 
   return (
     <PageShell title="Exercícios" rightAction={
-      <button onClick={() => setShowCreate(true)} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-        <Plus size={20} />
+      <button onClick={() => setShowCreate(true)} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
+        <Plus size={22} />
       </button>
     }>
-      <div className="space-y-4 max-w-lg mx-auto">
+      <div className="space-y-6 max-w-lg mx-auto">
         {/* Search */}
         <div className="relative">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             placeholder="Buscar exercício..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full bg-card border border-border/40 rounded-2xl pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/30 font-body text-sm transition-all"
+            className="w-full bg-secondary rounded-2xl pl-12 pr-4 py-4 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/40 focus:bg-secondary/80 font-bold text-sm transition-all"
           />
         </div>
 
         {/* Filters */}
-        <div className="space-y-2.5">
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-2.5">
             <button
               onClick={() => setShowFavs(!showFavs)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 ${showFavs ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-card border border-border/40 text-muted-foreground'}`}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95 ${showFavs ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
             >
-              <Heart size={12} fill={showFavs ? 'currentColor' : 'none'} /> Favoritos
+              <Heart size={14} fill={showFavs ? 'currentColor' : 'none'} /> Favoritos
             </button>
             <button
               onClick={() => setMuscleFilter('')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 ${!muscleFilter ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-card border border-border/40 text-muted-foreground'}`}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${!muscleFilter ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
             >
               Todos
             </button>
@@ -111,18 +111,18 @@ export default function Exercises() {
               <button
                 key={mg}
                 onClick={() => setMuscleFilter(muscleFilter === mg ? '' : mg)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 ${muscleFilter === mg ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-card border border-border/40 text-muted-foreground'}`}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${muscleFilter === mg ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
               >
                 {mg}
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5 overflow-x-auto pb-1 scrollbar-none">
             {equipmentList.map(eq => (
               <button
                 key={eq}
                 onClick={() => setEquipFilter(equipFilter === eq ? '' : eq)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 ${equipFilter === eq ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-card border border-border/40 text-muted-foreground'}`}
+                className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${equipFilter === eq ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-card border border-border/40 text-muted-foreground'}`}
               >
                 {eq}
               </button>
@@ -131,13 +131,14 @@ export default function Exercises() {
         </div>
 
         {/* Count */}
-        <p className="text-xs text-muted-foreground font-body px-1">{filtered.length} exercícios encontrados</p>
+        <p className="text-sm text-muted-foreground font-bold px-1 tracking-tight">{filtered.length} exercícios encontrados</p>
 
         {/* List */}
+        <div className="space-y-6 pb-6">
         {Object.entries(grouped).map(([group, exs]) => (
-          <div key={group} className="space-y-2.5">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">{group}</h3>
-            <div className="space-y-2">
+          <div key={group} className="space-y-3">
+            <h3 className="text-sm font-black text-muted-foreground uppercase tracking-widest px-1">{group}</h3>
+            <div className="space-y-2.5">
               {exs.map((ex, i) => (
                 <motion.div
                   key={ex.id}
@@ -147,30 +148,30 @@ export default function Exercises() {
                   animate="show"
                 >
                   <div
-                    className="w-full bg-card rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.97] transition-all cursor-pointer border border-border/40 hover:border-primary/20"
+                    className="w-full card-premium rounded-2xl p-4 flex items-center gap-4 text-left active:scale-[0.97] transition-transform cursor-pointer"
                     onClick={() => navigate(`/exercicio/${ex.id}`)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={e => e.key === 'Enter' && navigate(`/exercicio/${ex.id}`)}
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 ${isCustom(ex.id) ? 'bg-primary/15 text-primary' : 'bg-primary/8 text-primary'}`}>
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black shrink-0 shadow-inner ${isCustom(ex.id) ? 'bg-primary/15 text-primary' : 'bg-secondary text-primary'}`}>
                       {isCustom(ex.id) ? '★' : ex.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <p className="font-semibold text-sm truncate">{ex.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-base truncate">{ex.name}</p>
                         {isCustom(ex.id) && (
-                          <span className="text-[8px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold shrink-0">CUSTOM</span>
+                          <span className="text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-bold shrink-0 tracking-widest">CUSTOM</span>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground font-body mt-0.5">{ex.equipment}</p>
+                      <p className="text-xs text-muted-foreground font-bold mt-1 tracking-wide">{ex.equipment}</p>
                     </div>
                     {isCustom(ex.id) && (
                       <button
                         onClick={e => { e.stopPropagation(); removeCustom(ex.id); haptic('light'); toast.success('Exercício removido'); }}
-                        className="p-2 shrink-0 active:scale-90 transition-transform"
+                        className="p-2.5 shrink-0 active:scale-90 transition-transform rounded-lg hover:bg-destructive/10"
                       >
-                        <Trash2 size={14} className="text-destructive" />
+                        <Trash2 size={18} className="text-destructive" />
                       </button>
                     )}
                     <span
@@ -178,17 +179,18 @@ export default function Exercises() {
                       role="button"
                       tabIndex={0}
                       onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); toggleFavorite(ex.id); } }}
-                      className="p-2 shrink-0 active:scale-90 transition-transform"
+                      className="p-2.5 shrink-0 active:scale-90 transition-transform rounded-lg hover:bg-secondary"
                     >
-                      <Heart size={16} className={`transition-colors ${isFavorite(ex.id) ? 'text-primary fill-primary' : 'text-muted-foreground/40'}`} />
+                      <Heart size={20} className={`transition-colors ${isFavorite(ex.id) ? 'text-primary fill-primary drop-shadow-[0_0_6px_rgba(var(--primary),0.5)]' : 'text-muted-foreground/40'}`} />
                     </span>
-                    <ChevronRight size={16} className="text-muted-foreground/40 shrink-0" />
+                    <ChevronRight size={20} className="text-muted-foreground/30 shrink-0" />
                   </div>
                 </motion.div>
               ))}
             </div>
           </div>
         ))}
+        </div>
 
         {filtered.length === 0 && (
           <div className="text-center py-20 space-y-3">

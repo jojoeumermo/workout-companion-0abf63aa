@@ -12,40 +12,37 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t border-border/30">
-      <div
-        className="flex items-center justify-around h-[72px] max-w-lg mx-auto px-3"
-        style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)' }}
-      >
-        {tabs.map(({ to, icon: Icon, label }) => (
-          <RouterNavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            onClick={() => haptic('light')}
-            className={({ isActive }) =>
-              `relative flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-250 gap-1 ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <span className="absolute inset-0 rounded-2xl bg-primary/8 transition-all duration-300" />
-                )}
-                <Icon
-                  size={21}
-                  strokeWidth={isActive ? 2.3 : 1.7}
-                  className={`relative z-10 transition-all duration-250 ${isActive ? 'drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]' : ''}`}
-                />
-                <span className={`text-[10px] relative z-10 transition-all duration-250 leading-none ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                  {label}
-                </span>
-              </>
-            )}
-          </RouterNavLink>
-        ))}
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 16px)' }}>
+      <div className="float-nav glass-strong border border-border/40 rounded-2xl w-full max-w-sm">
+        <div className="flex items-center justify-around h-16 px-2">
+          {tabs.map(({ to, icon: Icon, label }) => (
+            <RouterNavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              onClick={() => haptic('light')}
+              className={({ isActive }) =>
+                `relative flex flex-col items-center justify-center flex-1 h-12 rounded-xl transition-all duration-200 gap-0.5 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground/70'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && <span className="absolute inset-0 rounded-xl bg-primary/10" />}
+                  <Icon
+                    size={20}
+                    strokeWidth={isActive ? 2.2 : 1.6}
+                    className={`relative z-10 transition-all ${isActive ? 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]' : ''}`}
+                  />
+                  <span className={`text-[9px] relative z-10 leading-none ${isActive ? 'font-bold' : 'font-medium'}`}>
+                    {label}
+                  </span>
+                </>
+              )}
+            </RouterNavLink>
+          ))}
+        </div>
       </div>
     </nav>
   );

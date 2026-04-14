@@ -223,58 +223,64 @@ export default function Progress() {
 
   return (
     <PageShell title="Progresso" rightAction={
-      <div className="flex gap-2">
-        <button onClick={() => navigate('/configuracoes')} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-muted-foreground">
-          <Settings size={18} />
+      <div className="flex gap-3">
+        <button onClick={() => navigate('/configuracoes')} className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground active:scale-95 transition-transform hover:bg-secondary/80">
+          <Settings size={20} />
         </button>
-        <button onClick={() => setShowGoalDialog(true)} className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-          <Target size={20} />
+        <button onClick={() => setShowGoalDialog(true)} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
+          <Target size={22} />
         </button>
       </div>
     }>
-      <div className="space-y-5 max-w-lg mx-auto pt-2">
+      <div className="space-y-6 max-w-lg mx-auto pt-2">
         {/* Summary */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-3">
           {[
             { icon: Calendar, value: totalWorkouts.toString(), label: 'treinos' },
             { icon: TrendingUp, value: `${(totalVolume / 1000).toFixed(1)}t`, label: 'volume' },
             { icon: Flame, value: currentStreak.toString(), label: 'dias seguidos' },
             { icon: Award, value: bestStreak.toString(), label: 'recorde' },
           ].map(({ icon: Icon, value, label }) => (
-            <div key={label} className="card-premium rounded-2xl p-3 space-y-1.5">
-              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Icon size={13} className="text-primary" />
+            <div key={label} className="card-premium rounded-2xl p-4 space-y-2 text-center">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
+                <Icon size={18} className="text-primary" />
               </div>
-              <p className="text-lg font-extrabold tracking-tight">{value}</p>
-              <p className="text-[9px] text-muted-foreground font-body">{label}</p>
+              <div>
+                <p className="text-xl font-black tracking-tight">{value}</p>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{label}</p>
+              </div>
             </div>
           ))}
         </motion.div>
 
         {/* Monthly comparison */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-4 space-y-3">
-          <h3 className="font-bold text-sm">Este Mês</h3>
-          <div className="grid grid-cols-2 gap-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-6 space-y-5">
+          <h3 className="font-black text-xl tracking-tight">Este Mês</h3>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-2xl font-extrabold text-primary tracking-tight">{monthlyStats.thisMonthCount}</p>
-              <p className="text-[10px] text-muted-foreground font-body">treinos ({monthlyStats.lastMonthCount} mês passado)</p>
+              <p className="text-4xl font-black text-primary tracking-tight">{monthlyStats.thisMonthCount}</p>
+              <p className="text-sm font-bold text-foreground mt-1">treinos</p>
+              <p className="text-xs text-muted-foreground font-body">{monthlyStats.lastMonthCount} mês passado</p>
             </div>
             <div>
-              <p className="text-2xl font-extrabold text-primary tracking-tight">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
-              <p className="text-[10px] text-muted-foreground font-body">volume ({(monthlyStats.lastMonthVolume / 1000).toFixed(1)}t anterior)</p>
+              <p className="text-4xl font-black text-primary tracking-tight">{(monthlyStats.thisMonthVolume / 1000).toFixed(1)}t</p>
+              <p className="text-sm font-bold text-foreground mt-1">volume</p>
+              <p className="text-xs text-muted-foreground font-body">{(monthlyStats.lastMonthVolume / 1000).toFixed(1)}t anterior</p>
             </div>
           </div>
         </motion.div>
 
         {/* AI Insights Panel */}
         {history.length >= 3 && (overttrainingAlert.risk !== 'low' || stagnationAlerts.length > 0 || progressPredictions.length > 0) && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.025 }} className="space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.025 }} className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Bot size={16} className="text-primary" />
-                <h3 className="font-bold text-sm">Insights de IA</h3>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Bot size={20} className="text-primary" />
+                </div>
+                <h3 className="font-black text-xl tracking-tight">Insights de IA</h3>
               </div>
-              <button onClick={() => navigate('/ai-coach')} className="text-xs text-primary font-medium">Ver FitAI →</button>
+              <button onClick={() => navigate('/ai-coach')} className="text-sm text-primary font-bold">Ver FitAI →</button>
             </div>
 
             {/* Overtraining Alert */}
@@ -372,21 +378,21 @@ export default function Progress() {
         )}
 
         {/* Heatmap */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card-premium rounded-2xl p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="card-premium rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm">Consistência</h3>
-            <span className="text-[10px] text-muted-foreground font-body">16 semanas</span>
+            <h3 className="font-black text-xl tracking-tight">Consistência</h3>
+            <span className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase bg-secondary px-2.5 py-1 rounded-md">16 semanas</span>
           </div>
-          <div className="flex gap-[3px] justify-center overflow-x-auto">
+          <div className="flex gap-1 justify-center overflow-x-auto">
             {heatmapWeeks.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-[3px]">
+              <div key={wi} className="flex flex-col gap-1">
                 {week.map((day, di) => (
                   <div
                     key={di}
-                    className={`w-[11px] h-[11px] rounded-[3px] transition-colors ${
-                      day.count >= 2 ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' :
-                      day.count === 1 ? 'bg-primary/45' :
-                      'bg-secondary/80'
+                    className={`w-[13px] h-[13px] rounded-[3px] transition-colors ${
+                      day.count >= 2 ? 'bg-primary shadow-glow' :
+                      day.count === 1 ? 'bg-primary/50' :
+                      'bg-secondary/60'
                     }`}
                     title={`${day.date.toLocaleDateString('pt-BR')} - ${day.count} treinos`}
                   />
@@ -394,11 +400,11 @@ export default function Progress() {
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground font-body">
+          <div className="flex items-center justify-center gap-2.5 text-xs text-muted-foreground font-bold">
             <span>Menos</span>
-            <div className="w-[11px] h-[11px] rounded-[3px] bg-secondary/80" />
-            <div className="w-[11px] h-[11px] rounded-[3px] bg-primary/45" />
-            <div className="w-[11px] h-[11px] rounded-[3px] bg-primary" />
+            <div className="w-[13px] h-[13px] rounded-[3px] bg-secondary/60" />
+            <div className="w-[13px] h-[13px] rounded-[3px] bg-primary/50" />
+            <div className="w-[13px] h-[13px] rounded-[3px] bg-primary" />
             <span>Mais</span>
           </div>
         </motion.div>
@@ -459,19 +465,19 @@ export default function Progress() {
 
         {/* Muscle Stats */}
         {muscleStats.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-5 space-y-4">
-            <h3 className="font-bold text-sm">Séries por Músculo</h3>
-            <div className="space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="card-premium rounded-2xl p-6 space-y-5">
+            <h3 className="font-black text-xl tracking-tight">Séries por Músculo</h3>
+            <div className="space-y-4">
               {muscleStats.map(m => {
                 const maxSets = muscleStats[0]?.sets || 1;
                 return (
-                  <div key={m.name} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-body text-secondary-foreground">{m.name}</span>
-                      <span className="font-medium text-primary text-xs">{m.sets} séries • {m.volume}t</span>
+                  <div key={m.name} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm font-bold">
+                      <span className="text-foreground">{m.name}</span>
+                      <span className="text-primary">{m.sets} séries <span className="text-muted-foreground ml-1">({m.volume}t)</span></span>
                     </div>
-                    <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-primary/60 rounded-full" style={{ width: `${(m.sets / maxSets) * 100}%` }} />
+                    <div className="w-full h-3 bg-secondary rounded-full overflow-hidden shadow-inner">
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${(m.sets / maxSets) * 100}%` }} />
                     </div>
                   </div>
                 );

@@ -9,11 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { haptic } from '@/lib/haptic';
 
 const MEAL_TYPE_LABELS: Record<string, string> = {
-  cafe: '☕ Café da Manhã',
-  almoco: '🍽️ Almoço',
-  lanche: '🥪 Lanche',
-  jantar: '🌙 Jantar',
-  outro: '🍴 Outro',
+  cafe: 'Café da Manhã',
+  almoco: 'Almoço',
+  lanche: 'Lanche',
+  jantar: 'Jantar',
+  outro: 'Outro',
 };
 
 const WATER_PRESETS = [150, 200, 300, 500];
@@ -107,39 +107,41 @@ export default function Nutrition() {
 
   return (
     <PageShell title="Nutrição">
-      <div className="max-w-lg mx-auto space-y-5 pt-2">
+      <div className="max-w-lg mx-auto space-y-6 pt-2">
         {/* Date selector */}
-        <div className="flex items-center justify-between">
-          <button onClick={() => changeDate(-1)} className="w-10 h-10 rounded-xl bg-card flex items-center justify-center active:scale-95 transition-transform">
-            <ChevronLeft size={18} />
+        <div className="flex items-center justify-between card-premium p-3 rounded-2xl">
+          <button onClick={() => changeDate(-1)} className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center active:scale-95 transition-transform hover:bg-secondary/80">
+            <ChevronLeft size={20} />
           </button>
-          <span className="font-semibold capitalize">{dateLabel}</span>
+          <span className="font-black text-lg capitalize tracking-tight">{dateLabel}</span>
           <button
             onClick={() => changeDate(1)}
             disabled={isToday}
-            className="w-10 h-10 rounded-xl bg-card flex items-center justify-center disabled:opacity-30 active:scale-95 transition-transform"
+            className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center disabled:opacity-30 active:scale-95 transition-transform hover:bg-secondary/80"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={20} />
           </button>
         </div>
 
         {/* Daily macros dashboard */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card-premium rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold">Resumo do Dia</h2>
-            <button onClick={() => { setTempGoals(goals); setShowGoals(true); }} className="text-xs text-primary font-medium flex items-center gap-1">
-              <Target size={12} /> Metas
+            <h2 className="font-black text-xl tracking-tight">Resumo do Dia</h2>
+            <button onClick={() => { setTempGoals(goals); setShowGoals(true); }} className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-primary active:scale-95 hover:bg-secondary/80 transition-colors">
+              <Target size={18} />
             </button>
           </div>
 
-          <div className="text-center space-y-1">
-            <p className="text-4xl font-black text-primary">{Math.round(dayTotals.calories)}</p>
-            <p className="text-xs text-muted-foreground font-body">de {goals.calories} kcal</p>
-            {macroBar(dayTotals.calories, goals.calories, 'bg-orange-400')}
+          <div className="text-center space-y-2">
+            <p className="text-5xl font-black text-primary tracking-tighter">{Math.round(dayTotals.calories)}</p>
+            <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest">de {goals.calories} kcal</p>
+            <div className="pt-2">
+              {macroBar(dayTotals.calories, goals.calories, 'bg-orange-400')}
+            </div>
           </div>
 
           {/* Calorie balance */}
-          <div className={`text-center py-2 rounded-xl text-xs font-semibold ${
+          <div className={`text-center py-3 rounded-xl text-sm font-black tracking-tight ${
             calorieBalance > 0 ? 'bg-green-500/10 text-green-400' : calorieBalance < -200 ? 'bg-red-500/10 text-red-400' : 'bg-yellow-500/10 text-yellow-400'
           }`}>
             {calorieBalance > 0
@@ -149,16 +151,16 @@ export default function Nutrition() {
               : `${Math.abs(Math.round(calorieBalance))} kcal acima da meta`}
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-4 pt-2">
             {[
               { label: 'Proteína', current: Math.round(dayTotals.protein * 10) / 10, goal: goals.protein, unit: 'g', color: 'bg-red-400' },
               { label: 'Carbos', current: Math.round(dayTotals.carbs * 10) / 10, goal: goals.carbs, unit: 'g', color: 'bg-blue-400' },
               { label: 'Gordura', current: Math.round(dayTotals.fat * 10) / 10, goal: goals.fat, unit: 'g', color: 'bg-yellow-400' },
             ].map(m => (
-              <div key={m.label} className="space-y-1.5">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xs text-muted-foreground font-body">{m.label}</span>
-                  <span className="text-xs font-medium">{m.current}/{m.goal}{m.unit}</span>
+              <div key={m.label} className="space-y-2">
+                <div className="text-center space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">{m.label}</span>
+                  <span className="text-sm font-black block text-foreground">{m.current}<span className="text-[10px] text-muted-foreground font-medium ml-0.5">/{m.goal}{m.unit}</span></span>
                 </div>
                 {macroBar(m.current, m.goal, m.color)}
               </div>
@@ -168,35 +170,37 @@ export default function Nutrition() {
 
         {/* Water tracking */}
         {isToday && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl border border-border/40 p-4 space-y-3">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="card-premium rounded-2xl p-6 space-y-5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Droplets size={16} className="text-blue-400" />
-                <h3 className="font-semibold text-sm">Água</h3>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Droplets size={20} className="text-blue-400" />
+                </div>
+                <h3 className="font-black text-xl tracking-tight">Água</h3>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <span className="text-sm font-bold text-blue-400">{(todayWater / 1000).toFixed(2).replace('.', ',')}L</span>
-                  <span className="text-xs text-muted-foreground font-body"> / {(waterGoal / 1000).toFixed(1).replace('.', ',')}L</span>
+                  <span className="text-xl font-black text-blue-400 leading-none block">{(todayWater / 1000).toFixed(2).replace('.', ',')}L</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 block">/ {(waterGoal / 1000).toFixed(1).replace('.', ',')}L</span>
                 </div>
                 <button
                   onClick={() => { setTempWaterGoal(waterGoal); setShowWaterSettings(true); }}
-                  className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground active:scale-90 transition-transform"
+                  className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground active:scale-90 transition-transform hover:bg-secondary/80"
                 >
-                  <Settings2 size={12} />
+                  <Settings2 size={18} />
                 </button>
               </div>
             </div>
 
             {/* Water progress */}
-            <div className="space-y-2">
-              <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
+            <div className="space-y-2.5">
+              <div className="w-full h-4 bg-secondary rounded-full overflow-hidden shadow-inner">
                 <div
                   className="h-full bg-blue-400 rounded-full transition-all duration-500"
                   style={{ width: `${waterPct}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-xs text-muted-foreground font-body">
+              <div className="flex items-center justify-between text-xs font-bold text-muted-foreground px-1">
                 <span>{waterGlasses} copos de 250ml</span>
                 <span>{Math.max(0, waterGoal - todayWater)}ml restantes</span>
               </div>
@@ -208,52 +212,52 @@ export default function Nutrition() {
                 <button
                   key={ml}
                   onClick={() => { addWater(ml); haptic('light'); }}
-                  className="flex-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl py-2 text-xs font-semibold active:scale-95 transition-transform"
+                  className="flex-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl py-3 text-sm font-black active:scale-95 transition-transform hover:bg-blue-500/20"
                 >
                   +{ml < 1000 ? `${ml}ml` : `${ml / 1000}L`}
                 </button>
               ))}
               <button
                 onClick={() => { addWater(-150); haptic('light'); }}
-                className="w-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground active:scale-95 transition-transform"
+                className="w-12 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground active:scale-95 transition-transform hover:bg-secondary/80"
               >
-                <Minus size={14} />
+                <Minus size={18} />
               </button>
             </div>
 
             {/* Custom water amount */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-2">
               <input
                 type="number"
                 inputMode="numeric"
-                placeholder="Quantidade (ml)"
+                placeholder="Quantidade personalizada (ml)"
                 value={customWaterMl}
                 onChange={e => setCustomWaterMl(e.target.value)}
-                className="flex-1 bg-secondary rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-400/40 placeholder:text-muted-foreground/50"
+                className="flex-1 bg-secondary rounded-xl px-4 py-3.5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-400/40 placeholder:text-muted-foreground/50 placeholder:font-medium"
               />
               <button
                 onClick={addCustomWater}
                 disabled={!customWaterMl || parseInt(customWaterMl) <= 0}
-                className="bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl px-4 py-2 text-xs font-semibold disabled:opacity-40 active:scale-95 transition-transform flex items-center gap-1"
+                className="bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl px-5 py-3.5 text-sm font-black disabled:opacity-40 active:scale-95 transition-transform flex items-center gap-2 hover:bg-blue-500/20"
               >
-                <GlassWater size={12} /> Adicionar
+                <GlassWater size={18} /> Adicionar
               </button>
             </div>
           </motion.div>
         )}
 
         {/* Quick actions */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate('/nutricao/camera')}
-            className="bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-2.5 font-semibold active:scale-[0.97] transition-transform shadow-lg shadow-primary/20"
+            className="bg-primary text-primary-foreground rounded-2xl p-5 flex items-center justify-center gap-3 font-black text-sm active:scale-[0.97] transition-transform shadow-glow"
           >
             <Camera size={20} />
             Registrar Refeição
           </button>
           <button
             onClick={() => navigate('/peso')}
-            className="bg-card border border-border rounded-2xl p-4 flex items-center justify-center gap-2.5 font-semibold active:scale-[0.97] transition-transform"
+            className="card-premium rounded-2xl p-5 flex items-center justify-center gap-3 font-black text-sm active:scale-[0.97] transition-transform hover:border-primary/30"
           >
             <Scale size={20} className="text-primary" />
             Peso Corporal
@@ -261,15 +265,20 @@ export default function Nutrition() {
         </div>
 
         {/* Meals list */}
-        <div className="space-y-3">
-          <h3 className="font-semibold text-sm px-1">Refeições {isToday ? 'de hoje' : 'do dia'}</h3>
+        <div className="space-y-4 pb-6">
+          <h3 className="font-black text-xl tracking-tight px-1">Refeições {isToday ? 'de hoje' : 'do dia'}</h3>
           {dayMeals.length === 0 ? (
-            <div className="bg-card rounded-2xl border border-border/40 p-8 text-center space-y-3">
-              <UtensilsCrossed size={36} className="text-muted-foreground/30 mx-auto" />
-              <p className="text-sm text-muted-foreground font-body">Nenhuma refeição registrada</p>
+            <div className="card-premium rounded-2xl p-10 text-center space-y-4">
+              <div className="w-20 h-20 bg-secondary rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+                <UtensilsCrossed size={36} className="text-muted-foreground/50" />
+              </div>
+              <div>
+                <p className="text-lg font-bold">Nenhuma refeição registrada</p>
+                <p className="text-sm text-muted-foreground font-body mt-1">Registre o que você come para acompanhar suas metas</p>
+              </div>
               <button
                 onClick={() => navigate('/nutricao/camera')}
-                className="text-xs text-primary font-medium underline underline-offset-2"
+                className="text-sm text-primary font-bold px-6 py-2.5 bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors"
               >
                 Adicionar refeição
               </button>
@@ -281,33 +290,33 @@ export default function Nutrition() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="bg-card rounded-2xl border border-border/40 p-4 space-y-3"
+                className="card-premium rounded-2xl p-5 space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-sm">{MEAL_TYPE_LABELS[meal.type] || meal.type}</p>
-                    <p className="text-xs text-muted-foreground font-body">{meal.time}</p>
+                    <p className="font-black text-lg">{MEAL_TYPE_LABELS[meal.type] || meal.type}</p>
+                    <p className="text-sm font-bold text-muted-foreground mt-0.5">{meal.time}</p>
                   </div>
                   <button
                     onClick={() => setConfirmDelete(meal.id)}
-                    className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+                    className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors active:scale-95"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={18} />
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {meal.items.map((item, i) => (
-                    <span key={i} className="text-xs bg-secondary px-2 py-1 rounded-lg font-body">{item.name}</span>
+                    <span key={i} className="text-xs bg-secondary/80 px-3 py-1.5 rounded-lg font-bold text-foreground">{item.name}</span>
                   ))}
                 </div>
-                <div className="flex gap-4 text-xs font-body text-muted-foreground">
-                  <span className="text-orange-400 font-medium">{Math.round(meal.totals.calories)} kcal</span>
-                  <span>P: {Math.round(meal.totals.protein * 10) / 10}g</span>
-                  <span>C: {Math.round(meal.totals.carbs * 10) / 10}g</span>
-                  <span>G: {Math.round(meal.totals.fat * 10) / 10}g</span>
+                <div className="flex gap-4 text-xs font-bold bg-secondary/30 p-3 rounded-xl">
+                  <span className="text-orange-400">{Math.round(meal.totals.calories)} kcal</span>
+                  <span className="text-muted-foreground">P: <span className="text-foreground">{Math.round(meal.totals.protein * 10) / 10}g</span></span>
+                  <span className="text-muted-foreground">C: <span className="text-foreground">{Math.round(meal.totals.carbs * 10) / 10}g</span></span>
+                  <span className="text-muted-foreground">G: <span className="text-foreground">{Math.round(meal.totals.fat * 10) / 10}g</span></span>
                 </div>
                 {meal.notes && (
-                  <p className="text-xs text-muted-foreground font-body italic">"{meal.notes}"</p>
+                  <p className="text-sm text-foreground font-body bg-secondary/30 p-3 rounded-xl border border-border/30">"{meal.notes}"</p>
                 )}
               </motion.div>
             ))

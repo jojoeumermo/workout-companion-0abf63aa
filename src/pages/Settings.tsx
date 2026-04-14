@@ -213,71 +213,75 @@ export default function Settings() {
 
   return (
     <PageShell>
-      <div className="pt-16 pb-28 space-y-5 max-w-lg mx-auto">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl bg-card flex items-center justify-center active:scale-95 transition-transform">
-            <ArrowLeft size={18} />
+      <div className="pt-12 pb-36 space-y-6 max-w-lg mx-auto px-1">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate(-1)} className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center active:scale-95 transition-transform hover:bg-secondary/80">
+            <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-xl font-bold">Configurações</h1>
-            <p className="text-xs text-muted-foreground font-body">Personalize seu app</p>
+            <h1 className="text-3xl font-black tracking-tight">Configurações</h1>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">Personalize seu app</p>
           </div>
         </div>
 
         {/* User Profile */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card-premium rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <User size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Perfil Corporal</h3>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <User size={20} className="text-primary" />
+              </div>
+              <h3 className="font-black text-lg">Perfil Corporal</h3>
             </div>
             <button
               onClick={() => { setTempProfile(profile); setShowProfile(true); }}
-              className="text-xs text-primary font-medium"
+              className="text-sm text-primary font-bold px-4 py-2 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
             >
               {hasProfile ? 'Editar' : 'Configurar'}
             </button>
           </div>
           {hasProfile ? (
-            <div className="grid grid-cols-4 gap-2">
-              <div className="bg-secondary rounded-xl p-2 text-center">
-                <p className="text-sm font-bold">{profile.height}cm</p>
-                <p className="text-[9px] text-muted-foreground font-body">Altura</p>
+            <div className="grid grid-cols-4 gap-3">
+              <div className="bg-secondary/80 rounded-xl p-3 text-center border border-border/30">
+                <p className="text-lg font-black">{profile.height}cm</p>
+                <p className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase mt-1">Altura</p>
               </div>
-              <div className="bg-secondary rounded-xl p-2 text-center">
-                <p className="text-sm font-bold">{profile.age}</p>
-                <p className="text-[9px] text-muted-foreground font-body">Idade</p>
+              <div className="bg-secondary/80 rounded-xl p-3 text-center border border-border/30">
+                <p className="text-lg font-black">{profile.age}</p>
+                <p className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase mt-1">Idade</p>
               </div>
-              <div className="bg-secondary rounded-xl p-2 text-center">
-                <p className="text-sm font-bold">{profile.sex === 'male' ? 'M' : 'F'}</p>
-                <p className="text-[9px] text-muted-foreground font-body">Sexo</p>
+              <div className="bg-secondary/80 rounded-xl p-3 text-center border border-border/30">
+                <p className="text-lg font-black">{profile.sex === 'male' ? 'M' : 'F'}</p>
+                <p className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase mt-1">Sexo</p>
               </div>
-              <div className="bg-secondary rounded-xl p-2 text-center">
-                <p className="text-sm font-bold">{ACTIVITY_LABELS[profile.activityLevel]?.charAt(0)}</p>
-                <p className="text-[9px] text-muted-foreground font-body">Atividade</p>
+              <div className="bg-secondary/80 rounded-xl p-3 text-center border border-border/30">
+                <p className="text-lg font-black">{ACTIVITY_LABELS[profile.activityLevel]?.charAt(0)}</p>
+                <p className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase mt-1">Atividade</p>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-muted-foreground font-body">Configure altura, idade e sexo para cálculos de composição corporal.</p>
+            <p className="text-sm text-muted-foreground font-body bg-secondary/50 p-4 rounded-xl border border-border/30">Configure altura, idade e sexo para cálculos de composição corporal.</p>
           )}
         </motion.div>
 
         {/* Theme */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-4">
-          <div className="flex items-center gap-2">
-            <Palette size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Tema de Cor</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.02 }} className="card-premium rounded-2xl p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Palette size={20} className="text-primary" />
+            </div>
+            <h3 className="font-black text-lg">Tema de Cor</h3>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-3">
             {themes.map(t => (
               <button
                 key={t.id}
                 onClick={() => applyTheme(t.id)}
-                className={`rounded-xl p-3 text-xs font-medium text-center transition-all active:scale-95 ${
-                  theme === t.id ? 'ring-2 ring-primary bg-primary/10' : 'bg-secondary'
+                className={`rounded-xl p-4 text-xs font-bold text-center transition-all active:scale-95 border ${
+                  theme === t.id ? 'border-primary bg-primary/10 shadow-glow' : 'border-border/30 bg-secondary/80 hover:bg-secondary'
                 }`}
               >
-                <div className="w-7 h-7 rounded-full mx-auto mb-1.5" style={{ background: `hsl(${t.primary})` }} />
+                <div className="w-8 h-8 rounded-full mx-auto mb-2 shadow-inner" style={{ background: `hsl(${t.primary})` }} />
                 {t.label}
               </button>
             ))}
@@ -285,90 +289,96 @@ export default function Settings() {
         </motion.div>
 
         {/* Body Measurements */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="card-premium rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Ruler size={16} className="text-primary" />
-              <h3 className="font-semibold text-sm">Medidas Corporais</h3>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Ruler size={20} className="text-primary" />
+              </div>
+              <h3 className="font-black text-lg">Medidas Corporais</h3>
             </div>
             <button
               onClick={() => { setTempMeasurements(measurements); setShowMeasurements(true); }}
-              className="text-xs text-primary font-medium"
+              className="text-sm text-primary font-bold px-4 py-2 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
             >
               {hasMeasurements ? 'Editar' : 'Adicionar'}
             </button>
           </div>
           {hasMeasurements ? (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               {MEASUREMENT_KEYS.filter(k => measurements[k.key]).map(({ key, label }) => (
-                <div key={key} className="bg-secondary rounded-xl p-2.5 text-center">
-                  <p className="text-sm font-bold">{measurements[key]}</p>
-                  <p className="text-[9px] text-muted-foreground font-body">{label.split(' (')[0]}</p>
+                <div key={key} className="bg-secondary/80 border border-border/30 rounded-xl p-3 text-center">
+                  <p className="text-lg font-black">{measurements[key]}</p>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">{label.split(' (')[0]}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-muted-foreground font-body">Registre suas medidas para acompanhar evolução do corpo.</p>
+            <p className="text-sm text-muted-foreground font-body bg-secondary/50 p-4 rounded-xl border border-border/30">Registre suas medidas para acompanhar evolução do corpo.</p>
           )}
-          <button onClick={() => navigate('/peso')} className="w-full bg-secondary rounded-xl p-3 flex items-center gap-2.5 active:scale-[0.98] transition-transform">
-            <Scale size={16} className="text-primary" />
+          <button onClick={() => navigate('/peso')} className="w-full bg-secondary/80 border border-border/50 rounded-xl p-4 flex items-center gap-4 active:scale-[0.98] transition-transform hover:border-primary/30 mt-2">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Scale size={20} className="text-primary" />
+            </div>
             <div className="text-left">
-              <p className="text-sm font-medium">Peso Corporal</p>
-              <p className="text-xs text-muted-foreground font-body">{weightCount} registros</p>
+              <p className="text-base font-bold">Peso Corporal</p>
+              <p className="text-xs text-muted-foreground font-bold mt-0.5">{weightCount} registros</p>
             </div>
           </button>
         </motion.div>
 
         {/* Export/Import */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Download size={16} className="text-primary" />
-            <h3 className="font-semibold text-sm">Backup & Exportação</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="card-premium rounded-2xl p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Download size={20} className="text-primary" />
+            </div>
+            <h3 className="font-black text-lg">Backup & Exportação</h3>
           </div>
-          <p className="text-[10px] text-muted-foreground font-body">Inclui treinos, refeições, peso corporal, medidas, perfil e configurações.</p>
-          <div className="space-y-2">
-            <button onClick={exportJSON} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
-              <FileJson size={18} className="text-primary" />
+          <p className="text-xs text-muted-foreground font-body px-1">Inclui treinos, refeições, peso corporal, medidas, perfil e configurações.</p>
+          <div className="space-y-3 pt-1">
+            <button onClick={exportJSON} className="w-full bg-secondary/80 border border-border/40 rounded-xl p-4 flex items-center gap-4 active:scale-[0.98] transition-transform hover:border-primary/30">
+              <FileJson size={22} className="text-primary" />
               <div className="text-left">
-                <p className="font-medium text-sm">Exportar Backup Completo (JSON)</p>
-                <p className="text-xs text-muted-foreground font-body">Todos os dados</p>
+                <p className="font-bold text-sm">Exportar Backup Completo (JSON)</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">Todos os dados</p>
               </div>
             </button>
-            <button onClick={exportCSV} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
-              <FileText size={18} className="text-primary" />
+            <button onClick={exportCSV} className="w-full bg-secondary/80 border border-border/40 rounded-xl p-4 flex items-center gap-4 active:scale-[0.98] transition-transform hover:border-primary/30">
+              <FileText size={22} className="text-primary" />
               <div className="text-left">
-                <p className="font-medium text-sm">Exportar Treinos (CSV)</p>
-                <p className="text-xs text-muted-foreground font-body">Histórico de treinos para planilha</p>
+                <p className="font-bold text-sm">Exportar Treinos (CSV)</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">Histórico de treinos para planilha</p>
               </div>
             </button>
-            <button onClick={exportNutritionCSV} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
-              <FileText size={18} className="text-primary" />
+            <button onClick={exportNutritionCSV} className="w-full bg-secondary/80 border border-border/40 rounded-xl p-4 flex items-center gap-4 active:scale-[0.98] transition-transform hover:border-primary/30">
+              <FileText size={22} className="text-primary" />
               <div className="text-left">
-                <p className="font-medium text-sm">Exportar Nutrição (CSV)</p>
-                <p className="text-xs text-muted-foreground font-body">Histórico de refeições para planilha</p>
+                <p className="font-bold text-sm">Exportar Nutrição (CSV)</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">Histórico de refeições para planilha</p>
               </div>
             </button>
-            <button onClick={importJSON} className="w-full bg-secondary rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform">
-              <Upload size={18} className="text-primary" />
+            <button onClick={importJSON} className="w-full bg-secondary/80 border border-border/40 rounded-xl p-4 flex items-center gap-4 active:scale-[0.98] transition-transform hover:border-primary/30">
+              <Upload size={22} className="text-primary" />
               <div className="text-left">
-                <p className="font-medium text-sm">Importar Backup</p>
-                <p className="text-xs text-muted-foreground font-body">Restaurar todos os dados</p>
+                <p className="font-bold text-sm">Importar Backup</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">Restaurar todos os dados</p>
               </div>
             </button>
           </div>
         </motion.div>
 
         {/* Stats */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="bg-card rounded-2xl border border-border/40 p-5 space-y-2.5">
-          <h3 className="font-semibold text-sm">Resumo dos Dados</h3>
-          <div className="space-y-2 text-sm font-body text-muted-foreground">
-            <div className="flex justify-between"><span>Rotinas salvas</span><span className="text-foreground font-medium">{templates.length}</span></div>
-            <div className="flex justify-between"><span>Treinos completados</span><span className="text-foreground font-medium">{history.length}</span></div>
-            <div className="flex justify-between"><span>Recordes pessoais</span><span className="text-foreground font-medium">{records.length}</span></div>
-            <div className="flex justify-between"><span>Metas ativas</span><span className="text-foreground font-medium">{goals.length}</span></div>
-            <div className="flex justify-between"><span>Refeições registradas</span><span className="text-foreground font-medium">{mealsCount}</span></div>
-            <div className="flex justify-between"><span>Registros de peso</span><span className="text-foreground font-medium">{weightCount}</span></div>
-            <div className="flex justify-between"><span>Exercícios personalizados</span><span className="text-foreground font-medium">{customExCount}</span></div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="card-premium rounded-2xl p-6 space-y-4">
+          <h3 className="font-black text-lg">Resumo dos Dados</h3>
+          <div className="space-y-3 text-sm font-bold text-muted-foreground pt-1 px-1">
+            <div className="flex justify-between border-b border-border/30 pb-2"><span>Rotinas salvas</span><span className="text-foreground font-black">{templates.length}</span></div>
+            <div className="flex justify-between border-b border-border/30 pb-2"><span>Treinos completados</span><span className="text-foreground font-black">{history.length}</span></div>
+            <div className="flex justify-between border-b border-border/30 pb-2"><span>Recordes pessoais</span><span className="text-foreground font-black">{records.length}</span></div>
+            <div className="flex justify-between border-b border-border/30 pb-2"><span>Metas ativas</span><span className="text-foreground font-black">{goals.length}</span></div>
+            <div className="flex justify-between border-b border-border/30 pb-2"><span>Refeições registradas</span><span className="text-foreground font-black">{mealsCount}</span></div>
+            <div className="flex justify-between border-b border-border/30 pb-2"><span>Registros de peso</span><span className="text-foreground font-black">{weightCount}</span></div>
+            <div className="flex justify-between"><span>Exercícios personalizados</span><span className="text-foreground font-black">{customExCount}</span></div>
           </div>
         </motion.div>
 
@@ -376,10 +386,10 @@ export default function Settings() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
           <button
             onClick={() => setShowClearConfirm(true)}
-            className="w-full bg-destructive/10 text-destructive rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform"
+            className="w-full bg-destructive/10 text-destructive rounded-2xl p-5 flex items-center justify-center gap-3 active:scale-[0.98] transition-transform border border-destructive/20 hover:bg-destructive/20"
           >
-            <Trash2 size={18} />
-            <span className="font-medium text-sm">Limpar Todos os Dados</span>
+            <Trash2 size={20} />
+            <span className="font-black text-base">Limpar Todos os Dados</span>
           </button>
         </motion.div>
       </div>
