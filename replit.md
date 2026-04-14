@@ -14,14 +14,14 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 ## Key Features
 
 - Workout tracking with templates, folders, history, personal records, and real-time volume tracking
-- AI Coach chat powered by OpenAI (streaming SSE) with 8 quick action prompts
+- AI Coach chat powered by OpenAI (streaming SSE) with 8 data-aware quick action prompts (routine building, weekly analysis, substitutions, load progression, 8-week program, overtraining risk, weekly split, evolution prediction)
 - AI meal analysis via photo or text description (vision model)
 - Nutrition tracking with macros (grams/percent toggle), calorie balance indicator, editable water goal, custom ml input, and meal history
 - Body weight tracking with chart, quick-adjust buttons, and history
 - Body composition: BMI, body fat % (US Navy method), BMR (Mifflin-St Jeor), TDEE, lean/fat mass
 - Custom exercises: create/delete with CUSTOM badge, merged with built-in 175+ exercises
 - Training programs: create/activate/start with template linking, preset program library
-- Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs
+- Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, AI Insights panel (stagnation alerts, overtraining risk, progress predictions)
 - Settings: 9 color themes, user profile (height/age/sex/activity/body measurements), body measurements, complete backup/export (JSON + CSV for workouts & nutrition)
 - iOS safe-area support for Capacitor apps
 - Haptic feedback via Vibration API (mobile/Android)
@@ -34,6 +34,7 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - `GET /api/health` — Health check / AI connectivity test
 - `POST /api/ai-coach` — AI fitness coach chat (streaming SSE)
 - `POST /api/analyze-meal` — AI meal nutritional analysis (image or text)
+- `POST /api/analyze-workout` — Post-workout AI analysis comparing current vs previous workout (non-streaming)
 
 ## Workflows
 

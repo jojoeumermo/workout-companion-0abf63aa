@@ -235,6 +235,64 @@ function parseNutritionResponse(content: string): any | null {
   }
 }
 
+// Post-workout AI analysis (non-streaming)
+app.post("/api/analyze-workout", async (req, res) => {
+  const { workout, previousWorkout, prs } = req.body as {
+    workout: {
+      name: string;
+      duration: number;
+      totalVolume: number;
+      exercises: { name: string; muscle: string; sets: { weight: number; reps: number }[] }[];
+    };
+    previousWorkout?: {
+      name: string;
+      totalVolume: number;
+      exercises: { name: string; sets: { weight: number; reps: number }[] }[];
+    };
+    prs?: { exerciseName: string; type: string; value: string }[];
+  };
+
+  if (!workout) {
+    res.status(400).json({ error: "Dados do treino ausentes." });
+    return;
+  }
+
+  const prompt = `Analise este treino concluído e gere um resumo inteligente em português brasileiro.
+
+Treino atual: ${workout.name}
+Duração: ${Math.round(workout.duration / 60)} minutos
+Volume total: ${workout.totalVolume}kg
+Exercícios: ${workout.exercises.map(e => `${e.name} (${e.muscle}): ${e.sets.map(s => `${s.weight}kg×${s.reps}`).join(', ')}`).join(' | ')}
+${prs && prs.length > 0 ? `Recordes batidos: ${prs.map(p => `${p.exerciseName} - ${p.type}: ${p.value}`).join(', ')}` : ''}
+${previousWorkout ? `Treino anterior (${previousWorkout.name}): volume ${previousWorkout.totalVolume}kg | ${previousWorkout.exercises.map(e => `${e.name}: ${e.sets.map(s => `${s.weight}kg×${s.reps}`).join(', ')}`).join(' | ')}` : 'Sem treino anterior para comparação.'}
+
+Gere um resumo com:
+1. Uma frase de abertura motivacional e direta (1 linha)
+2. **Destaques do treino** (2-3 pontos, use ✅)  
+3. **Comparação com treino anterior** (se disponível, use 📈 ou 📉)
+4. **Recomendação para o próximo treino** (1-2 pontos, use 🎯)
+
+Seja conciso (máx 150 palavras), direto e específico com os números. Use markdown.`;
+
+  try {
+    const openai = getOpenAI();
+    const result = await withRetry(() => openai.chat.completions.create({
+      model: AI_MODEL,
+      messages: [
+        { role: "system", content: "Você é um treinador pessoal expert. Analise treinos e dê feedback conciso, motivador e baseado em dados." },
+        { role: "user", content: prompt },
+      ],
+      max_tokens: 400,
+    }));
+    const text = result.choices[0]?.message?.content || "";
+    res.json({ analysis: text });
+  } catch (err) {
+    const { message, status } = friendlyError(err);
+    console.error("[analyze-workout]", err instanceof Error ? err.message : err);
+    res.status(status).json({ error: message });
+  }
+});
+
 if (isDev) {
   app.use(
     "/",

@@ -4,20 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import PageShell from '@/components/PageShell';
 import { apiFetch } from '@/lib/api';
-import { useHistory, usePersonalRecords, useTemplates } from '@/hooks/useStorage';
+import { useHistory, usePersonalRecords, useTemplates, useBodyWeight } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
+import { buildWorkoutContextForAI, detectStagnation, detectOvertraining, getWeeklyStats } from '@/lib/workoutAnalysis';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const QUICK_PROMPTS = [
-  { icon: Dumbbell, label: 'Criar treino', prompt: 'Crie uma rotina de treino completa para hipertrofia, considerando meu histórico. Inclua exercícios, séries, repetições e tempo de descanso.' },
-  { icon: TrendingUp, label: 'Analisar progresso', prompt: 'Analise meu progresso de treinos das últimas semanas. Identifique pontos fortes, fracos e sugira melhorias.' },
-  { icon: Zap, label: 'Substituir exercício', prompt: 'Sugira exercícios substitutos para os principais exercícios que faço, mantendo os mesmos grupos musculares.' },
-  { icon: Target, label: 'Progressão de carga', prompt: 'Analise meus pesos atuais e sugira progressão de carga para os próximos treinos, baseado no meu histórico.' },
-  { icon: Brain, label: 'Gerar programa', prompt: 'Crie um programa de treino de 8 semanas com periodização, incluindo fases de adaptação, progressão, intensidade e deload.' },
-  { icon: AlertTriangle, label: 'Detectar overtraining', prompt: 'Analise meu volume e frequência de treino recentes. Estou em risco de overtraining? Devo fazer um deload?' },
-  { icon: Calendar, label: 'Dividir semana', prompt: 'Sugira a melhor divisão de treino para minha semana, considerando meu histórico e grupos musculares treinados.' },
-  { icon: Sparkles, label: 'Insights do treino', prompt: 'Me dê insights inteligentes sobre meus treinos: tendências de volume, músculos mais e menos treinados, e recomendações.' },
+  { icon: Dumbbell, label: 'Criar rotina', prompt: 'Com base no meu histórico real de treinos e grupos musculares que já trabalho, crie uma nova rotina de treino personalizada. Inclua exercícios, séries, reps e descanso em formato de tabela.' },
+  { icon: TrendingUp, label: 'Analisar semana', prompt: 'Faça uma análise completa dos meus treinos desta semana: distribuição muscular, volume, frequência, qualidade e o que melhorar na próxima semana.' },
+  { icon: Zap, label: 'Substituições', prompt: 'Baseado nos exercícios que faço atualmente, sugira alternativas equivalentes para cada um — com o mesmo grupo muscular mas equipamentos diferentes ou variações melhores.' },
+  { icon: Target, label: 'Progressão de carga', prompt: 'Analise os exercícios em que há estagnação ou progressão no meu histórico. Para cada um, sugira uma estratégia específica de progressão de carga para as próximas 4 semanas.' },
+  { icon: Brain, label: 'Programa 8 semanas', prompt: 'Crie um programa completo de 8 semanas com periodização baseado no meu nível e histórico. Inclua fases de adaptação, volume e intensidade com tabelas detalhadas.' },
+  { icon: AlertTriangle, label: 'Risco overtraining', prompt: 'Analise meu volume total, frequência, grupos musculares e dias de descanso. Estou em risco de overtraining? O que devo ajustar imediatamente?' },
+  { icon: Calendar, label: 'Divisão semanal', prompt: 'Com base nos treinos que já fiz e meus músculos mais e menos trabalhados, qual a melhor divisão de treino para a minha semana? Justifique cada dia.' },
+  { icon: Sparkles, label: 'Previsão de evolução', prompt: 'Com base na minha progressão de carga histórica nos principais exercícios, estime minha evolução nas próximas 4-8 semanas e dê recomendações para acelerar os ganhos.' },
 ];
 
 export default function AICoach() {
@@ -30,6 +31,7 @@ export default function AICoach() {
   const [history] = useHistory();
   const { records } = usePersonalRecords();
   const [templates] = useTemplates();
+  const { entries: weightEntries } = useBodyWeight();
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,44 +44,23 @@ export default function AICoach() {
   const buildContext = () => {
     const parts: string[] = [];
 
-    // Recent workouts with more detail
-    const recentWorkouts = history.slice(-10).reverse();
-    if (recentWorkouts.length > 0) {
-      parts.push('Últimos treinos do usuário:');
-      recentWorkouts.forEach(w => {
-        const date = new Date(w.completedAt).toLocaleDateString('pt-BR');
-        const exercises = w.exercises.map(e => {
-          const ex = getExerciseById(e.exerciseId);
-          const completedSets = e.sets.filter(s => s.completed);
-          const sets = completedSets.map(s => `${s.weight}kg×${s.reps}`).join(', ');
-          const vol = completedSets.reduce((s, set) => s + set.weight * set.reps, 0);
-          return `${ex?.name || 'Exercício'} [${ex?.muscleGroup}]: ${sets} (vol: ${vol}kg)`;
-        }).join('\n  ');
-        parts.push(`- ${w.name} (${date}, ${Math.round(w.duration / 60)}min, vol total: ${w.totalVolume}kg):\n  ${exercises}`);
-      });
-    }
-
-    // Training frequency
-    const thisWeek = history.filter(w => {
-      const d = new Date(w.completedAt);
-      return d >= new Date(Date.now() - 7 * 86400000);
-    }).length;
-    const lastWeek = history.filter(w => {
-      const d = new Date(w.completedAt);
-      return d >= new Date(Date.now() - 14 * 86400000) && d < new Date(Date.now() - 7 * 86400000);
-    }).length;
-    parts.push(`\nFrequência: ${thisWeek} treinos esta semana, ${lastWeek} semana passada, ${history.length} total.`);
+    // Rich AI context from workoutAnalysis utility
+    const richContext = buildWorkoutContextForAI(history);
+    parts.push(richContext);
 
     // Personal records
     if (records.length > 0) {
-      parts.push('\nRecordes pessoais:');
-      records.forEach(r => {
-        const ex = getExerciseById(r.exerciseId);
-        parts.push(`- ${ex?.name || 'Exercício'} [${ex?.muscleGroup}]: ${r.maxWeight}kg peso, ${r.maxReps} reps, ${r.maxVolume}kg vol (${new Date(r.date).toLocaleDateString('pt-BR')})`);
-      });
+      parts.push('\nRecordes pessoais (PRs):');
+      records
+        .map(r => ({ ...r, ex: getExerciseById(r.exerciseId) }))
+        .filter(r => r.ex)
+        .sort((a, b) => b.maxWeight - a.maxWeight)
+        .forEach(r => {
+          parts.push(`- ${r.ex!.name} [${r.ex!.muscleGroup}]: ${r.maxWeight}kg, ${r.maxReps} reps, vol ${r.maxVolume}kg (${new Date(r.date).toLocaleDateString('pt-BR')})`);
+        });
     }
 
-    // Volume by muscle
+    // Volume by muscle (all time)
     const muscleVol: Record<string, number> = {};
     history.forEach(w => w.exercises.forEach(e => {
       const ex = getExerciseById(e.exerciseId);
@@ -89,15 +70,50 @@ export default function AICoach() {
       }
     }));
     if (Object.keys(muscleVol).length > 0) {
-      parts.push('\nVolume acumulado por músculo:');
+      parts.push('\nVolume total acumulado por músculo:');
       Object.entries(muscleVol).sort(([,a],[,b]) => b - a).forEach(([m, v]) => {
         parts.push(`- ${m}: ${(v / 1000).toFixed(1)}t`);
       });
     }
 
+    // Stagnation detection
+    if (history.length >= 3) {
+      const stagnation = detectStagnation(history, 3);
+      if (stagnation.length > 0) {
+        parts.push('\nExercícios com estagnação detectada (sem progressão de carga):');
+        stagnation.forEach(s => {
+          parts.push(`- ${s.exerciseName}: ${s.workoutCount} treinos em ${s.avgWeight}kg (${s.avgReps} reps médias)`);
+        });
+      }
+
+      // Overtraining detection
+      const ot = detectOvertraining(history);
+      if (ot.risk !== 'low') {
+        parts.push(`\nRisco de overtraining: ${ot.risk.toUpperCase()}`);
+        parts.push('Motivos: ' + ot.reasons.join('; '));
+        if (ot.suggestions.length > 0) parts.push('Sugestões: ' + ot.suggestions.join('; '));
+      }
+
+      // Weekly stats
+      const weeklyStats = getWeeklyStats(history);
+      if (weeklyStats.totalWorkouts > 0) {
+        parts.push(`\nEstatísticas da semana atual: ${weeklyStats.totalWorkouts} treinos, ${weeklyStats.totalVolume}kg volume, ${weeklyStats.totalSets} séries, ${Math.round(weeklyStats.avgDuration / 60)}min duração média`);
+        if (weeklyStats.muscleGroups.length > 0) {
+          parts.push('Músculos treinados esta semana: ' + weeklyStats.muscleGroups.join(', '));
+        }
+      }
+    }
+
+    // Body weight trend
+    if (weightEntries.length > 0) {
+      const recent = weightEntries.slice(-5);
+      const trend = recent.length >= 2 ? (recent[recent.length - 1].weight - recent[0].weight).toFixed(1) : null;
+      parts.push(`\nPeso corporal: atual ${recent[recent.length - 1].weight}kg${trend ? `, tendência ${Number(trend) >= 0 ? '+' : ''}${trend}kg nos últimos registros` : ''}`);
+    }
+
     // Templates
     if (templates.length > 0) {
-      parts.push('\nRotinas salvas:');
+      parts.push('\nRotinas salvas do usuário:');
       templates.forEach(t => {
         const exNames = t.exercises.map(e => {
           const ex = getExerciseById(e.exerciseId);

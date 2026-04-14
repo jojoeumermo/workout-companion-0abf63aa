@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp, Sparkles, TrendingDown, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import { useActiveWorkout, useHistory, usePersonalRecords } from '@/hooks/useStorage';
 import { getExerciseById, getAllExercises, muscleGroups } from '@/data/exercises';
 import { CompletedWorkout, CompletedExercise, ActiveSet } from '@/types/workout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { haptic } from '@/lib/haptic';
+import { apiFetch } from '@/lib/api';
+import { suggestWeight } from '@/lib/workoutAnalysis';
 
 export default function ActiveWorkoutPage() {
   const navigate = useNavigate();
@@ -30,6 +33,9 @@ export default function ActiveWorkoutPage() {
   const [showSummary, setShowSummary] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState<CompletedWorkout | null>(null);
   const [summaryPRs, setSummaryPRs] = useState<{ exerciseName: string; type: string; value: string }[]>([]);
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [summaryPreviousWorkout, setSummaryPreviousWorkout] = useState<CompletedWorkout | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const exerciseTimerRef = useRef<ReturnType<typeof setInterval>>();
   const exerciseStartRef = useRef(Date.now());
@@ -106,6 +112,7 @@ export default function ActiveWorkoutPage() {
     return null;
   };
   const previousSets = currentEx ? getPreviousData(currentEx.exerciseId) : null;
+  const weightSuggestion = currentEx ? suggestWeight(currentEx.exerciseId, history) : null;
 
   const updateSet = (setIndex: number, field: 'weight' | 'reps', value: number) => {
     setActiveWorkout(prev => {
@@ -340,10 +347,61 @@ export default function ActiveWorkoutPage() {
       });
     });
 
+    // Find previous workout with similar exercises for AI comparison
+    const previousWorkout = history.length > 0 ? history[history.length - 1] : null;
+
     setHistory(prev => [...prev, completed]);
     setWorkoutSummary(completed);
     setSummaryPRs(prs);
+    setSummaryPreviousWorkout(previousWorkout);
+    setAiAnalysis(null);
     setShowSummary(true);
+  };
+
+  const analyzeWorkout = async () => {
+    if (!workoutSummary || isAnalyzing) return;
+    setIsAnalyzing(true);
+    try {
+      const workoutPayload = {
+        name: workoutSummary.name,
+        duration: workoutSummary.duration,
+        totalVolume: workoutSummary.totalVolume,
+        exercises: workoutSummary.exercises.map(ex => {
+          const exInfo = getExerciseById(ex.exerciseId);
+          return {
+            name: exInfo?.name || ex.exerciseId,
+            muscle: exInfo?.muscleGroup || '',
+            sets: ex.sets.filter(s => s.completed).map(s => ({ weight: s.weight, reps: s.reps })),
+          };
+        }),
+      };
+
+      const previousPayload = summaryPreviousWorkout ? {
+        name: summaryPreviousWorkout.name,
+        totalVolume: summaryPreviousWorkout.totalVolume,
+        exercises: summaryPreviousWorkout.exercises.map(ex => {
+          const exInfo = getExerciseById(ex.exerciseId);
+          return {
+            name: exInfo?.name || ex.exerciseId,
+            sets: ex.sets.filter(s => s.completed).map(s => ({ weight: s.weight, reps: s.reps })),
+          };
+        }),
+      } : undefined;
+
+      const resp = await apiFetch('/api/analyze-workout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workout: workoutPayload, previousWorkout: previousPayload, prs: summaryPRs }),
+      });
+
+      if (!resp.ok) throw new Error(`Erro ${resp.status}`);
+      const data = await resp.json();
+      setAiAnalysis(data.analysis || 'Análise indisponível.');
+    } catch (e) {
+      setAiAnalysis('❌ Não foi possível gerar a análise agora. Tente mais tarde.');
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const closeSummary = () => {
@@ -572,19 +630,45 @@ export default function ActiveWorkoutPage() {
                 </div>
               </div>
 
-              {/* Previous workout data */}
-              {previousSets && previousSets.length > 0 && (
-                <div className="bg-secondary/50 rounded-xl px-4 py-3 space-y-1 border border-border/20">
-                  <p className="text-xs text-muted-foreground font-body font-medium">Treino anterior</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-0.5">
-                    {previousSets.map((s, i) => (
-                      <span key={i} className="text-xs text-secondary-foreground font-body">
-                        S{i + 1}: {s.weight}kg × {s.reps}
-                      </span>
-                    ))}
+              {/* Previous workout data + weight suggestion */}
+              <div className="space-y-2">
+                {previousSets && previousSets.length > 0 && (
+                  <div className="bg-secondary/50 rounded-xl px-4 py-3 space-y-1 border border-border/20">
+                    <p className="text-xs text-muted-foreground font-body font-medium">Último treino</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+                      {previousSets.map((s, i) => (
+                        <span key={i} className="text-xs text-secondary-foreground font-body">
+                          S{i + 1}: {s.weight}kg × {s.reps}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+                {weightSuggestion && weightSuggestion.suggested > 0 && (
+                  <div className={`rounded-xl px-4 py-2.5 flex items-center gap-2.5 border ${
+                    weightSuggestion.trend === 'up'
+                      ? 'bg-primary/5 border-primary/20'
+                      : weightSuggestion.trend === 'down'
+                      ? 'bg-orange-500/5 border-orange-500/20'
+                      : 'bg-secondary/40 border-border/20'
+                  }`}>
+                    {weightSuggestion.trend === 'up' ? (
+                      <TrendingUp size={14} className="text-primary shrink-0" />
+                    ) : weightSuggestion.trend === 'down' ? (
+                      <TrendingDown size={14} className="text-orange-400 shrink-0" />
+                    ) : (
+                      <Minus size={14} className="text-muted-foreground shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <span className="text-xs font-body text-muted-foreground">Sugestão: </span>
+                      <span className={`text-xs font-bold ${
+                        weightSuggestion.trend === 'up' ? 'text-primary' : 'text-foreground'
+                      }`}>{weightSuggestion.suggested}kg</span>
+                      <span className="text-[10px] text-muted-foreground font-body ml-1.5">— {weightSuggestion.reason}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Sets */}
               <div className="space-y-2">
@@ -825,6 +909,28 @@ export default function ActiveWorkoutPage() {
                   );
                 })}
               </div>
+
+              {/* AI Analysis */}
+              {aiAnalysis ? (
+                <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={15} className="text-primary shrink-0" />
+                    <p className="text-sm font-semibold text-primary">Análise do FitAI</p>
+                  </div>
+                  <div className="prose prose-sm prose-invert max-w-none text-xs text-foreground font-body leading-relaxed [&_strong]:text-foreground [&_ul]:pl-4 [&_li]:my-0.5">
+                    <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={analyzeWorkout}
+                  disabled={isAnalyzing}
+                  className="w-full bg-primary/10 border border-primary/20 text-primary rounded-xl py-3 text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-60"
+                >
+                  <Sparkles size={16} />
+                  {isAnalyzing ? 'Analisando com IA...' : 'Analisar Treino com IA'}
+                </button>
+              )}
 
               <button
                 onClick={closeSummary}

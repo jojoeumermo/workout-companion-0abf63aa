@@ -1,0 +1,53 @@
+Quero adicionar novas funcionalidades avançadas ao app de treino, sem remover nada que já existe e sem quebrar o funcionamento atual.
+
+IMPORTANTE:
+- manter todas as funcionalidades atuais
+- não recriar o projeto do zero
+- não simplificar o app
+- preservar FitAI Coach, rotinas, histórico, progresso e biblioteca
+- implementar tudo com cuidado, revisando impactos no restante do sistema
+
+Quero adicionar estas melhorias com IA:
+
+1. Sugestão automática de carga
+Antes de cada exercício ou série, analisar o histórico do usuário e mostrar uma sugestão de peso baseada no último treino e na evolução recente.
+
+2. Comparação com o último treino
+Na tela do exercício, mostrar o último desempenho naquele exercício, incluindo peso, repetições e séries, para facilitar progressão.
+
+3. IA detectando estagnação
+Analisar histórico de progresso e identificar quando o usuário está parado há muitos treinos no mesmo exercício, sugerindo ajuste de carga, volume, descanso ou substituição.
+
+4. IA detectando possível overtraining
+Analisar frequência, volume e repetição de grupos musculares para alertar quando houver sinais de excesso de treino ou recuperação insuficiente.
+
+5. IA sugerindo substituições de exercícios
+Permitir que o FitAI Coach sugira exercícios equivalentes com base em equipamento disponível, foco muscular ou limitação do usuário.
+
+6. IA analisando a semana de treino
+Gerar um resumo automático da semana com distribuição muscular, frequência, volume e possíveis desequilíbrios.
+
+7. IA criando ou ajustando rotinas
+Permitir que o FitAI Coach monte ou refine rotinas com base em objetivo, tempo disponível, frequência semanal e equipamentos.
+
+8. IA gerando análise pós-treino
+Após finalizar um treino, mostrar um resumo inteligente com progresso, volume, recordes, comparação com treino anterior e observações úteis.
+
+9. IA prevendo evolução
+Criar uma estimativa simples de evolução futura em alguns exercícios, com base no histórico recente do usuário.
+
+10. FitAI Coach mais contextual
+Melhorar o chat para que ele use os dados reais do app quando possível, como histórico, rotinas, progresso e exercícios recentes.
+
+Requisitos de implementação:
+- manter interface clara e leve
+- adicionar tratamento de erro
+- isolar bem essas features para que uma não quebre a outra
+- revisar estado global, hooks, integrações e performance
+- testar os fluxos principais ao final
+
+No final, me diga:
+- quais arquivos foram alterados
+- quais novas funções foram criadas
+- se existe alguma dependência nova
+- quais partes ainda precisam de ajuste manual

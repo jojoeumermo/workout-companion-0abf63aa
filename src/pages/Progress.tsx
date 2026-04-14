@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity, Scale } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity, Scale, AlertTriangle, Zap, Bot } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip, ReferenceLine } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import PageShell from '@/components/PageShell';
 import { useHistory, useGoals, usePersonalRecords, useBodyWeight } from '@/hooks/useStorage';
 import { getExerciseById } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { detectStagnation, detectOvertraining, predictProgress } from '@/lib/workoutAnalysis';
 
 export default function Progress() {
   const navigate = useNavigate();
@@ -196,6 +197,11 @@ export default function Progress() {
     return weightChartData.reduce((s, e) => s + e.weight, 0) / weightChartData.length;
   }, [weightChartData]);
 
+  // AI Insights
+  const stagnationAlerts = useMemo(() => detectStagnation(history, 3), [history]);
+  const overttrainingAlert = useMemo(() => detectOvertraining(history), [history]);
+  const progressPredictions = useMemo(() => predictProgress(history), [history]);
+
   const totalWorkouts = history.length;
   const totalVolume = history.reduce((s, w) => s + w.totalVolume, 0);
   const avgDuration = history.length > 0 ? Math.round(history.reduce((s, w) => s + w.duration, 0) / history.length / 60) : 0;
@@ -259,6 +265,92 @@ export default function Progress() {
             </div>
           </div>
         </motion.div>
+
+        {/* AI Insights Panel */}
+        {history.length >= 3 && (overttrainingAlert.risk !== 'low' || stagnationAlerts.length > 0 || progressPredictions.length > 0) && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.025 }} className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bot size={16} className="text-primary" />
+                <h3 className="font-bold text-sm">Insights de IA</h3>
+              </div>
+              <button onClick={() => navigate('/ai-coach')} className="text-xs text-primary font-medium">Ver FitAI →</button>
+            </div>
+
+            {/* Overtraining Alert */}
+            {overttrainingAlert.risk !== 'low' && (
+              <div className={`rounded-2xl p-4 space-y-2 border ${overttrainingAlert.risk === 'high' ? 'bg-red-500/5 border-red-500/20' : 'bg-orange-500/5 border-orange-500/20'}`}>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle size={15} className={overttrainingAlert.risk === 'high' ? 'text-red-400' : 'text-orange-400'} />
+                  <p className="text-sm font-semibold">
+                    {overttrainingAlert.risk === 'high' ? '⚠️ Risco alto de overtraining' : '⚠️ Atenção ao volume'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  {overttrainingAlert.reasons.map((r, i) => (
+                    <p key={i} className="text-xs text-muted-foreground font-body">• {r}</p>
+                  ))}
+                </div>
+                {overttrainingAlert.suggestions.length > 0 && (
+                  <div className="bg-secondary/50 rounded-xl px-3 py-2">
+                    <p className="text-xs font-medium mb-1">Sugestões:</p>
+                    {overttrainingAlert.suggestions.map((s, i) => (
+                      <p key={i} className="text-xs text-muted-foreground font-body">→ {s}</p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Stagnation Alerts */}
+            {stagnationAlerts.length > 0 && (
+              <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-2xl p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Zap size={15} className="text-yellow-400" />
+                  <p className="text-sm font-semibold">Estagnação detectada</p>
+                </div>
+                <div className="space-y-1.5">
+                  {stagnationAlerts.slice(0, 4).map((alert, i) => (
+                    <div key={i} className="flex items-center justify-between bg-secondary/50 rounded-xl px-3 py-2">
+                      <div>
+                        <p className="text-xs font-medium">{alert.exerciseName}</p>
+                        <p className="text-[10px] text-muted-foreground font-body">{alert.workoutCount} treinos sem progressão</p>
+                      </div>
+                      <span className="text-xs text-yellow-400 font-bold">{alert.avgWeight}kg</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted-foreground font-body">Tente aumentar 2.5kg ou variar repetições para quebrar o platô.</p>
+              </div>
+            )}
+
+            {/* Progress Predictions */}
+            {progressPredictions.length > 0 && (
+              <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={15} className="text-primary" />
+                  <p className="text-sm font-semibold">Previsão de evolução (4 semanas)</p>
+                </div>
+                <div className="space-y-2">
+                  {progressPredictions.slice(0, 3).map((pred, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium truncate">{pred.exerciseName}</p>
+                        <p className="text-[10px] text-muted-foreground font-body">+{pred.weeklyGain}kg/semana</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-muted-foreground font-body">{pred.currentMax}kg</span>
+                        <span className="text-xs text-muted-foreground font-body mx-1.5">→</span>
+                        <span className="text-xs text-primary font-bold">{pred.predictedIn4Weeks}kg</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted-foreground font-body">Estimativas baseadas no seu histórico de progressão.</p>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* Weekly Goal */}
         {weeklyGoal && (
