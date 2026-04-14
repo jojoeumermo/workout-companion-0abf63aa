@@ -152,12 +152,25 @@
     box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.3), inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
   }
 
+  .light .card-premium {
+    background: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 10% 98%) 100%);
+    border: 1px solid hsl(220 8% 90%);
+    box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.06), inset 0 1px 0 0 hsl(0 0% 100% / 0.8);
+  }
+
   .card-interactive {
     background: linear-gradient(145deg, hsl(225 15% 8%) 0%, hsl(225 12% 6%) 100%);
     border: 1px solid hsl(225 8% 13% / 0.7);
     box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.3), inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
     transition: all 0.2s ease;
   }
+
+  .light .card-interactive {
+    background: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 10% 98%) 100%);
+    border: 1px solid hsl(220 8% 90%);
+    box-shadow: 0 2px 12px 0 hsl(0 0% 0% / 0.06);
+  }
+
   .card-interactive:active {
     transform: scale(0.97);
   }
