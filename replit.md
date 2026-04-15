@@ -31,6 +31,11 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - Custom exercises: create/delete with CUSTOM badge, image upload (base64, up to 2MB stored in localStorage), merged with built-in 175+ exercises; muscle-group color coding throughout (red=Peito, blue=Costas, purple=Ombros, green=Bíceps, etc.)
 - Training programs: create/activate/start with template linking, preset program library with hero image cards and detail dialogs; AI-generated programs can be saved directly from AICoach
 - Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, AI Insights panel (stagnation alerts, overtraining risk, progress predictions)
+- Gamification system (`src/lib/gamification.ts`): XP per workout (base + volume + muscle diversity + duration + streak bonus), 10 levels (Iniciante → Mestre), 15 achievements, streak tracking (current + best)
+- Dashboard gamification card: Level badge, animated XP progress bar, streak display, weekly muscle volume distribution bars, stagnation/overtraining alerts surfaced directly
+- Post-workout summary redesign: gradient hero banner with "+N XP ganhos", per-exercise comparison vs last session (↑↓→ with volume diff), PRs highlighted, AI analysis button
+- Exercise Evolution Chart in ExerciseDetail: recharts LineChart showing max weight per session over time, with trend indicator (+X kg ↑ / Estável)
+- Achievements grid in Progress page: 15 unlockable achievements with earn/locked state, level/XP progress bar, current streak + best streak display
 - Settings: 9 color themes, user profile (height/age/sex/activity/body measurements), body measurements, complete backup/export (JSON + CSV for workouts & nutrition)
 - iOS safe-area support for Capacitor apps
 - Haptic feedback via Vibration API (mobile/Android)

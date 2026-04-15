@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp, Sparkles, TrendingDown, Minus } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp, Sparkles, TrendingDown, Minus, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { useActiveWorkout, useHistory, usePersonalRecords } from '@/hooks/useStorage';
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { haptic } from '@/lib/haptic';
 import { apiFetch } from '@/lib/api';
 import { suggestWeight } from '@/lib/workoutAnalysis';
+import { calculateXPForWorkout, computeStreak } from '@/lib/gamification';
 
 export default function ActiveWorkoutPage() {
   const navigate = useNavigate();
@@ -837,110 +838,155 @@ export default function ActiveWorkoutPage() {
 
       {/* Post-Workout Summary */}
       <Dialog open={showSummary} onOpenChange={() => closeSummary()}>
-        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl">🎉 Treino Finalizado!</DialogTitle>
-          </DialogHeader>
-          {workoutSummary && (
-            <div className="space-y-5 mt-2">
-              <h3 className="text-center font-bold text-lg">{workoutSummary.name}</h3>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-secondary rounded-xl p-3 text-center space-y-1">
-                  <Clock size={16} className="text-primary mx-auto" />
-                  <p className="text-lg font-bold">{formatTime(workoutSummary.duration)}</p>
-                  <p className="text-[10px] text-muted-foreground font-body">duração</p>
-                </div>
-                <div className="bg-secondary rounded-xl p-3 text-center space-y-1">
-                  <TrendingUp size={16} className="text-primary mx-auto" />
-                  <p className="text-lg font-bold">{workoutSummary.totalVolume > 1000 ? `${(workoutSummary.totalVolume / 1000).toFixed(1)}t` : `${workoutSummary.totalVolume}kg`}</p>
-                  <p className="text-[10px] text-muted-foreground font-body">volume</p>
-                </div>
-                <div className="bg-secondary rounded-xl p-3 text-center space-y-1">
-                  <Dumbbell size={16} className="text-primary mx-auto" />
-                  <p className="text-lg font-bold">{workoutSummary.exercises.length}</p>
-                  <p className="text-[10px] text-muted-foreground font-body">exercícios</p>
-                </div>
-              </div>
-
-              {/* Muscles worked */}
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">Músculos Trabalhados</h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {[...new Set(workoutSummary.exercises.map(e => getExerciseById(e.exerciseId)?.muscleGroup).filter(Boolean))].map(m => (
-                    <span key={m} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-lg font-medium">{m}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* PRs */}
-              {summaryPRs.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Trophy size={16} className="text-primary" />
-                    <h4 className="font-semibold text-sm">Recordes Batidos!</h4>
-                  </div>
-                  <div className="space-y-1.5">
-                    {summaryPRs.map((pr, i) => (
-                      <div key={i} className="bg-primary/5 border border-primary/20 rounded-xl px-3 py-2 text-sm">
-                        <span className="font-medium">{pr.exerciseName}</span>
-                        <span className="text-muted-foreground"> — {pr.type}: </span>
-                        <span className="text-primary font-semibold">{pr.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Exercises detail */}
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">Detalhes</h4>
-                {workoutSummary.exercises.map((ex, i) => {
-                  const exInfo = getExerciseById(ex.exerciseId);
-                  const completedSets = ex.sets.filter(s => s.completed);
-                  const vol = completedSets.reduce((s, set) => s + set.weight * set.reps, 0);
-                  return (
-                    <div key={i} className="bg-secondary rounded-xl px-3 py-2.5 flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium">{exInfo?.name}</p>
-                        <p className="text-xs text-muted-foreground font-body">{completedSets.length} séries completadas</p>
-                      </div>
-                      <span className="text-xs text-primary font-medium">{vol}kg</span>
+        <DialogContent className="bg-card border-border max-h-[90vh] overflow-y-auto p-0">
+          {workoutSummary && (() => {
+            const { current: streak } = computeStreak([...history]);
+            const xpEarned = calculateXPForWorkout(workoutSummary, streak);
+            const muscles = [...new Set(workoutSummary.exercises.map(e => getExerciseById(e.exerciseId)?.muscleGroup).filter(Boolean))];
+            return (
+              <div className="space-y-0">
+                {/* Hero banner */}
+                <div className="relative rounded-t-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.75) 100%)' }}>
+                  <div className="absolute inset-0 bg-grid-white/10" />
+                  <div className="relative p-6 text-center space-y-2">
+                    <div className="text-5xl mb-2">🎉</div>
+                    <h2 className="text-2xl font-black text-primary-foreground tracking-tight">Treino Finalizado!</h2>
+                    <p className="text-primary-foreground/70 font-body text-sm">{workoutSummary.name}</p>
+                    <div className="inline-flex items-center gap-2 bg-primary-foreground/20 rounded-full px-4 py-1.5 mt-2">
+                      <Zap size={14} className="text-primary-foreground" />
+                      <span className="text-primary-foreground font-black text-sm">+{xpEarned} XP ganhos</span>
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* AI Analysis */}
-              {aiAnalysis ? (
-                <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={15} className="text-primary shrink-0" />
-                    <p className="text-sm font-semibold text-primary">Análise do FitAI</p>
-                  </div>
-                  <div className="prose prose-sm prose-invert max-w-none text-xs text-foreground font-body leading-relaxed [&_strong]:text-foreground [&_ul]:pl-4 [&_li]:my-0.5">
-                    <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
                   </div>
                 </div>
-              ) : (
-                <button
-                  onClick={analyzeWorkout}
-                  disabled={isAnalyzing}
-                  className="w-full bg-primary/10 border border-primary/20 text-primary rounded-xl py-3 text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-60"
-                >
-                  <Sparkles size={16} />
-                  {isAnalyzing ? 'Analisando com IA...' : 'Analisar Treino com IA'}
-                </button>
-              )}
 
-              <button
-                onClick={closeSummary}
-                className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-semibold"
-              >
-                Ver Histórico
-              </button>
-            </div>
-          )}
+                <div className="p-5 space-y-5">
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-secondary rounded-2xl p-3.5 text-center space-y-1.5">
+                      <Clock size={16} className="text-primary mx-auto" />
+                      <p className="text-base font-black">{formatTime(workoutSummary.duration)}</p>
+                      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">duração</p>
+                    </div>
+                    <div className="bg-secondary rounded-2xl p-3.5 text-center space-y-1.5">
+                      <TrendingUp size={16} className="text-primary mx-auto" />
+                      <p className="text-base font-black">{workoutSummary.totalVolume > 1000 ? `${(workoutSummary.totalVolume / 1000).toFixed(1)}t` : `${workoutSummary.totalVolume}kg`}</p>
+                      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">volume</p>
+                    </div>
+                    <div className="bg-secondary rounded-2xl p-3.5 text-center space-y-1.5">
+                      <Dumbbell size={16} className="text-primary mx-auto" />
+                      <p className="text-base font-black">{workoutSummary.exercises.length}</p>
+                      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">exercícios</p>
+                    </div>
+                  </div>
+
+                  {/* Muscles */}
+                  {muscles.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Músculos trabalhados</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {muscles.map(m => (
+                          <span key={m} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-lg font-bold">{m}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PRs */}
+                  {summaryPRs.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Trophy size={15} className="text-yellow-400" />
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Recordes Pessoais!</p>
+                      </div>
+                      <div className="space-y-1.5">
+                        {summaryPRs.map((pr, i) => (
+                          <div key={i} className="bg-primary/5 border border-primary/20 rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                            <span className="text-sm font-bold">{pr.exerciseName}</span>
+                            <span className="text-xs text-primary font-black">{pr.type}: {pr.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Per-exercise comparison */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Comparação com treino anterior</p>
+                    {workoutSummary.exercises.map((ex, i) => {
+                      const exInfo = getExerciseById(ex.exerciseId);
+                      const completedSets = ex.sets.filter(s => s.completed);
+                      const currentVol = completedSets.reduce((s, set) => s + set.weight * set.reps, 0);
+                      const currentMaxW = completedSets.reduce((m, s) => Math.max(m, s.weight), 0);
+
+                      // Find previous session for this exercise
+                      const prevSession = history
+                        .slice(0, -1)
+                        .reverse()
+                        .find(w => w.exercises.some(e => e.exerciseId === ex.exerciseId));
+                      const prevEx = prevSession?.exercises.find(e => e.exerciseId === ex.exerciseId);
+                      const prevSets = prevEx?.sets.filter(s => s.completed) || [];
+                      const prevVol = prevSets.reduce((s, set) => s + set.weight * set.reps, 0);
+                      const prevMaxW = prevSets.reduce((m, s) => Math.max(m, s.weight), 0);
+
+                      const volDiff = prevVol > 0 ? currentVol - prevVol : null;
+                      const wDiff = prevMaxW > 0 ? currentMaxW - prevMaxW : null;
+
+                      return (
+                        <div key={i} className="bg-secondary/60 rounded-xl px-4 py-3 flex items-center gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold truncate">{exInfo?.name}</p>
+                            <p className="text-[11px] text-muted-foreground font-body">{completedSets.length} séries · {currentVol}kg volume</p>
+                          </div>
+                          {volDiff !== null ? (
+                            <div className={`text-right shrink-0 ${volDiff > 0 ? 'text-green-400' : volDiff < 0 ? 'text-orange-400' : 'text-muted-foreground'}`}>
+                              <p className="text-xs font-black">
+                                {volDiff > 0 ? `+${volDiff}kg` : volDiff < 0 ? `${volDiff}kg` : '→'}
+                              </p>
+                              <p className="text-[10px] font-body opacity-70">
+                                {volDiff > 0 ? '↑ melhorou' : volDiff < 0 ? '↓ caiu' : 'igual'}
+                              </p>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground font-body shrink-0">1ª vez</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* AI Analysis */}
+                  {aiAnalysis ? (
+                    <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles size={15} className="text-primary shrink-0" />
+                        <p className="text-sm font-bold text-primary">Análise do FitAI</p>
+                      </div>
+                      <div className="prose prose-sm prose-invert max-w-none text-xs text-foreground font-body leading-relaxed [&_strong]:text-foreground [&_ul]:pl-4 [&_li]:my-0.5">
+                        <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={analyzeWorkout}
+                      disabled={isAnalyzing}
+                      className="w-full bg-primary/10 border border-primary/20 text-primary rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-60"
+                    >
+                      <Sparkles size={16} />
+                      {isAnalyzing ? 'Analisando com IA...' : 'Analisar com FitAI'}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={closeSummary}
+                    className="w-full text-primary-foreground rounded-2xl py-4 font-black text-base active:scale-[0.97] transition-transform"
+                    style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}
+                  >
+                    Ver Histórico
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>

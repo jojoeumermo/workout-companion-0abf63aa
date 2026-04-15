@@ -1,0 +1,294 @@
+Quero implementar a próxima grande evolução do app, transformando-o em um sistema inteligente de treino de verdade, sem remover nenhuma funcionalidade existente e sem quebrar o que já funciona hoje.
+
+IMPORTANTE:
+- não remover nenhuma função existente
+- não recriar o app
+- não simplificar o projeto
+- não alterar desnecessariamente o que já está bom
+- preservar design atual
+- preservar programas, rotinas, histórico, progresso, nutrição, FitAI Coach e demais features existentes
+- fazer tudo com foco em integração real, estabilidade e produto final
+- se for necessário, implemente em etapas internas, mas já deixe tudo integrado no app atual
+
+OBJETIVO GERAL:
+Transformar o app em um sistema inteligente de treino, onde histórico, progresso, treino ativo e IA conversem entre si de forma real.
+
+================================
+FASE 1 — UNIFICAR DADOS DO APP
+================================
+
+Quero consolidar a base de dados e a lógica entre módulos.
+
+Implementar e revisar:
+1. Garantir que treino ativo, histórico, progresso, programas, rotinas, nutrição e IA usem dados coerentes entre si
+2. Fazer a IA ler dados reais do app quando possível
+3. Garantir que finalizar treino atualize corretamente:
+- histórico
+- progresso
+- estatísticas
+- recordes
+- insights da IA
+4. Garantir que programas e rotinas influenciem corretamente o treino ativo
+5. Revisar persistência para evitar inconsistências ou dados duplicados
+
+================================
+FASE 2 — PROGRESSO REAL E INTELIGENTE
+================================
+
+Quero sair do progresso superficial e passar para métricas reais.
+
+Implementar:
+1. PR automático
+- detectar recordes pessoais automaticamente
+- por carga
+- por repetições
+- por volume
+- destacar no app quando acontecer
+
+2. Evolução por exercício
+- mostrar histórico do exercício
+- evolução de carga ao longo do tempo
+- evolução de repetições
+- evolução de volume
+
+3. Estatísticas por músculo
+- séries por músculo
+- volume por músculo
+- frequência por músculo
+- distribuição semanal
+
+4. Volume total por treino e por período
+- treino do dia
+- semana
+- mês
+
+5. Gráficos de progresso mais úteis
+- não apenas bonitos, mas com dados reais e comparáveis
+
+================================
+FASE 3 — IA USANDO DADOS REAIS
+================================
+
+Quero que o FitAI Coach deixe de ser genérico e passe a responder com base no que realmente está acontecendo no app.
+
+Implementar:
+1. Fazer o FitAI Coach acessar, quando possível:
+- histórico de treino
+- progresso
+- programas
+- rotinas
+- exercícios recentes
+- recordes
+- frequência semanal
+- volume total
+
+2. Melhorar respostas para incluir contexto real, por exemplo:
+- “você aumentou carga no supino”
+- “você treinou mais peito do que costas”
+- “você está mantendo boa consistência”
+
+3. Fazer a IA responder em português de forma natural, técnica e útil
+
+4. Garantir fallback amigável se a API falhar
+
+================================
+FASE 4 — SUGESTÃO AUTOMÁTICA DE CARGA
+================================
+
+Implementar sistema de sugestão automática de carga.
+
+Quero que, antes de um exercício ou série, o app consiga sugerir peso com base em:
+- último treino
+- repetições anteriores
+- evolução recente
+- desempenho recente
+
+Exemplo:
+- último treino: 40kg x 10
+- sugestão: 42kg para 8-10 reps
+
+Requisitos:
+- não ser agressivo demais
+- parecer inteligente
+- funcionar bem em exercícios principais
+- permitir ajuste manual pelo usuário
+
+================================
+FASE 5 — COMPARAÇÃO COM ÚLTIMO TREINO
+================================
+
+Durante o treino, quero comparação clara com a sessão anterior.
+
+Implementar:
+1. Mostrar no exercício atual:
+- último peso
+- últimas reps
+- últimas séries
+2. Mostrar se houve:
+- melhora
+- queda
+- manutenção
+3. Deixar isso visualmente claro, mas sem poluição
+
+================================
+FASE 6 — ANÁLISE PÓS-TREINO AUTOMÁTICA
+================================
+
+Ao finalizar um treino, gerar uma análise inteligente.
+
+Incluir:
+1. volume total
+2. músculos mais trabalhados
+3. exercícios com melhor desempenho
+4. comparação com treino anterior
+5. PRs batidos
+6. observações úteis da IA
+7. sugestão breve para a próxima sessão
+
+Quero que isso apareça como uma tela ou bloco bonito e útil.
+
+================================
+FASE 7 — DETECÇÃO DE ESTAGNAÇÃO
+================================
+
+Implementar sistema que detecta quando o usuário está parado em um exercício.
+
+Exemplos:
+- mesma carga por muitos treinos
+- queda contínua de reps
+- falta de progresso no volume
+
+Quando detectar:
+- alertar de forma útil
+- sugerir ajuste de carga, reps, descanso ou troca de exercício
+
+================================
+FASE 8 — ALERTA DE OVERTRAINING / DESEQUILÍBRIO
+================================
+
+Implementar análise básica de excesso e desequilíbrio.
+
+Quero que o app identifique:
+- músculo sendo treinado demais
+- músculo sendo negligenciado
+- frequência alta demais sem recuperação
+- distribuição desbalanceada
+
+A resposta deve ser útil e moderada, sem exageros ou alarmismo.
+
+================================
+FASE 9 — RESUMO SEMANAL INTELIGENTE
+================================
+
+Criar um resumo semanal automático.
+
+Incluir:
+- número de treinos
+- consistência
+- volume total
+- músculos mais treinados
+- músculos negligenciados
+- evolução da semana
+- comentário breve da IA
+
+================================
+FASE 10 — GAMIFICAÇÃO E RETENÇÃO
+================================
+
+Implementar sistema de engajamento sem deixar infantil.
+
+Quero:
+1. XP por treino
+2. níveis
+3. conquistas/recompensas
+4. streak de consistência
+5. destaques como:
+- 7 dias ativos
+- novo PR
+- semana completa
+- 10 treinos concluídos
+
+Importante:
+- deixar visual maduro
+- nada infantil ou exagerado
+- mais premium do que “gamezinho”
+
+================================
+FASE 11 — EXPERIÊNCIA MAIS VICIANTE
+================================
+
+Implementar:
+1. ranking pessoal de exercícios
+2. top exercícios com maior evolução
+3. resumo mensal estilo retrospectiva
+4. métricas marcantes do mês:
+- volume total levantado
+- número de treinos
+- PRs
+- consistência
+
+================================
+FASE 12 — IA MAIS AVANÇADA
+================================
+
+Quero preparar o app para uma camada de inteligência mais forte.
+
+Implementar de forma inicial:
+1. IA sugerindo ajustes de treino com base em desempenho real
+2. IA sugerindo troca de exercício quando houver estagnação
+3. IA sugerindo mudanças de volume ou descanso
+4. IA sugerindo treino ideal do dia com base em:
+- histórico recente
+- frequência
+- volume
+- fadiga estimada
+- tempo disponível, se existir essa informação
+
+================================
+FASE 13 — ARQUITETURA E ESTABILIDADE
+================================
+
+Tudo isso só vale se ficar estável.
+
+Quero que você:
+1. revise a arquitetura dessas integrações
+2. evite acoplamento ruim entre módulos
+3. mantenha o app leve
+4. trate erros da IA
+5. trate estados vazios
+6. evite regressões
+7. preserve responsividade
+8. preserve mobile e desktop
+9. isole bem regras de negócio, UI e integrações
+
+================================
+FASE 14 — IMPLEMENTAÇÃO COM BOM SENSO
+================================
+
+Se implementar tudo de uma vez for grande demais, organize internamente em partes, mas já deixe o projeto caminhando o máximo possível dentro dessa visão completa.
+
+Prioridade de implementação:
+1. unificação de dados
+2. progresso real
+3. IA usando dados reais
+4. sugestão de carga
+5. comparação com último treino
+6. análise pós-treino
+7. estagnação
+8. overtraining/desequilíbrio
+9. resumo semanal
+10. gamificação
+11. camada extra de IA
+
+================================
+ENTREGA FINAL
+================================
+
+No final, quero um relatório claro com:
+- quais arquivos foram alterados
+- quais novas funções foram criadas
+- o que já ficou implementado de verdade
+- o que ficou parcialmente preparado
+- quais dependências novas foram adicionadas
+- quais áreas ainda recomendam uma fase 2
+- quais testes você fez para garantir que nada importante quebrou

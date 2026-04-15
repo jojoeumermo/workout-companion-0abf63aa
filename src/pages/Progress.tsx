@@ -8,6 +8,7 @@ import { useHistory, useGoals, usePersonalRecords, useBodyWeight } from '@/hooks
 import { getExerciseById } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { detectStagnation, detectOvertraining, predictProgress } from '@/lib/workoutAnalysis';
+import { computeGamification } from '@/lib/gamification';
 
 export default function Progress() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function Progress() {
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [goalTarget, setGoalTarget] = useState(4);
   const { entries: weightEntries, latest: latestWeight } = useBodyWeight();
+  const gam = useMemo(() => computeGamification(history, records.length), [history, records.length]);
 
   // Weekly volume data (last 8 weeks)
   const weeklyData = useMemo(() => {
@@ -269,6 +271,72 @@ export default function Progress() {
             </div>
           </div>
         </motion.div>
+
+        {/* Gamification — Level & Streak */}
+        {history.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.022 }} className="card-premium rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Award size={18} className="text-primary" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-sm">Nível {gam.level.level} — {gam.level.name}</span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-body">{gam.totalXP.toLocaleString()} XP acumulados</span>
+                </div>
+              </div>
+              <div className="text-right">
+                {gam.nextLevel ? (
+                  <p className="text-xs font-bold text-primary">{gam.xpInCurrentLevel}/{gam.xpToNextLevel} XP</p>
+                ) : (
+                  <p className="text-xs font-bold text-primary">Nível Máximo 🏆</p>
+                )}
+              </div>
+            </div>
+            <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${gam.xpProgressPercent}%` }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
+                className="h-full rounded-full"
+                style={{ background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))' }}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="bg-secondary/60 rounded-xl p-3 text-center">
+                <p className="text-2xl font-black text-orange-400">{gam.currentStreak}🔥</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Dias seguidos</p>
+              </div>
+              <div className="bg-secondary/60 rounded-xl p-3 text-center">
+                <p className="text-2xl font-black text-primary">{gam.bestStreak}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Melhor sequência</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Achievements */}
+        {gam.achievements.filter(a => a.earned).length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.024 }} className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-black text-xl tracking-tight">Conquistas</h3>
+              <span className="text-xs text-muted-foreground font-body bg-secondary px-2.5 py-1 rounded-md">
+                {gam.achievements.filter(a => a.earned).length}/{gam.achievements.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2.5">
+              {gam.achievements.map(a => (
+                <div key={a.id} className={`rounded-2xl p-3.5 text-center space-y-1.5 transition-all ${a.earned ? 'card-premium' : 'bg-secondary/30 border border-border/20 opacity-40'}`}>
+                  <div className="text-2xl">{a.icon}</div>
+                  <p className={`text-[10px] font-black leading-tight ${a.earned ? 'text-foreground' : 'text-muted-foreground'}`}>{a.name}</p>
+                  {a.earned && <div className="w-1.5 h-1.5 rounded-full bg-primary mx-auto" />}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* AI Insights Panel */}
         {history.length >= 3 && (overttrainingAlert.risk !== 'low' || stagnationAlerts.length > 0 || progressPredictions.length > 0) && (

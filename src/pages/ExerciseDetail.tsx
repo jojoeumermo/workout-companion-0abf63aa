@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, Target, Wrench, Trophy, Dumbbell } from 'lucide-react';
+import { ArrowLeft, Heart, Target, Wrench, Trophy, Dumbbell, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { getExerciseById } from '@/data/exercises';
 import { useFavorites, useHistory, usePersonalRecords, useCustomExercises } from '@/hooks/useStorage';
 import { getMuscleColor } from '@/lib/muscleColors';
@@ -21,14 +22,24 @@ export default function ExerciseDetail() {
   const customEx = customExercises.find(ce => ce.id === exercise.id);
   const exerciseImage = customEx?.image;
 
+  // All sessions with this exercise
   const exerciseHistory = history
     .flatMap(w => w.exercises.filter(e => e.exerciseId === exercise.id).map(e => ({ date: w.completedAt, sets: e.sets })))
     .slice(-10)
     .reverse();
 
-  const bestSet = exerciseHistory.length > 0
-    ? exerciseHistory.flatMap(h => h.sets.filter(s => s.completed)).reduce((best, s) => s.weight > (best?.weight || 0) ? s : best, null as null | { weight: number; reps: number; completed: boolean })
-    : null;
+  // Evolution chart data (weight over time, max weight per session)
+  const evolutionData = exerciseHistory
+    .slice()
+    .reverse()
+    .map(h => ({
+      date: new Date(h.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+      peso: h.sets.filter(s => s.completed).reduce((m, s) => Math.max(m, s.weight), 0),
+      volume: h.sets.filter(s => s.completed).reduce((s, set) => s + set.weight * set.reps, 0),
+    }))
+    .filter(d => d.peso > 0);
+
+  const hasEvolution = evolutionData.length >= 2;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -128,6 +139,62 @@ export default function ExerciseDetail() {
                 <p className={`text-xl font-black ${color.text}`}>{record.maxVolume}kg</p>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">Volume</p>
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Evolution Chart */}
+        {hasEvolution && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="bg-card rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={16} className="text-primary" />
+                <h3 className="font-semibold text-sm">Evolução de Carga</h3>
+              </div>
+              <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-body">
+                <span>
+                  {evolutionData.length >= 2 && evolutionData[evolutionData.length - 1].peso > evolutionData[0].peso
+                    ? <span className="text-green-400 font-bold">+{(evolutionData[evolutionData.length - 1].peso - evolutionData[0].peso).toFixed(1)}kg ↑</span>
+                    : evolutionData[evolutionData.length - 1].peso < evolutionData[0].peso
+                    ? <span className="text-orange-400 font-bold">{(evolutionData[evolutionData.length - 1].peso - evolutionData[0].peso).toFixed(1)}kg ↓</span>
+                    : <span className="text-muted-foreground">Estável →</span>
+                  }
+                </span>
+                <span>{evolutionData.length} sessões</span>
+              </div>
+            </div>
+            <div style={{ height: 120 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={evolutionData} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                    tickLine={false}
+                    axisLine={false}
+                    domain={['auto', 'auto']}
+                    tickCount={4}
+                  />
+                  <Tooltip
+                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }}
+                    labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: 2 }}
+                    formatter={(v: number) => [`${v}kg`, 'Carga máxima']}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="peso"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
+                    dot={{ fill: 'hsl(var(--primary))', r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </motion.div>
         )}
