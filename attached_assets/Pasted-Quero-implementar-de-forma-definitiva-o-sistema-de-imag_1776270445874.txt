@@ -1,0 +1,156 @@
+Quero implementar de forma definitiva o sistema de imagens dos exercícios usando um dataset local de exercícios no projeto, sem depender de API externa e sem remover nenhuma funcionalidade existente.
+
+IMPORTANTE:
+- não remover funções existentes
+- não quebrar nada que já funciona
+- não alterar a lógica principal do app sem necessidade
+- preservar design atual
+- fazer uma implementação completa, organizada e escalável
+- foco em integrar um dataset local de exercícios com mídia real
+
+OBJETIVO GERAL:
+Fazer o app suportar um dataset local de exercícios com imagens/GIFs, conectando os exercícios já existentes do sistema com os exercícios do dataset, para exibir mídia real no app inteiro.
+
+O QUE PRECISA SER FEITO:
+
+1. ESTRUTURA DO DATASET LOCAL
+Preparar o projeto para receber um dataset local de exercícios.
+
+Criar uma estrutura clara para:
+- arquivo JSON com os exercícios do dataset
+- pasta com imagens ou GIFs dos exercícios
+- leitura local desses arquivos no app
+
+Criar pastas apropriadas no projeto, por exemplo:
+- uma pasta de dados para o JSON
+- uma pasta pública para as mídias
+
+Me diga no final exatamente onde devo colocar:
+- o JSON do dataset
+- as imagens/GIFs
+- qualquer arquivo complementar
+
+2. MODELO DE DADOS DOS EXERCÍCIOS
+Revisar o modelo atual dos exercícios e adicionar suporte completo a mídia.
+
+Garantir suporte a campos como:
+- imageUrl
+- gifUrl
+- customImage
+- source
+- externalExerciseId ou algum identificador de vínculo com o dataset
+
+Sem quebrar os exercícios atuais.
+
+3. LEITURA DO DATASET
+Implementar a leitura do dataset local no app.
+
+Assumir que o dataset terá algo como:
+- nome do exercício
+- grupo muscular
+- equipamento
+- instruções
+- caminho da mídia
+
+Criar uma camada de serviço/utilitário para:
+- ler o dataset
+- indexar os exercícios
+- buscar correspondência com os exercícios atuais do app
+
+4. MAPEAMENTO AUTOMÁTICO
+Essa é a parte mais importante.
+
+Criar um sistema de mapeamento automático entre os exercícios do app e os exercícios do dataset.
+
+Esse sistema deve:
+- normalizar nomes em lowercase
+- remover acentos
+- remover caracteres especiais
+- comparar variações simples de nome
+- tentar correspondência aproximada quando não houver match exato
+
+Exemplos:
+- “supino reto” pode corresponder a “bench press”
+- “rosca bíceps” pode corresponder a “bicep curl”
+
+Se necessário, criar uma camada de aliases/sinônimos para exercícios comuns.
+
+Também quero que o sistema registre:
+- quais exercícios tiveram correspondência
+- quais não tiveram
+- quais precisam de ajuste manual depois
+
+5. EXIBIÇÃO DAS IMAGENS NO APP
+Exibir a mídia do exercício em todos os pontos relevantes do aplicativo.
+
+Pelo menos:
+- lista de exercícios
+- tela de detalhe do exercício
+- cards ou seções onde exercício aparece dentro de rotinas/programas
+- qualquer tela onde a mídia melhore claramente a experiência
+
+Manter:
+- boa responsividade no mobile
+- boa aparência no desktop
+- layout bonito e consistente com o app atual
+
+6. FALLBACK INTELIGENTE
+Quando não houver imagem correspondente no dataset:
+- mostrar placeholder bonito e consistente
+- não deixar espaço vazio ou quebrado
+
+Além disso:
+- manter upload manual de imagem
+- permitir que a imagem manual sobrescreva a imagem padrão do dataset
+- garantir que exercícios personalizados também possam ter imagem própria
+
+7. PRIORIDADE DE EXIBIÇÃO
+Definir a lógica de prioridade da mídia assim:
+1. imagem manual enviada pelo usuário
+2. imagem/GIF do dataset local
+3. placeholder padrão
+
+8. PERFORMANCE
+Implementar isso com bom desempenho.
+
+Quero que você:
+- use lazy loading para as mídias
+- evite carregar tudo de uma vez
+- evite travamentos por causa de GIFs pesados
+- mantenha o app fluido no mobile e desktop
+
+9. INTEGRAÇÃO COM O SISTEMA ATUAL
+Garantir que isso funcione junto com:
+- programas
+- rotinas
+- biblioteca de exercícios
+- exercícios personalizados
+- detalhes do exercício
+- histórico e qualquer tela relevante
+
+Sem quebrar a experiência atual.
+
+10. PREPARAÇÃO PARA ESCALABILIDADE
+Deixar o sistema preparado para que eu possa, no futuro:
+- adicionar mais arquivos de mídia
+- trocar imagens
+- expandir o dataset
+- melhorar o mapeamento
+sem precisar refazer a arquitetura
+
+11. RELATÓRIO FINAL
+No final, me diga claramente:
+- quais arquivos foram criados ou alterados
+- onde devo colocar o dataset JSON
+- onde devo colocar as imagens/GIFs
+- qual formato de JSON você espera
+- como funciona o mapeamento
+- quantos exercícios tiveram correspondência
+- quais ficaram sem imagem
+- o que ainda pode ser melhorado depois
+
+IMPORTANTE:
+Não use API externa.
+Não troque a fonte por outra solução.
+Não implemente algo temporário ou gambiarra.
+Quero a estrutura definitiva para usar um dataset local de exercícios com imagens/GIFs no app.

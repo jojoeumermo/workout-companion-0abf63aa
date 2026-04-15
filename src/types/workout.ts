@@ -7,6 +7,9 @@ export interface Exercise {
   description: string;
   instructions: string[];
   image: string;
+  imageUrl?: string;
+  gifUrl?: string;
+  datasetId?: string;
 }
 
 export type MuscleGroup =

@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { haptic } from '@/lib/haptic';
 import { getMuscleColor } from '@/lib/muscleColors';
 import { toast } from 'sonner';
+import ExerciseMedia from '@/components/ExerciseMedia';
 
 const stagger = {
   hidden: { opacity: 0, y: 8 },
@@ -170,7 +171,6 @@ export default function Exercises() {
                 {exs.map((ex, i) => {
                   const c = getMuscleColor(ex.muscleGroup);
                   const customEx = customExercises.find(ce => ce.id === ex.id);
-                  const hasImage = customEx?.image;
                   return (
                     <motion.div
                       key={ex.id}
@@ -186,15 +186,14 @@ export default function Exercises() {
                         tabIndex={0}
                         onKeyDown={e => e.key === 'Enter' && navigate(`/exercicio/${ex.id}`)}
                       >
-                        {hasImage ? (
-                          <div className="w-14 h-14 rounded-xl shrink-0 overflow-hidden">
-                            <img src={hasImage} alt={ex.name} className="w-full h-full object-cover" />
-                          </div>
-                        ) : (
-                          <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black shrink-0 shadow-inner border ${c.bg} ${c.text} ${c.border}`}>
-                            {isCustom(ex.id) ? '★' : ex.name.charAt(0)}
-                          </div>
-                        )}
+                        <ExerciseMedia
+                          exerciseId={ex.id}
+                          exerciseName={ex.name}
+                          muscleGroup={ex.muscleGroup}
+                          customImage={customEx?.image}
+                          size="sm"
+                          placeholderLetter={isCustom(ex.id) ? '★' : ex.name.charAt(0)}
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <p className="font-bold text-base truncate">{ex.name}</p>

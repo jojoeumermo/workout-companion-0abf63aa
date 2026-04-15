@@ -8,6 +8,7 @@ import { WorkoutTemplate, WorkoutExercise, ActiveWorkout, SetConfig } from '@/ty
 import { getAllExercises, getExerciseById, muscleGroups } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { haptic } from '@/lib/haptic';
+import ExerciseMedia from '@/components/ExerciseMedia';
 
 export default function Workouts() {
   const navigate = useNavigate();
@@ -459,13 +460,19 @@ export default function Workouts() {
                 <button
                   key={ex.id}
                   onClick={() => addExercise(ex.id)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-secondary transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors text-left"
                 >
-                  <div>
-                    <p className="font-medium text-sm">{ex.name}</p>
+                  <ExerciseMedia
+                    exerciseId={ex.id}
+                    exerciseName={ex.name}
+                    muscleGroup={ex.muscleGroup}
+                    size="sm"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{ex.name}</p>
                     <p className="text-xs text-muted-foreground font-body">{ex.muscleGroup} • {ex.equipment}</p>
                   </div>
-                  <ChevronRight size={16} className="text-muted-foreground" />
+                  <ChevronRight size={16} className="text-muted-foreground shrink-0" />
                 </button>
               ))}
             </div>

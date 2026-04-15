@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, Target, Wrench, Trophy, Dumbbell, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Heart, Target, Wrench, Trophy, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { getExerciseById } from '@/data/exercises';
 import { useFavorites, useHistory, usePersonalRecords, useCustomExercises } from '@/hooks/useStorage';
 import { getMuscleColor } from '@/lib/muscleColors';
+import ExerciseMedia from '@/components/ExerciseMedia';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -55,18 +56,14 @@ export default function ExerciseDetail() {
       <main className="px-5 space-y-5">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           {/* Hero image or muscle-group banner */}
-          {exerciseImage ? (
-            <div className="w-full h-52 rounded-2xl overflow-hidden">
-              <img src={exerciseImage} alt={exercise.name} className="w-full h-full object-cover" />
-            </div>
-          ) : (
-            <div className={`w-full h-52 rounded-2xl flex flex-col items-center justify-center gap-3 border ${color.bg} ${color.border}`}>
-              <div className={`w-20 h-20 rounded-2xl ${color.bg} border ${color.border} flex items-center justify-center`}>
-                <Dumbbell size={40} className={color.text} />
-              </div>
-              <span className={`text-sm font-black tracking-widest uppercase ${color.text}`}>{exercise.muscleGroup}</span>
-            </div>
-          )}
+          <ExerciseMedia
+            exerciseId={exercise.id}
+            exerciseName={exercise.name}
+            muscleGroup={exercise.muscleGroup}
+            customImage={exerciseImage}
+            size="hero"
+            showGif={true}
+          />
 
           <div>
             <div className="flex items-start justify-between gap-4">
