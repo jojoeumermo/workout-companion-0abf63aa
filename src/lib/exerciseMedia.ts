@@ -1,7 +1,9 @@
 import datasetRaw from '@/data/exerciseDataset.json';
 
-type DatasetEntry = { slug: string; names: string[] };
-type Dataset = { version: number; exercises: Record<string, DatasetEntry> };
+const GITHUB_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises';
+
+type DatasetEntry = { slug: string; names: string[]; freeExerciseDbId?: string };
+type Dataset = { version: number; baseUrl: string; exercises: Record<string, DatasetEntry> };
 
 const dataset = datasetRaw as Dataset;
 
@@ -22,19 +24,17 @@ for (const [id, entry] of Object.entries(dataset.exercises)) {
   }
 }
 
-export function getExerciseSlug(exerciseId: string, exerciseName?: string): string | null {
+function resolveDatasetId(exerciseId: string, exerciseName?: string): string | null {
   const byId = dataset.exercises[exerciseId];
-  if (byId) return byId.slug;
+  if (byId) return exerciseId;
 
   if (exerciseName) {
-    const normalizedName = normalize(exerciseName);
-    const matchedId = nameIndex.get(normalizedName);
-    if (matchedId) return dataset.exercises[matchedId].slug;
+    const norm = normalize(exerciseName);
+    const matchedId = nameIndex.get(norm);
+    if (matchedId) return matchedId;
 
     for (const [key, id] of nameIndex.entries()) {
-      if (normalizedName.includes(key) || key.includes(normalizedName)) {
-        return dataset.exercises[id].slug;
-      }
+      if (norm.includes(key) || key.includes(norm)) return id;
     }
   }
 
@@ -48,30 +48,37 @@ export interface ExerciseMediaUrls {
 }
 
 export function getExerciseMediaUrls(exerciseId: string, exerciseName?: string): ExerciseMediaUrls | null {
-  const slug = getExerciseSlug(exerciseId, exerciseName);
-  if (!slug) return null;
+  const resolvedId = resolveDatasetId(exerciseId, exerciseName);
+  if (!resolvedId) return null;
+
+  const entry = dataset.exercises[resolvedId];
+  if (!entry?.freeExerciseDbId) return null;
+
+  const dbId = entry.freeExerciseDbId;
   return {
-    slug,
-    gif: `/exercise-media/${slug}.gif`,
-    image: `/exercise-media/${slug}.jpg`,
+    slug: entry.slug,
+    gif:   `${GITHUB_BASE}/${dbId}/0.jpg`,
+    image: `${GITHUB_BASE}/${dbId}/1.jpg`,
   };
 }
 
-export function resolveExerciseMedia(
-  customImage: string | undefined,
-  exerciseId: string,
-  exerciseName?: string
-): { url: string; type: 'custom' | 'gif' | 'image' } | null {
-  if (customImage) return { url: customImage, type: 'custom' };
-  const urls = getExerciseMediaUrls(exerciseId, exerciseName);
-  if (!urls) return null;
-  return { url: urls.gif, type: 'gif' };
+export function getExerciseSlug(exerciseId: string, exerciseName?: string): string | null {
+  const resolvedId = resolveDatasetId(exerciseId, exerciseName);
+  return resolvedId ? dataset.exercises[resolvedId].slug : null;
 }
 
-export function getAllDatasetEntries(): Array<{ id: string; slug: string; names: string[] }> {
+export function getAllDatasetEntries(): Array<{ id: string; slug: string; names: string[]; freeExerciseDbId?: string }> {
   return Object.entries(dataset.exercises).map(([id, entry]) => ({
     id,
     slug: entry.slug,
     names: entry.names,
+    freeExerciseDbId: entry.freeExerciseDbId,
   }));
+}
+
+export function getMatchStats(): { matched: number; unmatched: string[] } {
+  const entries = Object.entries(dataset.exercises);
+  const matched = entries.filter(([, e]) => !!e.freeExerciseDbId).length;
+  const unmatched = entries.filter(([, e]) => !e.freeExerciseDbId).map(([, e]) => e.names[0]);
+  return { matched, unmatched };
 }
