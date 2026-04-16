@@ -425,31 +425,33 @@ export default function ActiveWorkoutPage() {
   });
 
   const ExercisePickerContent = ({ onSelect }: { onSelect: (id: string) => void }) => (
-    <div className="space-y-3 mt-4">
-      <div className="relative">
+    <div className="flex flex-col gap-3 mt-2 min-h-0 flex-1">
+      <div className="relative shrink-0">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           placeholder="Buscar exercício..."
           value={exerciseSearch}
           onChange={e => setExerciseSearch(e.target.value)}
+          autoComplete="off"
+          enterKeyHint="search"
           className="w-full bg-secondary rounded-xl pl-9 pr-4 py-2.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring font-body text-sm"
         />
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        <button onClick={() => setMuscleFilter('')} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none shrink-0">
+        <button onClick={() => setMuscleFilter('')} className={`whitespace-nowrap shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
           Todos
         </button>
         {muscleGroups.map(mg => (
-          <button key={mg} onClick={() => setMuscleFilter(mg)} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+          <button key={mg} onClick={() => setMuscleFilter(mg)} className={`whitespace-nowrap shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
             {mg}
           </button>
         ))}
       </div>
-      <div className="space-y-1 max-h-[50vh] overflow-y-auto">
+      <div className="space-y-1 overflow-y-auto flex-1 min-h-0">
         {filteredExercises.map(ex => (
-          <button key={ex.id} onClick={() => onSelect(ex.id)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors text-left">
-            <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-primary text-sm font-bold">
+          <button key={ex.id} onClick={() => onSelect(ex.id)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary active:scale-[0.98] transition-all text-left">
+            <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-primary text-sm font-bold shrink-0">
               {ex.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
@@ -818,7 +820,7 @@ export default function ActiveWorkoutPage() {
 
       {/* Add Exercise Dialog */}
       <Dialog open={showAddExercise} onOpenChange={v => { setShowAddExercise(v); if (!v) { setExerciseSearch(''); setMuscleFilter(''); } }}>
-        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border flex flex-col" style={{ maxHeight: '85dvh' }}>
           <DialogHeader>
             <DialogTitle>Adicionar Exercício</DialogTitle>
           </DialogHeader>
@@ -828,7 +830,7 @@ export default function ActiveWorkoutPage() {
 
       {/* Replace Exercise Dialog */}
       <Dialog open={showReplaceExercise} onOpenChange={v => { setShowReplaceExercise(v); if (!v) { setExerciseSearch(''); setMuscleFilter(''); } }}>
-        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border flex flex-col" style={{ maxHeight: '85dvh' }}>
           <DialogHeader>
             <DialogTitle>Substituir Exercício</DialogTitle>
           </DialogHeader>

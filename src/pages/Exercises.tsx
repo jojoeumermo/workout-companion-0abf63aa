@@ -112,17 +112,17 @@ export default function Exercises() {
         </div>
 
         {/* Filters */}
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2.5">
+        <div className="space-y-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
               onClick={() => setShowFavs(!showFavs)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95 ${showFavs ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+              className={`whitespace-nowrap shrink-0 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 ${showFavs ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
             >
-              <Heart size={14} fill={showFavs ? 'currentColor' : 'none'} /> Favoritos
+              <Heart size={12} fill={showFavs ? 'currentColor' : 'none'} /> Favoritos
             </button>
             <button
               onClick={() => setMuscleFilter('')}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${!muscleFilter ? 'bg-primary text-primary-foreground shadow-glow' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+              className={`whitespace-nowrap shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
             >
               Todos
             </button>
@@ -132,19 +132,25 @@ export default function Exercises() {
                 <button
                   key={mg}
                   onClick={() => setMuscleFilter(muscleFilter === mg ? '' : mg)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${muscleFilter === mg ? `${color.bg} ${color.text} border ${color.border}` : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+                  className={`whitespace-nowrap shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${muscleFilter === mg ? `${color.bg} ${color.text} border ${color.border}` : 'bg-secondary text-muted-foreground'}`}
                 >
                   {mg}
                 </button>
               );
             })}
           </div>
-          <div className="flex flex-wrap gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              onClick={() => setEquipFilter('')}
+              className={`whitespace-nowrap shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${!equipFilter ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-card border border-border/40 text-muted-foreground'}`}
+            >
+              Todo Equipamento
+            </button>
             {equipmentList.map(eq => (
               <button
                 key={eq}
                 onClick={() => setEquipFilter(equipFilter === eq ? '' : eq)}
-                className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${equipFilter === eq ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-card border border-border/40 text-muted-foreground'}`}
+                className={`whitespace-nowrap shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${equipFilter === eq ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-card border border-border/40 text-muted-foreground'}`}
               >
                 {eq}
               </button>

@@ -110,7 +110,7 @@ export default function Dashboard() {
 
   return (
     <PageShell>
-      <div className="pt-16 space-y-5 max-w-lg mx-auto pb-6">
+      <div className="space-y-5 max-w-lg mx-auto pb-6">
         {/* Hero Header */}
         <motion.div custom={0} variants={stagger} initial="hidden" animate="show">
           <div className="hero-section -mx-5 sm:-mx-6 mb-6" style={{ height: '220px' }}>

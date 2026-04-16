@@ -1,0 +1,242 @@
+Entramos na fase final antes do beta.
+
+Quero que você trate este app como um produto que precisa ficar pronto para testes reais com poucas pessoas, com foco total em estabilidade, mobile, UX/UI consistente e baixo risco de quebrar.
+
+OBJETIVO
+Deixar o app sólido, limpo, funcional e com boa experiência no celular, pronto para uso em pequena escala.
+
+PRIORIDADES
+- estabilidade
+- mobile first
+- correção de bugs reais
+- UX clara e fluida
+- consistência visual
+- evitar regressão
+
+--------------------------------------------------
+
+1. LIMPEZA DO PROJETO
+- apagar completamente a pasta public/exercises
+- remover qualquer código ou referência ligada a ela
+- remover código morto
+- remover imports não usados
+- remover assets inúteis
+- remover dependências desnecessárias
+- manter apenas o que realmente está em uso
+
+--------------------------------------------------
+
+2. AUDITORIA COMPLETA
+Escanear o app inteiro e verificar:
+
+- bugs visuais
+- bugs funcionais
+- problemas de responsividade
+- layout quebrado
+- overflow horizontal
+- textos cortados
+- botões com área ruim
+- componentes desalinhados
+- problemas de navegação
+- estados vazios ruins
+- loaders ruins
+- mensagens de erro ruins ou inexistentes
+- erros/warnings no console
+- código duplicado ou morto
+- dependências inúteis
+- gargalos de performance
+- risco de travamento
+- fluxos incompletos
+
+--------------------------------------------------
+
+3. CORREÇÕES
+Corrigir tudo que for possível sem quebrar o app.
+
+Regras:
+- priorizar estabilidade
+- evitar regressão
+- não fazer refatoração desnecessária
+- não mudar coisas que já funcionam bem
+
+--------------------------------------------------
+
+4. MOBILE FIRST (CRÍTICO)
+
+Corrigir especificamente:
+
+✔ Bottom navigation cobrindo conteúdo
+- adicionar padding-bottom equivalente à altura da navbar
+- garantir que nada fique escondido ao rolar
+
+✔ Banner da home desalinhado
+- remover espaço estranho no topo
+- corrigir safe-area (topo do celular)
+- alinhar corretamente ao topo da tela
+
+✔ Problemas gerais de mobile
+- espaçamento
+- fontes
+- botões
+- inputs
+- listas
+- modais
+- rolagem
+- elementos saindo da tela
+
+--------------------------------------------------
+
+5. IMAGENS DOS EXERCÍCIOS (CORRIGIR DIREITO)
+
+Problema atual:
+- antes: bonito, mas cortava
+- agora: não corta, mas ficou feio e pequeno
+
+Quero solução equilibrada:
+
+- usar object-cover (não object-contain)
+- ajustar object-position (priorizar parte superior do corpo, ex: object-top)
+- manter imagens grandes, bonitas e com impacto
+- manter bordas arredondadas
+- evitar cortar cabeça/torso quando possível
+
+Resultado esperado:
+imagem bonita, grande, bem enquadrada e com aparência premium
+
+--------------------------------------------------
+
+6. CRIAÇÃO DE ROTINAS (MELHORAR)
+
+Corrigir:
+- campo de busca saindo da margem
+- filtros que não scrollam horizontalmente
+
+Melhorar:
+- layout
+- fluidez
+- clareza
+- seleção de exercícios
+- experiência no celular
+
+Pode repaginar levemente se necessário, mas mantendo simplicidade.
+
+--------------------------------------------------
+
+7. NUTRIÇÃO (SEM IA - PRINCIPAL)
+
+Manter e garantir:
+
+- base de alimentos funcionando
+- seleção por lista (não depender de texto livre)
+- input de gramas
+- cálculo automático de macros e calorias
+- funcionamento consistente
+
+--------------------------------------------------
+
+8. REGISTRO DE REFEIÇÃO
+
+Corrigir fluxo:
+
+- garantir que salvar funciona sempre
+- deixar claro:
+  - adicionar alimento
+  - editar
+  - salvar
+- melhorar UX geral
+- deixar aparência mais profissional
+
+--------------------------------------------------
+
+9. CHECK FINAL DOS MÓDULOS
+
+Revisar:
+- Home
+- Treinos
+- Exercícios
+- Nutrição
+- Progresso
+
+Garantir:
+- fluxos completos funcionando
+- nada quebrado
+- navegação fluida
+- nenhuma ação confusa
+
+--------------------------------------------------
+
+10. UX/UI FINAL
+
+Melhorias pontuais:
+
+- feedback ao salvar (visual claro)
+- mensagens de erro melhores
+- loaders mais limpos
+- melhor hierarquia visual
+- consistência entre telas
+
+--------------------------------------------------
+
+11. GAMIFICAÇÃO LEVE
+
+Adicionar, se simples:
+
+- streak de dias
+- feedback visual ao completar ações
+- sensação de progresso
+
+Sem complicar o app.
+
+--------------------------------------------------
+
+12. IA — DECISÃO FINAL
+
+Tomar decisão objetiva:
+
+A) integrar API real corretamente (via backend)
+OU
+B) remover completamente a IA
+
+Sem meio-termo.
+
+Se não estiver 100% funcional e estável:
+→ REMOVER IA e tudo relacionado
+
+--------------------------------------------------
+
+13. ESTABILIDADE PARA BETA
+
+Verificar:
+
+- chamadas desnecessárias
+- renderizações pesadas
+- uso de memória
+- loops
+- ações duplicadas
+- possíveis travamentos
+
+--------------------------------------------------
+
+14. RELATÓRIO FINAL
+
+Entregar:
+
+- o que foi corrigido
+- o que foi melhorado
+- o que foi removido
+- o que ainda precisa atenção
+- riscos restantes
+- partes já sólidas
+- partes frágeis
+- se o app está pronto para beta real
+
+--------------------------------------------------
+
+IMPORTANTE
+
+- foco total em mobile
+- foco em estabilidade
+- foco em UX real
+- não adicionar features grandes
+- não quebrar o que já funciona
+- deixar o app pronto para uso real por pessoas
