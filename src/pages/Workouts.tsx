@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus, X } from 'lucide-react';
+import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus, X, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
@@ -97,6 +97,18 @@ export default function Workouts() {
 
   const deleteTemplate = (id: string) => {
     setTemplates(prev => prev.filter(t => t.id !== id));
+  };
+
+  const duplicateTemplate = (t: WorkoutTemplate) => {
+    const copy: WorkoutTemplate = {
+      ...t,
+      id: `tmpl-${Date.now()}`,
+      name: `${t.name} (cópia)`,
+      exercises: t.exercises.map(e => ({ ...e, sets: e.sets.map(s => ({ ...s })) })),
+      createdAt: new Date().toISOString(),
+    };
+    setTemplates(prev => [...prev, copy]);
+    haptic('success');
   };
 
   const addExercise = (exerciseId: string) => {
@@ -235,6 +247,9 @@ export default function Workouts() {
                   </div>
                 </div>
                 <div className="flex gap-2 shrink-0 ml-4">
+                  <button onClick={() => duplicateTemplate(t)} title="Duplicar rotina" className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:bg-secondary/80 transition-colors active:scale-95">
+                    <Copy size={16} />
+                  </button>
                   <button onClick={() => openEdit(t)} className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:bg-secondary/80 transition-colors active:scale-95">
                     <Edit3 size={18} />
                   </button>

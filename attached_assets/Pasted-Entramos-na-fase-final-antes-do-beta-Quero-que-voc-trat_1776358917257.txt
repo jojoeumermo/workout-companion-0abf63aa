@@ -1,0 +1,248 @@
+Entramos na fase final antes do beta.
+
+Quero que você trate este app como um produto que precisa ficar pronto para testes reais com poucas pessoas, com foco total em estabilidade, mobile, UX/UI consistente, baixo risco de quebrar e sensação de app polido.
+
+OBJETIVO
+Deixar o app sólido, limpo, funcional e com boa experiência no celular, pronto para uso em pequena escala.
+
+PRIORIDADES
+- estabilidade
+- mobile first
+- correção de bugs reais
+- UX clara e fluida
+- consistência visual
+- evitar regressão
+- design bom e coeso
+
+1. LIMPEZA DO PROJETO
+- apagar completamente a pasta public/exercises
+- remover qualquer código ou referência ligada a ela
+- remover código morto
+- remover imports não usados
+- remover assets inúteis
+- remover dependências desnecessárias
+- manter apenas o que realmente está em uso
+
+2. AUDITORIA COMPLETA
+Escanear o app inteiro e verificar:
+- bugs visuais
+- bugs funcionais
+- problemas de responsividade
+- layout quebrado
+- overflow horizontal
+- textos cortados
+- botões com área ruim
+- componentes desalinhados
+- problemas de navegação
+- estados vazios ruins
+- loaders ruins
+- mensagens de erro ruins ou inexistentes
+- erros e warnings no console
+- código duplicado ou morto
+- dependências inúteis
+- gargalos de performance
+- risco de travamento
+- fluxos incompletos
+
+3. CORREÇÕES
+Corrigir tudo que for possível sem quebrar o app.
+
+Regras:
+- priorizar estabilidade
+- evitar regressão
+- não fazer refatoração desnecessária
+- não mudar coisas que já funcionam bem
+
+4. MOBILE FIRST
+Corrigir especificamente:
+- bottom navigation cobrindo conteúdo no fim das telas
+- adicionar padding-bottom correto nas páginas para nada ficar escondido atrás da navbar
+- corrigir o banner da home, que está com espaço estranho no topo e não está encostando corretamente no início da tela
+- tratar corretamente safe area no topo e no rodapé
+- revisar espaçamentos, fontes, botões, inputs, listas, modais, rolagem e elementos saindo da tela
+
+5. IMAGENS DOS EXERCÍCIOS
+A correção atual do crop ficou pior visualmente.
+
+Problema:
+- antes estava mais bonito, mas cortava partes importantes
+- agora não corta tanto, mas ficou pequeno, sem impacto e feio
+
+Quero uma solução equilibrada e visualmente boa:
+- usar imagem grande
+- manter bordas arredondadas
+- preservar aparência premium
+- evitar object-contain seco e pequeno
+- usar object-cover com enquadramento inteligente
+- ajustar object-position para priorizar cabeça e tronco quando fizer sentido
+- se necessário, usar tratamento diferente para:
+  - cards/listas
+  - tela de detalhe/hero
+
+Resultado esperado:
+- imagem bonita
+- grande
+- bem encaixada
+- sem parecer apertada ou minúscula
+- sem destruir o layout
+
+6. CRIAÇÃO DE ROTINAS
+Corrigir:
+- campo de busca saindo da margem
+- filtros que não scrollam horizontalmente
+
+Melhorar:
+- layout
+- clareza
+- fluidez
+- seleção de exercícios
+- experiência no celular
+
+Pode repaginar levemente essa área se necessário, desde que continue simples, bonita e intuitiva.
+
+7. NUTRIÇÃO
+Manter e garantir:
+- base de alimentos funcionando bem
+- seleção por lista
+- input de gramas
+- cálculo automático de macros e calorias
+- fluxo consistente e confiável
+
+8. REGISTRO DE REFEIÇÃO
+Corrigir e polir:
+- garantir que salvar funcione sempre
+- deixar claro adicionar, editar e salvar
+- melhorar UX geral
+- deixar aparência mais profissional
+
+9. CHECK FINAL DOS MÓDULOS
+Revisar:
+- Home
+- Treinos
+- Exercícios
+- Nutrição
+- Progresso
+- FitAI Coach
+
+Garantir:
+- fluxos completos funcionando
+- nada quebrado
+- navegação fluida
+- nenhuma ação confusa
+
+10. FITAI COACH
+O chat do FitAI está visualmente bugado e precisa de correção.
+
+Problemas:
+- a janela/mensagens estão ficando por cima de tudo
+- o layout do chat está ruim no mobile
+- falta botão de voltar, então o usuário fica isolado nessa tela
+
+Quero que você:
+- reorganize completamente o layout do chat para mobile
+- corrija sobreposição de mensagens, input e containers
+- garanta scroll correto
+- garanta que input e mensagens respeitem a área visível
+- adicione um botão de voltar claro e funcional no FitAI Coach
+- faça essa tela parecer parte natural do app, com design consistente
+
+11. IA NO CELULAR — RESOLVER DIREITO
+A IA funciona no PC, mas não funciona no celular. Isso não é aceitável.
+
+Quero resolver isso da forma correta.
+
+Regras:
+- não chamar a API de IA diretamente no frontend/mobile
+- implementar via backend
+- usar rota segura no backend para intermediar as chamadas
+- proteger chave da API
+- garantir funcionamento no celular e no PC
+- evitar problemas de CORS, exposição de chave e inconsistência entre web e app mobile
+
+Quero que você:
+- revise a arquitetura atual da IA
+- mova a integração para backend se ainda estiver no frontend
+- faça a solução funcionar de forma estável tanto no celular quanto no desktop
+- teste o fluxo completo
+- se não for possível deixar estável agora, remover a IA e qualquer UI quebrada relacionada
+
+12. IA — DECISÃO FINAL
+Tomar decisão objetiva:
+A) integrar IA real corretamente via backend
+OU
+B) remover completamente a IA
+
+Sem meio-termo.
+Sem gambiarra.
+Se não estiver 100% funcional e estável no mobile e no desktop, remover tudo relacionado.
+
+13. UX/UI FINAL
+Melhorias pontuais:
+- feedback visual claro ao salvar
+- mensagens de erro melhores
+- loaders mais limpos
+- melhor hierarquia visual
+- consistência entre telas
+- sensação de produto mais premium
+
+14. GAMIFICAÇÃO LEVE
+Adicionar, se couber sem complicar:
+- streak de dias
+- feedback visual ao completar ações
+- sensação de progresso
+- metas simples semanais
+- pequenos reforços visuais de consistência
+
+15. IDEIAS BOAS QUE VALEM A PENA ADICIONAR AGORA SE FOREM SIMPLES
+Quero que você também pense como product designer e adicione pequenas melhorias que realmente aumentem valor sem inflar o app.
+
+Boas ideias que podem entrar se forem simples e bem executadas:
+- botão de duplicar rotina
+- botão de duplicar refeição
+- favoritos para exercícios
+- favoritos para alimentos
+- última atividade na home
+- resumo rápido do dia na home
+- empty states mais bonitos
+- confirmações visuais mais fortes
+- pequenos atalhos úteis
+- refinamento de spacing, contraste e proporções
+- qualquer pequeno ajuste de UX que deixe o app mais gostoso de usar
+
+Pode adicionar por conta própria o que fizer sentido, desde que:
+- seja leve
+- útil
+- bonito
+- não complique o app
+- não gere risco de regressão
+
+16. ESTABILIDADE PARA BETA
+Verificar:
+- chamadas desnecessárias
+- renderizações pesadas
+- uso de memória
+- loops
+- ações duplicadas
+- possíveis travamentos
+- instabilidades em uso pequeno e real
+
+17. RELATÓRIO FINAL
+Entregar:
+- o que foi corrigido
+- o que foi melhorado
+- o que foi removido
+- o que foi adicionado
+- o que ainda precisa atenção
+- riscos restantes
+- partes já sólidas
+- partes frágeis
+- se o app está pronto para beta real
+
+IMPORTANTE
+- foco total em mobile
+- foco em estabilidade
+- foco em UX real
+- não quebrar o que já funciona
+- não adicionar feature grande
+- só adicionar melhorias pequenas que realmente elevem a qualidade
+- quero o app pronto para uso real por pessoas

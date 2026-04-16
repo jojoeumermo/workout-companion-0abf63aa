@@ -22,8 +22,8 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 
 ## Key Features
 
-- Workout tracking with templates, folders, history, personal records, and real-time volume tracking
-- AI Coach chat powered by OpenAI (streaming SSE) with 8 data-aware quick action prompts (routine building, weekly analysis, substitutions, load progression, 8-week program, overtraining risk, weekly split, evolution prediction)
+- Workout tracking with templates (duplicate/edit/delete), folders, history, personal records, and real-time volume tracking
+- AI Coach chat powered by Google Gemini (streaming SSE) with 8 data-aware quick action prompts (routine building, weekly analysis, substitutions, load progression, 8-week program, overtraining risk, weekly split, evolution prediction); full-screen mobile layout with back button, no BottomNav overlap
 - AI meal analysis via photo or text description (vision model) — secondary tab in NutritionCamera
 - Brazilian food database (`src/data/foodDatabase.ts`) with 80 foods: macros per 100g, common portions, search/filter by category
 - NutritionCamera redesigned: food database primary (search → select → grams → auto macros), AI analysis secondary tab
