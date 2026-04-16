@@ -1,0 +1,210 @@
+Estamos na fase final antes do beta, mas ainda existem problemas críticos que precisam ser resolvidos de forma definitiva.
+
+Quero que você trate este projeto como um produto real prestes a ser usado por pessoas, e não como um protótipo.
+
+Este prompt tem prioridade máxima e exige execução completa, sem respostas superficiais.
+
+--------------------------------------------------
+
+OBJETIVO PRINCIPAL
+
+Resolver de forma definitiva:
+1. funcionamento da IA no celular
+2. polimento final de UX/UI
+3. consistência visual e comportamento mobile
+4. elevar o app para nível premium real
+
+Sem meio-termo.
+
+--------------------------------------------------
+
+1. IA NO CELULAR — CORREÇÃO DEFINITIVA (CRÍTICO)
+
+Situação atual:
+- IA funciona no desktop
+- IA NÃO funciona corretamente no celular
+
+Isso é inaceitável para o beta.
+
+Quero que você:
+
+1. Audite completamente o fluxo da IA:
+   - chamada
+   - backend
+   - streaming (SSE)
+   - renderização no frontend
+   - comportamento em WebView (Capacitor)
+
+2. Identifique exatamente por que falha no celular:
+   - SSE incompatível?
+   - problema de scroll?
+   - problema de renderização?
+   - problema de lifecycle no mobile?
+
+3. Corrija de forma definitiva:
+
+REGRAS:
+- NÃO usar solução frágil
+- NÃO deixar dependente de comportamento específico de desktop
+- NÃO manter algo que pode quebrar facilmente
+
+SE NECESSÁRIO:
+- substituir SSE por resposta tradicional (JSON completo)
+- garantir compatibilidade total com mobile
+
+Resultado esperado:
+- IA funcionando 100% no celular
+- fluxo completo: enviar → responder → renderizar
+- sem glitches visuais
+- sem travamentos
+- sem bugs de scroll
+
+Se não for possível garantir isso com estabilidade:
+→ REMOVER completamente o streaming
+→ usar resposta padrão estável
+
+--------------------------------------------------
+
+2. FITAI COACH — POLIMENTO FINAL
+
+Ainda há problemas visuais e de UX.
+
+Quero:
+
+- layout totalmente estável no mobile
+- nenhuma sobreposição de elementos
+- input sempre visível com teclado aberto
+- scroll perfeito das mensagens
+- comportamento consistente em telas pequenas
+
+Adicionar:
+- botão de voltar claro e funcional
+- espaçamento correto entre mensagens
+- limite de largura confortável para leitura
+- aparência de chat moderno e limpo
+
+--------------------------------------------------
+
+3. UX PREMIUM — ELEVAR QUALIDADE
+
+Quero elevar o app de “bom” para “premium”.
+
+Implemente melhorias reais de produto:
+
+- feedback visual forte ao salvar ações
+- micro animações leves (sem exagero)
+- sensação de fluidez
+- loaders melhores
+- hierarquia visual clara
+
+--------------------------------------------------
+
+4. HOME MAIS INTELIGENTE
+
+Melhorar a home com:
+
+- resumo do dia (treino, nutrição, água)
+- última atividade
+- progresso semanal simples
+- streak de dias (visual claro)
+
+--------------------------------------------------
+
+5. ENGAGEMENT (RETENÇÃO)
+
+Adicionar:
+
+- streak diário
+- metas semanais simples
+- feedback ao completar treino
+- pequenas conquistas visuais
+
+Sem complicar o app.
+
+--------------------------------------------------
+
+6. MICRO UX (DETALHES QUE FAZEM DIFERENÇA)
+
+Melhorar:
+
+- áreas clicáveis
+- responsividade de toque
+- evitar qualquer atraso perceptível
+- evitar qualquer fricção
+
+--------------------------------------------------
+
+7. CONSISTÊNCIA VISUAL
+
+Padronizar:
+
+- espaçamentos
+- tamanhos de fonte
+- cores
+- sombras
+- comportamento de cards
+
+Objetivo:
+todas as telas parecerem parte do mesmo sistema.
+
+--------------------------------------------------
+
+8. PERFORMANCE PERCEBIDA
+
+- evitar re-renderizações desnecessárias
+- melhorar sensação de velocidade
+- garantir que nenhuma ação pareça travada
+
+--------------------------------------------------
+
+9. SEGURANÇA E ARQUITETURA
+
+- garantir que nenhuma chave de API esteja no frontend
+- manter chamadas da IA via backend
+- validar fluxo completo de requisições
+
+--------------------------------------------------
+
+10. DECISÃO FINAL SOBRE IA
+
+Se após correção:
+
+IA estiver:
+- estável
+- funcionando no mobile
+- sem bugs
+
+→ manter
+
+Se não:
+
+→ remover completamente IA e qualquer UI relacionada
+
+Sem meio-termo.
+
+--------------------------------------------------
+
+11. RELATÓRIO FINAL (OBRIGATÓRIO)
+
+Quero um relatório técnico completo:
+
+- causa exata do problema da IA no mobile
+- o que foi corrigido
+- o que foi alterado (arquitetura ou fluxo)
+- o que foi melhorado na UX
+- o que foi padronizado no design
+- riscos restantes
+- se o app está pronto para beta real
+
+--------------------------------------------------
+
+REGRAS FINAIS
+
+- não responder superficialmente
+- não pular etapas
+- não deixar problemas “aceitáveis”
+- agir como engenheiro responsável por produção
+- foco total em qualidade real
+
+Resultado esperado:
+app funcionando de forma sólida, estável e com sensação de produto premium pronto para uso real.

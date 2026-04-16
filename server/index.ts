@@ -102,7 +102,7 @@ app.get("/api/health", async (_req, res) => {
   }
 });
 
-// AI Coach - streaming SSE
+// AI Coach — non-streaming JSON (compatible with all mobile browsers and WebViews)
 app.post("/api/ai-coach", async (req, res) => {
   const { messages, context } = req.body as {
     messages: { role: "user" | "assistant"; content: string }[];
@@ -126,40 +126,24 @@ app.post("/api/ai-coach", async (req, res) => {
       systemInstruction: systemContent,
     });
 
-    // All messages except the last become history; last message is sent now
     const history: Content[] = messages.slice(0, -1).map(m => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
 
     const lastMessage = messages[messages.length - 1].content;
-
     const chat = model.startChat({ history });
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
+    const result = await withRetry(() => chat.sendMessage(lastMessage));
+    const text = result.response.text();
 
-    const streamResult = await chat.sendMessageStream(lastMessage);
+    if (!text) throw new Error("Resposta vazia da IA.");
 
-    for await (const chunk of streamResult.stream) {
-      const text = chunk.text();
-      if (text) {
-        res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`);
-      }
-    }
-    res.write("data: [DONE]\n\n");
-    res.end();
+    res.json({ response: text });
   } catch (err) {
     const { message, status } = friendlyError(err);
     console.error("[ai-coach]", err instanceof Error ? err.message : err);
-    if (!res.headersSent) {
-      res.status(status).json({ error: message });
-    } else {
-      res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: `\n\n❌ ${message}` } }] })}\n\n`);
-      res.write("data: [DONE]\n\n");
-      res.end();
-    }
+    res.status(status).json({ error: message });
   }
 });
 

@@ -155,54 +155,17 @@ export default function AICoach() {
         }),
       });
 
+      const data = await resp.json().catch(() => ({ error: 'Resposta inválida do servidor.' }));
+
       if (!resp.ok) {
-        const errorData = await resp.json().catch(() => ({ error: 'Erro desconhecido' }));
-        throw new Error(errorData.error || `Erro ${resp.status}`);
+        throw new Error(data.error || `Erro ${resp.status}`);
       }
 
-      if (!resp.body) throw new Error('Sem resposta do servidor');
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantSoFar = '';
-      let textBuffer = '';
-      let streamDone = false;
-
-      const upsertAssistant = (nextChunk: string) => {
-        assistantSoFar += nextChunk;
-        setMessages(prev => {
-          const last = prev[prev.length - 1];
-          if (last?.role === 'assistant') {
-            return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
-          }
-          return [...prev, { role: 'assistant', content: assistantSoFar }];
-        });
-      };
-
-      while (!streamDone) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-          if (line.endsWith('\r')) line = line.slice(0, -1);
-          if (line.startsWith(':') || line.trim() === '') continue;
-          if (!line.startsWith('data: ')) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') { streamDone = true; break; }
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const chunk = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (chunk) upsertAssistant(chunk);
-          } catch { /* ignore partial */ }
-        }
-      }
-
-      if (assistantSoFar === '') {
+      if (!data.response) {
         throw new Error('Resposta vazia da IA. Tente novamente.');
       }
+
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
       haptic('success');
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erro ao conectar com a IA.';

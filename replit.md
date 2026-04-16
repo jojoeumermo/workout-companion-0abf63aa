@@ -48,7 +48,7 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 ## API Routes
 
 - `GET /api/health` — Health check / AI connectivity test
-- `POST /api/ai-coach` — AI fitness coach chat (streaming SSE)
+- `POST /api/ai-coach` — AI fitness coach chat (JSON response, non-streaming — full mobile/WebView compatibility)
 - `POST /api/analyze-meal` — AI meal nutritional analysis (image or text)
 - `POST /api/analyze-workout` — Post-workout AI analysis comparing current vs previous workout (non-streaming)
 
