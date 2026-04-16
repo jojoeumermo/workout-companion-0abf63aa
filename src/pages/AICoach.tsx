@@ -144,6 +144,9 @@ export default function AICoach() {
     setIsLoading(true);
     haptic('light');
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
+
     try {
       const context = buildContext();
       const resp = await apiFetch('/api/ai-coach', {
@@ -153,25 +156,40 @@ export default function AICoach() {
           messages: allMessages.map(m => ({ role: m.role, content: m.content })),
           context,
         }),
+        signal: controller.signal,
       });
 
-      const data = await resp.json().catch(() => ({ error: 'Resposta inválida do servidor.' }));
-
-      if (!resp.ok) {
-        throw new Error(data.error || `Erro ${resp.status}`);
+      // Read as text first — avoids JSON parse failure on mobile WebViews
+      const rawText = await resp.text();
+      let data: Record<string, string>;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        console.error('[ai-coach] non-JSON response:', resp.status, rawText.slice(0, 200));
+        throw new Error(`Servidor retornou resposta inesperada (HTTP ${resp.status}). Tente novamente.`);
       }
 
-      if (!data.response) {
-        throw new Error('Resposta vazia da IA. Tente novamente.');
+      if (!resp.ok) {
+        throw new Error(data?.error || `Erro do servidor (${resp.status})`);
+      }
+
+      if (!data?.response) {
+        console.error('[ai-coach] missing response field:', JSON.stringify(data).slice(0, 200));
+        throw new Error('Resposta da IA incompleta. Tente novamente.');
       }
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
       haptic('success');
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Erro ao conectar com a IA.';
-      setMessages(prev => [...prev, { role: 'assistant', content: `❌ **Erro:** ${msg}\n\nTente novamente.` }]);
+    } catch (e: any) {
+      if (e?.name === 'AbortError') {
+        setMessages(prev => [...prev, { role: 'assistant', content: '⏱️ **Timeout:** A IA demorou mais de 55s. Tente uma pergunta mais curta ou simples.' }]);
+      } else {
+        const msg = e instanceof Error ? e.message : 'Erro ao conectar com a IA.';
+        setMessages(prev => [...prev, { role: 'assistant', content: `❌ **Erro:** ${msg}\n\nTente novamente.` }]);
+      }
       haptic('error');
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   };

@@ -1,0 +1,353 @@
+Estamos na fase FINAL antes do beta.
+
+Quero que você trate este projeto como um produto real, que será usado por pessoas reais, e não como um protótipo.
+
+Este prompt é crítico e deve ser executado com máxima qualidade, sem respostas superficiais.
+
+OBJETIVO
+
+Deixar o app:
+
+100% funcional no mobile
+visualmente consistente
+sem bugs visuais
+com UX fluida
+com sensação de produto premium, no nível de apps como MyFitnessPal, Hevy e Fitbod
+1. PROBLEMA CRÍTICO — NAVBAR SOBREPONDO CONTEÚDO
+
+Problema:
+
+a bottom navigation flutuante está cobrindo o conteúdo ao final do scroll
+elementos ficam escondidos atrás dela
+isso quebra a UX
+
+Importante:
+
+NÃO remover a navbar flutuante
+NÃO alterar o estilo dela
+o design flutuante deve ser mantido
+
+Solução obrigatória:
+
+adicionar padding-bottom em TODAS as telas e containers principais
+usar:
+padding-bottom: calc(90px + env(safe-area-inset-bottom));
+garantir que o último elemento nunca fique escondido atrás da navbar
+
+Resultado esperado:
+
+a navbar continua flutuante e bonita, mas nunca cobre conteúdo
+2. CONSISTÊNCIA VISUAL GLOBAL
+
+Problema:
+
+telas com níveis diferentes de qualidade visual
+inconsistência de espaçamento e hierarquia
+
+Padronizar:
+
+padding lateral padrão: 16px a 20px
+espaçamento vertical consistente entre seções
+títulos com peso e tamanho consistentes
+subtítulos com contraste adequado
+distância consistente entre:
+título → conteúdo
+cards → cards
+seções → seções
+
+Objetivo:
+
+todas as telas devem parecer parte do mesmo sistema
+3. POLIMENTO PREMIUM
+
+Corrigir:
+
+aumentar levemente o espaçamento vertical
+garantir “respiro” entre elementos
+evitar elementos colados
+melhorar contraste geral
+usar fundo #0f0f0f ou #121212 em vez de preto puro
+aplicar leve elevação nos cards
+
+Objetivo:
+
+sensação de app premium, refinado e menos “cru”
+4. IMAGENS DOS EXERCÍCIOS
+
+Problema:
+
+antes estava bonito, mas cortava demais
+agora está correto, mas perdeu impacto visual
+
+Corrigir de forma equilibrada:
+
+usar object-cover
+ajustar object-position priorizando parte superior do corpo / topo / cabeça
+manter imagens grandes e impactantes
+manter bordas arredondadas
+evitar aparência de imagem pequena ou “encaixada”
+
+Se necessário:
+
+usar comportamento diferente para:
+cards
+tela de detalhe
+
+Objetivo:
+
+imagem bonita + informativa + funcional + premium
+5. FITAI COACH
+
+Problemas:
+
+sensação de tela separada do resto do app
+layout pode melhorar
+experiência do chat pode parecer simples demais
+
+Quero:
+
+alinhar o design com o resto do app
+corrigir completamente o layout mobile
+melhorar espaçamento entre mensagens
+limitar largura do texto para leitura confortável
+manter input sempre visível com teclado aberto
+garantir scroll perfeito
+manter botão de voltar claro e funcional
+evitar bugs visuais no chat
+
+Objetivo:
+
+parecer um chat moderno, integrado e premium
+6. IA NO MOBILE — VALIDAÇÃO FINAL
+
+Estado atual:
+
+a IA funciona via JSON, sem streaming
+
+Garantir:
+
+funcionamento 100% no mobile
+fluxo completo do início ao fim sem travamentos
+loading claro, por exemplo: “FitAI está pensando…”
+feedback claro durante o tempo de resposta
+ausência de bugs visuais no chat
+
+Importante:
+
+manter JSON simples
+NÃO voltar para streaming / SSE
+se houver qualquer instabilidade, continuar com JSON
+7. NUTRIÇÃO — UPGRADE NÍVEL MYFITNESSPAL
+
+Quero elevar essa área para nível premium real.
+
+A. CÍRCULO DE CALORIAS
+substituir barra simples por círculo de progresso
+mostrar:
+calorias consumidas
+calorias restantes
+usar animação suave ao atualizar
+B. RESUMO DO DIA
+
+Exibir claramente:
+
+Meta calórica
+Consumido
+Exercício
+Restante
+
+Formato:
+Meta - Consumido + Exercício = Restante
+
+C. ESTRUTURA DE REFEIÇÕES
+
+Organizar como:
+
+Café da manhã
+Almoço
+Jantar
+Lanches
+
+Cada bloco com:
+
+alimentos listados
+calorias por item
+macros resumidos
+D. BOTÃO “ADICIONAR ALIMENTO”
+claro
+acessível
+consistente com o resto do app
+E. FAVORITOS E REPETIÇÃO
+permitir repetir refeição
+permitir favoritos, se for simples implementar
+8. MACROS E MICROS
+
+Adicionar sistema mais completo com:
+
+proteínas
+carboidratos
+gorduras
+
+Se possível, sem complicar:
+
+fibras
+sódio
+açúcares
+
+Exibir:
+
+porcentagem
+comparação com meta
+
+Usar:
+
+gráfico circular estilo MyFitnessPal
+visual limpo e claro
+9. JEJUM INTERMITENTE
+
+Implementar funcionalidade completa e confiável.
+
+Requisitos:
+
+iniciar jejum com horário
+encerrar jejum automaticamente ou manualmente
+calcular duração corretamente, sem bugs
+atualizar em tempo real
+persistir dados corretamente
+
+Exibir:
+
+duração atual (ex: 13h 10m)
+histórico de jejuns
+feedback visual claro
+
+Importante:
+
+não quero erros de cálculo
+não quero correções manuais
+deve funcionar perfeitamente
+10. HOME
+
+Melhorar a home com:
+
+resumo do dia (treino + nutrição)
+calorias restantes com visual claro
+última atividade
+progresso semanal simples
+streak visual / streak de dias
+
+Objetivo:
+
+dar sensação de app vivo, útil e em uso real
+11. ENGAGEMENT
+
+Adicionar, sem complexidade excessiva:
+
+streak diário
+metas semanais (ex: 3 treinos)
+feedback visual ao concluir treino
+pequenas conquistas visuais
+
+Objetivo:
+
+melhorar retenção e sensação de progresso
+12. UX PREMIUM
+
+Adicionar ou refinar:
+
+feedback visual ao salvar
+loaders mais suaves
+mensagens de erro claras
+microanimações leves
+sensação geral de fluidez nas ações
+13. PERFORMANCE E ESTABILIDADE
+
+Garantir:
+
+sem travamentos
+sem renderizações desnecessárias
+sem componentes pesados sem necessidade
+sem loops ou ações duplicadas
+fluidez real no mobile
+
+Objetivo:
+
+performance sólida para uso real
+14. RELATÓRIO FINAL (OBRIGATÓRIO)
+
+Entregar:
+
+tudo que foi corrigido
+o que foi padronizado
+o que foi melhorado no design
+o que foi ajustado no mobile
+o que foi feito na navbar
+o que foi melhorado no FitAI
+o que foi adicionado em nutrição, macros e jejum
+validação da IA no mobile
+riscos restantes
+dizer claramente se o app está pronto para beta real
+REGRAS
+não quebrar o que já funciona
+não adicionar features grandes ou complexas sem necessidade
+foco total em polimento, consistência e qualidade
+agir como produto real em produção
+RESULTADO ESPERADO
+
+App:
+
+estável
+consistente
+bonito
+sem bugs visuais
+funcional no mobile
+fluido
+com aparência premium
+pronto para uso real
+pronto para beta real
+
+ADENDO CRÍTICO — IA NO MOBILE AINDA ESTÁ FALHANDO
+
+No celular, a IA ainda está retornando:
+"erro: resposta inválida do servidor"
+
+Isso significa que o problema NÃO está resolvido.
+
+Quero que você trate isso como bug crítico de produção.
+
+Tarefas obrigatórias:
+
+1. reproduzir o erro no mobile
+2. descobrir a causa exata
+3. verificar:
+- formato do JSON retornado
+- status HTTP real da resposta
+- headers da resposta
+- parsing no frontend
+- tratamento de erro no backend
+- diferenças entre desktop e mobile
+- possíveis problemas de proxy, CORS, body parsing ou resposta vazia
+
+4. garantir que a resposta da rota da IA seja sempre válida e previsível, por exemplo:
+{
+  "response": "texto aqui"
+}
+
+5. no frontend, validar defensivamente:
+- se vier JSON inválido
+- se vier erro do servidor
+- se vier campo diferente de "response"
+- se vier resposta vazia
+
+6. exibir erro amigável real, e não mensagem genérica enganosa
+
+7. testar o fluxo completo no mobile:
+- enviar mensagem
+- receber resposta
+- renderizar corretamente
+- sem "resposta inválida do servidor"
+
+IMPORTANTE:
+não quero suposição.
+quero diagnóstico real da causa e correção definitiva.
+se necessário, adicionar logs temporários no backend e no frontend para descobrir exatamente onde quebra.

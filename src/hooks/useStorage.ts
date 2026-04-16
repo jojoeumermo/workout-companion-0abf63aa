@@ -230,3 +230,47 @@ export function useCustomExercises() {
 
   return { exercises, addExercise, removeExercise };
 }
+
+export interface FastingSession {
+  id: string;
+  startedAt: string;
+  endedAt?: string;
+  durationMinutes?: number;
+}
+
+interface FastingData {
+  active: FastingSession | null;
+  history: FastingSession[];
+}
+
+export function useFasting() {
+  const [data, setData] = useLocalStorage<FastingData>('fasting-data', { active: null, history: [] });
+
+  const start = useCallback(() => {
+    setData(prev => ({
+      ...prev,
+      active: { id: `fast-${Date.now()}`, startedAt: new Date().toISOString() },
+    }));
+  }, [setData]);
+
+  const stop = useCallback(() => {
+    setData(prev => {
+      if (!prev.active) return prev;
+      const endedAt = new Date().toISOString();
+      const durationMinutes = Math.round(
+        (new Date(endedAt).getTime() - new Date(prev.active!.startedAt).getTime()) / 60000
+      );
+      const completed: FastingSession = { ...prev.active!, endedAt, durationMinutes };
+      return {
+        active: null,
+        history: [completed, ...prev.history].slice(0, 60),
+      };
+    });
+  }, [setData]);
+
+  const clearHistory = useCallback(() => {
+    setData(prev => ({ ...prev, history: [] }));
+  }, [setData]);
+
+  return { data, start, stop, clearHistory };
+}

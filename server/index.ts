@@ -264,6 +264,16 @@ Seja conciso (máx 150 palavras), direto e específico com os números. Use mark
   }
 });
 
+// Global JSON error handler — ensures ALL Express errors return JSON, never HTML
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Erro interno do servidor.";
+  console.error("[express-error]", status, message);
+  if (!res.headersSent) {
+    res.status(status).json({ error: message });
+  }
+});
+
 if (isDev) {
   app.use(
     "/",

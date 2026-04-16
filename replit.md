@@ -8,7 +8,7 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 - **Backend**: Express server (`server/index.ts`) running on port 5000
 - **Dev proxy**: Vite proxies `/api` requests to the Express server in development
 - **Data storage**: localStorage (client-side) for all user data (workouts, meals, goals, body weight, water, measurements, custom exercises, programs, user profile)
-- **AI**: Google Gemini API (`gemini-1.5-flash`) via `GEMINI_API_KEY` secret — no Replit Agent dependency
+- **AI**: Google Gemini API (`gemini-2.5-flash`) via `GEMINI_API_KEY` secret — JSON response (no SSE), global Express JSON error handler, AbortController 55s timeout on frontend
 - **Android**: Capacitor (`com.fitai.coach`), build guide in `BUILD_ANDROID.md`
 
 ## Visual Design
@@ -23,11 +23,12 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 ## Key Features
 
 - Workout tracking with templates (duplicate/edit/delete), folders, history, personal records, and real-time volume tracking
-- AI Coach chat powered by Google Gemini (streaming SSE) with 8 data-aware quick action prompts (routine building, weekly analysis, substitutions, load progression, 8-week program, overtraining risk, weekly split, evolution prediction); full-screen mobile layout with back button, no BottomNav overlap
+- AI Coach chat powered by Google Gemini (JSON response, mobile-safe — no SSE) with 8 data-aware quick action prompts; AbortController 55s timeout; text→JSON defensive parsing; global Express JSON error handler; full-screen mobile layout
 - AI meal analysis via photo or text description (vision model) — secondary tab in NutritionCamera
 - Brazilian food database (`src/data/foodDatabase.ts`) with 80 foods: macros per 100g, common portions, search/filter by category
 - NutritionCamera redesigned: food database primary (search → select → grams → auto macros), AI analysis secondary tab
-- Nutrition tracking with macros (grams/percent toggle), calorie balance indicator, editable water goal, custom ml input, and meal history
+- Nutrition tracking: calorie circle (SVG stroke-dasharray), meals grouped by type (Café/Almoço/Jantar/Lanche/Outro) with per-type add button, macros bars, water tracking, intermittent fasting timer with live elapsed time and history
+- Intermittent fasting: `useFasting` hook in useStorage, start/stop/history, persists in localStorage (`fasting-data`)
 - Body weight tracking with chart, quick-adjust buttons, and history
 - Body composition: BMI, body fat % (US Navy method), BMR (Mifflin-St Jeor), TDEE, lean/fat mass
 - Custom exercises: create/delete with CUSTOM badge, image upload (base64, up to 2MB stored in localStorage), merged with built-in 175+ exercises; muscle-group color coding throughout (red=Peito, blue=Costas, purple=Ombros, green=Bíceps, etc.)
