@@ -1,0 +1,233 @@
+Entramos na fase final antes do beta.
+
+Quero uma revisão completa, objetiva e prática do app para deixá-lo pronto para testes reais com poucas pessoas, com foco em estabilidade, mobile, UX/UI, baixo risco de quebrar e boa experiência geral.
+
+OBJETIVO GERAL
+Deixar o projeto o mais sólido, limpo e pronto possível para uso em pequena escala, corrigindo bugs, melhorando a experiência no celular, limpando código e fechando os fluxos principais do app.
+
+PRIORIDADES ABSOLUTAS
+1. estabilidade
+2. mobile first
+3. correção de bugs reais
+4. UX/UI limpa e consistente
+5. performance
+6. baixo risco de regressão
+7. prontidão para beta pequeno e real
+
+TAREFA 1 — LIMPEZA DO PROJETO
+- apagar a pasta public/exercises, já que não vamos mais usar essa estrutura local
+- remover qualquer código, lógica ou referência que dependa dela, se ainda existir
+- remover código morto
+- remover imports não usados
+- remover assets inúteis
+- remover dependências desnecessárias
+- remover configs antigas sem uso
+- manter apenas a solução final realmente usada no app
+
+TAREFA 2 — AUDITORIA COMPLETA DO APP
+Faça uma varredura total no app, de cima a baixo.
+
+Verifique:
+- bugs visuais
+- bugs funcionais
+- problemas de responsividade no mobile
+- erros de layout
+- inconsistências de design
+- erros e warnings de console
+- problemas de performance
+- estados quebrados
+- fluxos incompletos
+- componentes duplicados ou mal organizados
+- imports não usados
+- código morto
+- dependências desnecessárias
+- vulnerabilidades e riscos básicos de segurança
+- problemas de validação
+- possíveis crashes
+- gargalos de performance
+- risco de travamento
+- risco de sobrecarga em uso pequeno
+- qualquer problema de UX que atrapalhe o beta real
+
+TAREFA 3 — CORREÇÕES SEGURAS
+Corrija automaticamente tudo o que for seguro corrigir sem quebrar o app.
+
+Regras:
+- priorizar estabilidade
+- priorizar mobile
+- manter consistência visual
+- evitar regressão
+- não fazer refatorações desnecessárias
+- não fazer mudanças cosméticas aleatórias
+
+TAREFA 4 — MOBILE FIRST
+Revise todas as telas com foco forte em celular.
+
+Quero ajuste real em:
+- espaçamentos
+- tamanhos de fonte
+- altura de botões
+- áreas clicáveis
+- cards
+- modais
+- inputs
+- headers
+- listas
+- rolagem
+- imagens
+- componentes que ultrapassam a tela
+- elementos apertados ou desalinhados
+- overflow horizontal
+
+Problemas já identificados que precisam ser corrigidos:
+- em alguns exercícios, as imagens estão cortadas demais no celular; a foto fica bonita na caixa, mas corta partes importantes da pessoa, como cabeça, braços ou postura. Ajuste o enquadramento e a exibição para ficar bonito sem cortar informação essencial.
+- na criação de rotinas, ao adicionar exercícios, a barra/campo de busca do nome do exercício está saindo da margem da tela.
+- os botões de filtro abaixo, como grupo muscular, equipamento e similares, não estão permitindo scroll horizontal corretamente no celular, então não dá para filtrar direito.
+
+TAREFA 5 — MELHORAR A CRIAÇÃO DE ROTINAS
+Revise e melhore a experiência de criação de rotinas.
+
+Objetivos:
+- deixar mais bonita
+- deixar mais funcional
+- deixar mais clara
+- deixar mais fluida no celular
+- melhorar o fluxo de adicionar exercícios
+- melhorar layout e usabilidade dos filtros
+- melhorar busca, seleção e organização
+- corrigir os bugs já citados
+- se fizer sentido, pode repaginar essa área para ficar mais moderna, desde que continue simples e intuitiva
+
+TAREFA 6 — NUTRIÇÃO SEM DEPENDER DA IA
+Como a IA ainda não está confiável, quero uma solução estável sem depender dela.
+
+Implemente uma base de dados estruturada de alimentos para cálculo de calorias e macros.
+
+Requisitos:
+- o usuário não deve depender de digitação livre para o fluxo principal
+- o usuário escolhe alimentos de uma base pronta
+- deve haver busca, categorias e seleção clara
+- o usuário informa a quantidade em gramas
+- o app calcula automaticamente calorias, proteínas, carboidratos, gorduras e valores médios com base nessa quantidade
+
+Exemplo:
+- selecionar “frango grelhado”
+- informar 150g
+- o app calcula os valores proporcionalmente
+
+TAREFA 7 — CORRIGIR O REGISTRO DE REFEIÇÃO
+A tela/fluxo de registrar refeição ainda está amadora e ruim.
+
+Problemas percebidos:
+- se eu descrevo a refeição, nem consigo salvar direito
+- só existe botão de analisar refeição
+- o fluxo está confuso
+- falta clareza entre adicionar, analisar e salvar
+
+Quero que você:
+- reorganize esse fluxo
+- corrija o salvamento
+- simplifique a experiência
+- deixe a tela mais profissional
+- priorize o fluxo baseado em base de alimentos + quantidade
+- garanta que registrar refeição funcione bem mesmo sem IA
+
+TAREFA 8 — CHECK FINAL DOS MÓDULOS PRINCIPAIS
+Faça uma revisão final nestas áreas:
+- Home
+- Progresso
+- Rotinas
+- Nutrição
+
+Verifique se:
+- os fluxos principais funcionam do início ao fim
+- não há estados quebrados
+- não há componentes desalinhados
+- não há ações confusas
+- não há pontos amadores que prejudiquem o beta
+
+TAREFA 9 — GAMIFICAÇÃO LEVE
+Quero adicionar elementos leves de gamificação, desde que isso não complique demais o app.
+
+Sugestões:
+- streaks
+- sequência de dias
+- feedback visual de consistência
+- pequenas metas
+- sensação de progresso
+- reforço visual quando o usuário completa ações
+
+Faça isso de forma útil, leve e coerente com o app, sem virar bagunça.
+
+TAREFA 10 — UX/UI FINAL
+Além de corrigir bugs, faça melhorias pontuais de UX/UI onde realmente fizer sentido.
+
+Exemplos:
+- estados vazios melhores
+- feedback visual melhor ao salvar, editar e apagar
+- mensagens de erro mais claras
+- loaders mais limpos
+- hierarquia visual melhor
+- ações principais mais claras
+- consistência entre telas
+
+Não invente feature grande fora do escopo. Foque em polimento real.
+
+TAREFA 11 — IA: DECISÃO DEFINITIVA
+Analise o estado atual da funcionalidade de IA no app e tome uma decisão objetiva.
+
+Opções:
+A) integrar uma API de IA real e deixar funcionando de forma estável
+ou
+B) remover completamente a IA e todas as dependências relacionadas
+
+Regras:
+- sem meio-termo
+- sem gambiarra
+- sem deixar UI quebrada
+- ou a IA funciona de verdade, ou sai do app
+
+Se a opção A for viável agora:
+- implemente da forma mais simples, robusta e sustentável possível
+
+Se a opção A não for viável agora:
+- remover a IA
+- remover dependências ligadas à IA
+- remover UI quebrada relacionada à IA
+- remover configs e código morto ligados à IA
+
+TAREFA 12 — RESISTÊNCIA PARA PEQUENA ESCALA
+Revise o app pensando em uso real por poucas pessoas.
+
+Verifique riscos de:
+- chamadas desnecessárias em excesso
+- renderizações pesadas
+- loops
+- consumo exagerado de memória
+- assets pesados demais
+- estados inconsistentes
+- falhas em formulários
+- duplicação de ação
+- problemas simples de concorrência
+- qualquer instabilidade que possa aparecer em testes reais
+
+TAREFA 13 — RELATÓRIO FINAL
+No final, me entregue um relatório claro e objetivo com:
+- o que foi corrigido
+- o que foi melhorado
+- o que foi removido
+- o que foi limpo
+- o que ainda merece atenção
+- quais riscos ainda existem
+- quais partes do app já estão sólidas
+- quais partes ainda estão frágeis
+- se o app está apto para beta real em pequena escala sem quebrar ou sobrecarregar
+
+IMPORTANTE
+- priorize robustez
+- priorize mobile
+- priorize confiabilidade
+- evite regressão
+- não faça refatoração desnecessária
+- não invente features grandes fora do escopo
+- quero o produto o mais pronto possível para beta real

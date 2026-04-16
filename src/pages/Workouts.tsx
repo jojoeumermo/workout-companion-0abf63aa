@@ -426,22 +426,24 @@ export default function Workouts() {
 
       {/* Exercise Picker Dialog */}
       <Dialog open={showExercisePicker} onOpenChange={setShowExercisePicker}>
-        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border flex flex-col" style={{ maxHeight: '85dvh' }}>
           <DialogHeader>
             <DialogTitle>Selecionar Exercício</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 mt-4">
+          <div className="flex flex-col gap-3 mt-2 min-h-0 flex-1">
             <input
               type="text"
               placeholder="Buscar exercício..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring font-body text-sm"
+              autoComplete="off"
+              enterKeyHint="search"
+              className="w-full bg-secondary rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring font-body text-sm shrink-0"
             />
-            <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none shrink-0">
               <button
                 onClick={() => setMuscleFilter('')}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${!muscleFilter ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
               >
                 Todos
               </button>
@@ -449,18 +451,18 @@ export default function Workouts() {
                 <button
                   key={mg}
                   onClick={() => setMuscleFilter(mg)}
-                  className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
+                  className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${muscleFilter === mg ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}
                 >
                   {mg}
                 </button>
               ))}
             </div>
-            <div className="space-y-1 max-h-[50vh] overflow-y-auto">
+            <div className="space-y-1 overflow-y-auto flex-1 min-h-0">
               {filteredExercises.map(ex => (
                 <button
                   key={ex.id}
                   onClick={() => addExercise(ex.id)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary active:scale-[0.98] transition-all text-left"
                 >
                   <ExerciseMedia
                     exerciseId={ex.id}

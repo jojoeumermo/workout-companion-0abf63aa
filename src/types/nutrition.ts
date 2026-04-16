@@ -23,7 +23,7 @@ export interface MealEntry {
   };
   imageBase64?: string; // thumbnail
   notes?: string;
-  confidence?: 'alta' | 'media' | 'baixa';
+  confidence?: 'alta' | 'media' | 'baixa' | 'manual';
 }
 
 export interface DailyNutritionGoal {

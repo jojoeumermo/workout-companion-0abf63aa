@@ -116,7 +116,7 @@ function ExerciseMedia({
             onLoad={handleLoad}
             loading="lazy"
             decoding="async"
-            className={`w-full h-full object-cover transition-opacity duration-300 ${mediaState === 'loading' ? 'opacity-0 absolute inset-0' : 'opacity-100'}`}
+            className={`w-full h-full transition-opacity duration-300 ${size === 'hero' ? 'object-contain' : 'object-cover object-top'} ${mediaState === 'loading' ? 'opacity-0 absolute inset-0' : 'opacity-100'}`}
           />
         </>
       ) : (
