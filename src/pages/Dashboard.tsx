@@ -217,7 +217,7 @@ export default function Dashboard() {
             {[
               { icon: Zap, label: 'Treino Livre', action: startFreeWorkout },
               { icon: BookOpen, label: 'Programas', action: () => navigate('/programas') },
-              { icon: Utensils, label: 'Refeição', action: () => navigate('/nutricao/camera') },
+              { icon: Utensils, label: 'Refeição', action: () => navigate('/nutricao/registrar') },
             ].map(({ icon: Icon, label, action }) => (
               <button
                 key={label}

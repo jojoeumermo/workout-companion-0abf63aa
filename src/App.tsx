@@ -17,7 +17,7 @@ const ActiveWorkoutPage = lazy(() => import("./pages/ActiveWorkout"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Nutrition = lazy(() => import("./pages/Nutrition"));
-const NutritionCamera = lazy(() => import("./pages/NutritionCamera"));
+const RegisterMeal = lazy(() => import("./pages/RegisterMeal"));
 const WeightLog = lazy(() => import("./pages/WeightLog"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -53,7 +53,7 @@ const App = () => {
               <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
               <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
               <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
-              <Route path="/nutricao/camera" element={<NutritionCamera />} />
+              <Route path="/nutricao/registrar" element={<RegisterMeal />} />
               <Route path="/configuracoes" element={<Settings />} />
               <Route path="/programas" element={<><Programs /><BottomNav /></>} />
               <Route path="/peso" element={<WeightLog />} />

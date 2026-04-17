@@ -235,7 +235,7 @@ export default function Nutrition() {
   };
 
   const navigateToAddMeal = (type?: string) => {
-    navigate('/nutricao/camera', { state: { presetType: type } });
+    navigate('/nutricao/registrar', { state: { presetType: type } });
   };
 
   // Macro donut segments
