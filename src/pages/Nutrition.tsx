@@ -4,7 +4,8 @@ import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Dro
 import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
-import { useMeals, useNutritionGoals, useWaterLog, useWaterGoal, useFasting } from '@/hooks/useStorage';
+import { useMeals, useNutritionGoals, useWaterLog, useWaterGoal, useFasting, useMicroGoals } from '@/hooks/useStorage';
+import { MICRO_LIMITS, MicroGoals } from '@/types/nutrition';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { haptic } from '@/lib/haptic';
