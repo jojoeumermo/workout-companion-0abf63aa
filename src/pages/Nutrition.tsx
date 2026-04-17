@@ -138,6 +138,7 @@ export default function Nutrition() {
   const { getTodayWater, addWater, getWaterForDate } = useWaterLog();
   const [waterGoal, setWaterGoal] = useWaterGoal();
   const { data: fastingData, start: startFast, stop: stopFast, deleteFasting } = useFasting();
+  const [microGoals] = useMicroGoals();
 
   const [activeTab, setActiveTab] = useState<Tab>('Resumo');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
