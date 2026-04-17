@@ -120,10 +120,16 @@ export default function SwipeableRow({
         </button>
       </div>
 
+      {/* content layer — NO own border-radius: the parent overflow-hidden clips it.
+          bg-background ensures the card fully covers the red action layer at rest. */}
       <div
         ref={contentRef}
-        className="relative z-10 will-change-transform rounded-xl overflow-hidden bg-card"
-        style={{ transform: 'translate3d(0, 0, 0)', boxShadow: '0 0 0 1px hsl(var(--border)) inset' }}
+        className="relative z-10 will-change-transform"
+        style={{
+          transform: 'translate3d(0, 0, 0)',
+          background: 'hsl(var(--background))',
+          backfaceVisibility: 'hidden',
+        }}
       >
         {children}
       </div>
