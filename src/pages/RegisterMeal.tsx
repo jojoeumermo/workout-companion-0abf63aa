@@ -19,12 +19,20 @@ const MEAL_TYPES = [
 ] as const;
 
 function recalcTotals(items: NutritionItem[]) {
+  const sum = (k: keyof NutritionItem) => items.reduce((s, i) => s + ((i[k] as number) || 0), 0);
+  const r1 = (n: number) => Math.round(n * 10) / 10;
   return {
-    calories: Math.round(items.reduce((s, i) => s + (i.calories || 0), 0)),
-    protein: Math.round(items.reduce((s, i) => s + (i.protein || 0), 0) * 10) / 10,
-    carbs: Math.round(items.reduce((s, i) => s + (i.carbs || 0), 0) * 10) / 10,
-    fat: Math.round(items.reduce((s, i) => s + (i.fat || 0), 0) * 10) / 10,
-    fiber: Math.round(items.reduce((s, i) => s + (i.fiber || 0), 0) * 10) / 10,
+    calories: Math.round(sum('calories')),
+    protein: r1(sum('protein')),
+    carbs: r1(sum('carbs')),
+    fat: r1(sum('fat')),
+    fiber: r1(sum('fiber')),
+    sodium: Math.round(sum('sodium')),
+    sugar: r1(sum('sugar')),
+    calcium: Math.round(sum('calcium')),
+    iron: r1(sum('iron')),
+    vitaminC: r1(sum('vitaminC')),
+    vitaminD: r1(sum('vitaminD')),
   };
 }
 

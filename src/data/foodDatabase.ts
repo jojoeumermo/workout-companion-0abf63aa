@@ -8,10 +8,12 @@ export interface FoodItem {
     carbs: number;
     fat: number;
     fiber: number;
-    sodium?: number;
-    calcium?: number;
-    iron?: number;
-    vitaminC?: number;
+    sodium?: number;   // mg
+    sugar?: number;    // g
+    calcium?: number;  // mg
+    iron?: number;     // mg
+    vitaminC?: number; // mg
+    vitaminD?: number; // mcg
   };
   commonPortions: { label: string; grams: number }[];
 }
@@ -365,13 +367,21 @@ export function searchFoods(query: string, category?: string): FoodItem[] {
 
 export function calcMacrosForGrams(food: FoodItem, grams: number) {
   const ratio = grams / 100;
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  const p = food.per100g;
   return {
     name: food.name,
     portion: `${grams}g`,
-    calories: Math.round(food.per100g.calories * ratio),
-    protein: Math.round(food.per100g.protein * ratio * 10) / 10,
-    carbs: Math.round(food.per100g.carbs * ratio * 10) / 10,
-    fat: Math.round(food.per100g.fat * ratio * 10) / 10,
-    fiber: Math.round(food.per100g.fiber * ratio * 10) / 10,
+    calories: Math.round(p.calories * ratio),
+    protein: round1(p.protein * ratio),
+    carbs: round1(p.carbs * ratio),
+    fat: round1(p.fat * ratio),
+    fiber: round1(p.fiber * ratio),
+    sodium: p.sodium ? Math.round(p.sodium * ratio) : 0,
+    sugar: p.sugar ? round1(p.sugar * ratio) : 0,
+    calcium: p.calcium ? Math.round(p.calcium * ratio) : 0,
+    iron: p.iron ? round1(p.iron * ratio) : 0,
+    vitaminC: p.vitaminC ? round1(p.vitaminC * ratio) : 0,
+    vitaminD: p.vitaminD ? round1(p.vitaminD * ratio) : 0,
   };
 }

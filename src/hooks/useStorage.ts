@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WorkoutTemplate, CompletedWorkout, ActiveWorkout, PersonalRecord, Goal } from '@/types/workout';
-import { MealEntry, DailyNutritionGoal } from '@/types/nutrition';
+import { MealEntry, DailyNutritionGoal, MicroGoals, DEFAULT_MICRO_GOALS } from '@/types/nutrition';
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -134,6 +134,12 @@ export function useNutritionGoals() {
     carbs: 250,
     fat: 70,
   });
+}
+
+export function useMicroGoals() {
+  const [stored, setStored] = useLocalStorage<MicroGoals>('micro-goals', DEFAULT_MICRO_GOALS);
+  const goals: MicroGoals = { ...DEFAULT_MICRO_GOALS, ...stored };
+  return [goals, setStored] as const;
 }
 
 export function useBodyWeight() {
