@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, BookOpen, Settings, UtensilsCrossed, Camera, Scale, Droplets, Clock, Trophy, AlertTriangle, Star } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, BookOpen, Settings, UtensilsCrossed, Plus, Scale, Droplets, Clock, Trophy, AlertTriangle, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useBodyWeight, useWaterLog, useUserProfile, usePersonalRecords } from '@/hooks/useStorage';
@@ -217,7 +217,7 @@ export default function Dashboard() {
             {[
               { icon: Zap, label: 'Treino Livre', action: startFreeWorkout },
               { icon: BookOpen, label: 'Programas', action: () => navigate('/programas') },
-              { icon: Camera, label: 'Câmera Nutri', action: () => navigate('/nutricao/camera') },
+              { icon: Plus, label: 'Refeição', action: () => navigate('/nutricao') },
             ].map(({ icon: Icon, label, action }) => (
               <button
                 key={label}
