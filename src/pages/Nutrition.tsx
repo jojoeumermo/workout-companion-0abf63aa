@@ -633,6 +633,60 @@ export default function Nutrition() {
                 ))}
               </div>
             </div>
+
+            {/* ─── MICRONUTRIENTES ─── */}
+            <div className="card-premium rounded-2xl p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-black text-base tracking-tight">Micronutrientes</h3>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Hoje</span>
+              </div>
+              <div className="space-y-3.5">
+                {([
+                  { key: 'fiber',     label: 'Fibras',     unit: 'g',   color: 'bg-emerald-400', text: 'text-emerald-400' },
+                  { key: 'sodium',    label: 'Sódio',      unit: 'mg',  color: 'bg-rose-400',    text: 'text-rose-400' },
+                  { key: 'sugar',     label: 'Açúcar',     unit: 'g',   color: 'bg-pink-400',    text: 'text-pink-400' },
+                  { key: 'iron',      label: 'Ferro',      unit: 'mg',  color: 'bg-orange-400',  text: 'text-orange-400' },
+                  { key: 'calcium',   label: 'Cálcio',     unit: 'mg',  color: 'bg-sky-400',     text: 'text-sky-400' },
+                  { key: 'vitaminC',  label: 'Vitamina C', unit: 'mg',  color: 'bg-yellow-400',  text: 'text-yellow-400' },
+                  { key: 'vitaminD',  label: 'Vitamina D', unit: 'mcg', color: 'bg-amber-400',   text: 'text-amber-400' },
+                ] as const).map(m => {
+                  const current = (dayMicros as any)[m.key] as number;
+                  const goal = (microGoals as any)[m.key] as number;
+                  const isLimit = MICRO_LIMITS.has(m.key as keyof MicroGoals);
+                  const pct = Math.min((current / Math.max(goal, 1)) * 100, 100);
+                  const over = current > goal;
+                  const barColor = isLimit && over ? 'bg-destructive' : m.color;
+                  const displayCurrent = (m.unit === 'g' || m.unit === 'mcg') ? Math.round(current * 10) / 10 : Math.round(current);
+                  return (
+                    <div key={m.key} className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold">{m.label}</span>
+                          {isLimit && (
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider bg-secondary px-1.5 py-0.5 rounded">limite</span>
+                          )}
+                        </div>
+                        <span className="text-xs font-black">
+                          <span className={isLimit && over ? 'text-destructive' : m.text}>
+                            {displayCurrent}{m.unit}
+                          </span>
+                          <span className="text-muted-foreground font-medium"> / {goal}{m.unit}</span>
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-muted-foreground font-medium leading-relaxed pt-1">
+                Metas baseadas em valores diários de referência para adultos. Sódio e açúcar são <span className="font-bold">limites máximos</span>.
+              </p>
+            </div>
           </motion.div>
         )}
 
