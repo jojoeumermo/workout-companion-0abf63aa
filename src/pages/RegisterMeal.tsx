@@ -35,7 +35,7 @@ const MACRO_DISPLAY = [
   { key: 'fat',      label: 'Gordura',  unit: 'g',    color: 'text-yellow-400',  bg: 'bg-yellow-400/10' },
 ] as const;
 
-export default function NutritionCamera() {
+export default function RegisterMeal() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addMeal } = useMeals();
