@@ -135,7 +135,7 @@ export default function Nutrition() {
   const [goals, setGoals] = useNutritionGoals();
   const { getTodayWater, addWater, getWaterForDate } = useWaterLog();
   const [waterGoal, setWaterGoal] = useWaterGoal();
-  const { data: fastingData, start: startFast, stop: stopFast } = useFasting();
+  const { data: fastingData, start: startFast, stop: stopFast, deleteFasting } = useFasting();
 
   const [activeTab, setActiveTab] = useState<Tab>('Resumo');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -150,6 +150,7 @@ export default function Nutrition() {
   const [showFastingHistory, setShowFastingHistory] = useState(false);
   const [showConfirmStopFast, setShowConfirmStopFast] = useState(false);
   const [fastingGoalHours, setFastingGoalHours] = useState(16);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
   const todayWater = isToday ? getTodayWater() : getWaterForDate(selectedDate);
@@ -798,19 +799,50 @@ export default function Nutrition() {
       <Dialog open={showFastingHistory} onOpenChange={setShowFastingHistory}>
         <DialogContent className="bg-card border-border">
           <DialogHeader><DialogTitle>Histórico de Jejuns</DialogTitle></DialogHeader>
-          <div className="space-y-2 mt-2 max-h-72 overflow-y-auto">
+      <div className="space-y-2 mt-2 max-h-72 overflow-y-auto">
             {fastingData.history.slice(0, 20).map(session => (
-              <div key={session.id} className="flex items-center justify-between bg-secondary/40 rounded-xl px-4 py-3">
-                <div>
+              <div key={session.id} className="flex items-center justify-between gap-3 bg-secondary/40 rounded-xl px-4 py-3">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">{new Date(session.startedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
                   <p className="text-xs text-muted-foreground font-medium">
                     {new Date(session.startedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`}
                   </p>
                 </div>
-                <span className="text-base font-black text-orange-400">{session.durationMinutes !== undefined ? formatDuration(session.durationMinutes) : '—'}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-base font-black text-orange-400">{session.durationMinutes !== undefined ? formatDuration(session.durationMinutes) : '—'}</span>
+                  <button
+                    onClick={() => setDeleteTargetId(session.id)}
+                    className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 active:scale-95 transition-colors"
+                    aria-label="Excluir jejum"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteTargetId} onOpenChange={() => setDeleteTargetId(null)}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>Excluir jejum?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body mt-1">Este item será removido permanentemente do histórico.</p>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <button onClick={() => setDeleteTargetId(null)} className="bg-secondary rounded-xl py-2.5 font-medium text-sm">Cancelar</button>
+            <button
+              onClick={() => {
+                if (deleteTargetId) deleteFasting(deleteTargetId);
+                setDeleteTargetId(null);
+                toast({ title: 'Jejum removido' });
+              }}
+              className="bg-destructive text-destructive-foreground rounded-xl py-2.5 font-semibold text-sm"
+            >
+              Excluir
+            </button>
           </div>
         </DialogContent>
       </Dialog>

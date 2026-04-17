@@ -272,5 +272,12 @@ export function useFasting() {
     setData(prev => ({ ...prev, history: [] }));
   }, [setData]);
 
-  return { data, start, stop, clearHistory };
+  const deleteFasting = useCallback((id: string) => {
+    setData(prev => ({
+      ...prev,
+      history: prev.history.filter(session => session.id !== id),
+    }));
+  }, [setData]);
+
+  return { data, start, stop, clearHistory, deleteFasting };
 }
