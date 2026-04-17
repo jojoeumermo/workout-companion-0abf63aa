@@ -104,16 +104,15 @@ export default function SwipeableRow({
       style={{ isolation: 'isolate' }}
     >
       <div
-        className="absolute inset-0 overflow-hidden rounded-xl bg-destructive"
-        style={{ transform: 'translateZ(0)' }}
+        className="absolute inset-y-0 right-0 flex items-stretch bg-destructive"
+        style={{ width: `${REVEAL_WIDTH}px`, transform: 'translateZ(0)' }}
       >
         <button
           onPointerDown={e => e.stopPropagation()}
           onClick={handleDelete}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-white active:opacity-80"
-          style={{ borderRadius: 'inherit' }}
+          className="flex flex-1 flex-col items-center justify-center gap-1 text-destructive-foreground active:opacity-80"
         >
-          <Trash2 size={18} strokeWidth={2.5} />
+          <Trash2 size={20} strokeWidth={2.5} />
           <span className="text-[10px] font-bold tracking-wide uppercase leading-none">
             {deleteLabel}
           </span>
