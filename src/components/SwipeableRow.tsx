@@ -32,11 +32,12 @@ export default function SwipeableRow({
     if (!container || !content) return;
 
     const snap = (x: number, animate = true) => {
+      const snapped = Math.round(x);
       content.style.transition = animate
         ? 'transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
         : 'none';
-      content.style.transform = `translateX(${x}px)`;
-      offsetRef.current = x;
+      content.style.transform = `translate3d(${snapped}px, 0, 0)`;
+      offsetRef.current = snapped;
     };
 
     const onStart = (e: TouchEvent) => {
@@ -61,8 +62,9 @@ export default function SwipeableRow({
 
       e.preventDefault();
       const next = Math.max(-REVEAL_WIDTH, Math.min(0, startOffsetRef.current + dx));
-      content.style.transform = `translateX(${next}px)`;
-      offsetRef.current = next;
+      const snapped = Math.round(next);
+      content.style.transform = `translate3d(${snapped}px, 0, 0)`;
+      offsetRef.current = snapped;
     };
 
     const onEnd = () => {
@@ -89,7 +91,7 @@ export default function SwipeableRow({
     const content = contentRef.current;
     if (content) {
       content.style.transition = 'transform 0.18s ease-in';
-      content.style.transform = 'translateX(0)';
+      content.style.transform = 'translate3d(0, 0, 0)';
       offsetRef.current = 0;
     }
     onDelete();
@@ -98,17 +100,18 @@ export default function SwipeableRow({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden rounded-xl select-none ${className}`}
+      className={`relative overflow-hidden rounded-xl select-none bg-card ${className}`}
+      style={{ isolation: 'isolate' }}
     >
-      {/* Delete action — absolutely positioned on the right, always behind content */}
       <div
-        className="absolute inset-y-0 right-0 flex items-center justify-center bg-destructive rounded-xl"
-        style={{ width: REVEAL_WIDTH }}
+        className="absolute inset-0 overflow-hidden rounded-xl bg-destructive"
+        style={{ transform: 'translateZ(0)' }}
       >
         <button
           onPointerDown={e => e.stopPropagation()}
           onClick={handleDelete}
-          className="w-full h-full flex flex-col items-center justify-center gap-1 text-white active:opacity-80"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-white active:opacity-80"
+          style={{ borderRadius: 'inherit' }}
         >
           <Trash2 size={18} strokeWidth={2.5} />
           <span className="text-[10px] font-bold tracking-wide uppercase leading-none">
@@ -117,11 +120,10 @@ export default function SwipeableRow({
         </button>
       </div>
 
-      {/* Content — solid background covers the delete button until swiped */}
       <div
         ref={contentRef}
-        className="relative will-change-transform"
-        style={{ background: 'hsl(var(--background))' }}
+        className="relative z-10 will-change-transform rounded-xl overflow-hidden bg-card"
+        style={{ transform: 'translate3d(0, 0, 0)', boxShadow: '0 0 0 1px hsl(var(--border)) inset' }}
       >
         {children}
       </div>
