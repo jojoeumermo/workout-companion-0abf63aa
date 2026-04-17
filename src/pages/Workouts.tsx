@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus, X, Copy } from 'lucide-react';
 import SwipeableRow from '@/components/SwipeableRow';
@@ -163,17 +163,19 @@ export default function Workouts() {
     updateExerciseSets(exIndex, sets);
   };
 
-  const allExercises = getAllExercises();
-  const filteredExercises = allExercises.filter(e => {
+  const allExercises = useMemo(() => getAllExercises(), []);
+  const filteredExercises = useMemo(() => allExercises.filter(e => {
     if (muscleFilter && e.muscleGroup !== muscleFilter) return false;
     if (search && !e.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  });
+  }), [allExercises, muscleFilter, search]);
 
-  const usedFolders = [...new Set(templates.map(t => t.folder || 'Sem Pasta').filter(Boolean))];
-  const displayTemplates = activeFolder
-    ? templates.filter(t => (t.folder || 'Sem Pasta') === activeFolder)
-    : templates;
+  const usedFolders = useMemo(() =>
+    [...new Set(templates.map(t => t.folder || 'Sem Pasta').filter(Boolean))],
+    [templates]);
+  const displayTemplates = useMemo(() =>
+    activeFolder ? templates.filter(t => (t.folder || 'Sem Pasta') === activeFolder) : templates,
+    [templates, activeFolder]);
 
   return (
     <PageShell title="Treinos" rightAction={

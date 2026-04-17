@@ -139,7 +139,6 @@
 
   /* Use this for main page top padding (status bar + a bit extra) */
   .page-top {
-    padding-top: max(env(safe-area-inset-top, 0px), 14px);
     padding-top: calc(max(env(safe-area-inset-top, 0px), 14px) + 44px);
   }
 

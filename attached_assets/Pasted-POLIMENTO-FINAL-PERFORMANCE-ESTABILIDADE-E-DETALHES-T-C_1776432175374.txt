@@ -1,0 +1,125 @@
+POLIMENTO FINAL — PERFORMANCE, ESTABILIDADE E DETALHES TÉCNICOS
+
+O app já está funcional e pronto para beta.
+
+Agora quero garantir:
+- máxima estabilidade
+- performance fluida no mobile
+- zero bugs visuais ou técnicos
+
+--------------------------------------------------
+
+1. PERFORMANCE
+
+Verificar:
+
+- renders desnecessários (React)
+- uso de useMemo/useCallback onde necessário
+- listas com muitos itens (otimizar)
+- evitar re-render global ao atualizar estados locais
+
+Objetivo:
+app fluido mesmo em celular mais fraco
+
+--------------------------------------------------
+
+2. ANIMAÇÕES LEVES E OTIMIZADAS
+
+Garantir:
+
+- uso de transform (translate/scale) em vez de top/left
+- evitar reflows pesados
+- evitar animações longas
+
+--------------------------------------------------
+
+3. SWIPE (VALIDAÇÃO FINAL)
+
+Revisar:
+
+- nenhum vazamento visual
+- ação sempre visível
+- sem conflito com scroll vertical
+- sem glitch ao soltar
+
+Se necessário:
+- simplificar implementação
+
+--------------------------------------------------
+
+4. TOQUE / INTERAÇÕES
+
+Garantir:
+
+- nenhuma área com comportamento estranho ao toque
+- sem delay de clique
+- sem highlight/callout inesperado
+- sem seleção de texto indevida
+
+--------------------------------------------------
+
+5. LOCALSTORAGE / DADOS
+
+Verificar:
+
+- consistência ao salvar e carregar dados
+- evitar duplicação
+- evitar estados inconsistentes
+- garantir persistência correta
+
+--------------------------------------------------
+
+6. ERROS SILENCIOSOS
+
+Revisar:
+
+- console sem erros
+- console sem warnings importantes
+- tratar possíveis falhas silenciosas
+
+--------------------------------------------------
+
+7. TAMANHO E LEVEZA
+
+- remover código morto
+- remover imports não usados
+- remover dependências desnecessárias
+
+Objetivo:
+app leve
+
+--------------------------------------------------
+
+8. RESPONSIVIDADE FINAL
+
+Testar:
+
+- diferentes tamanhos de tela
+- textos não cortando
+- nada ultrapassando a tela
+- scroll funcionando corretamente
+
+--------------------------------------------------
+
+9. CHECK FINAL
+
+Validar:
+
+- app abre rápido
+- navegação fluida
+- sem travamentos
+- sem glitches
+- sem bugs visuais
+- sem comportamento estranho no mobile
+
+--------------------------------------------------
+
+OBJETIVO FINAL
+
+App:
+- leve
+- rápido
+- estável
+- confiável
+
+Pronto para uso real em pequena escala.

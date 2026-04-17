@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, Dumbbell, TrendingUp, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, Dumbbell, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory } from '@/hooks/useStorage';
@@ -17,13 +18,17 @@ const stagger = {
 export default function History() {
   const navigate = useNavigate();
   const [history] = useHistory();
-  const sorted = [...history].sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+  const sorted = useMemo(() =>
+    [...history].sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()),
+    [history]);
 
-  const grouped = sorted.reduce<Record<string, typeof sorted>>((acc, w) => {
-    const key = new Date(w.completedAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-    (acc[key] = acc[key] || []).push(w);
-    return acc;
-  }, {});
+  const grouped = useMemo(() =>
+    sorted.reduce<Record<string, typeof sorted>>((acc, w) => {
+      const key = new Date(w.completedAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      (acc[key] = acc[key] || []).push(w);
+      return acc;
+    }, {}),
+    [sorted]);
 
   return (
     <PageShell title="Histórico">

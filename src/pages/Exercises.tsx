@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Heart, ChevronRight, Plus, Trash2, ImagePlus } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -40,22 +40,22 @@ export default function Exercises() {
   });
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  const allExercises = getAllExercises();
+  const allExercises = useMemo(() => getAllExercises(), [customExercises]);
 
-  const filtered = allExercises.filter(e => {
+  const filtered = useMemo(() => allExercises.filter(e => {
     if (search && !e.name.toLowerCase().includes(search.toLowerCase())) return false;
     if (muscleFilter && e.muscleGroup !== muscleFilter) return false;
     if (equipFilter && e.equipment !== equipFilter) return false;
     if (showFavs && !isFavorite(e.id)) return false;
     return true;
-  });
+  }), [allExercises, search, muscleFilter, equipFilter, showFavs, isFavorite]);
 
-  const grouped = muscleFilter
+  const grouped = useMemo(() => muscleFilter
     ? { [muscleFilter]: filtered }
     : filtered.reduce<Record<string, Exercise[]>>((acc, e) => {
         (acc[e.muscleGroup] = acc[e.muscleGroup] || []).push(e);
         return acc;
-      }, {});
+      }, {}), [filtered, muscleFilter]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
