@@ -1,73 +1,99 @@
-# Welcome to your Lovable project
+# 🏋️‍♂️ FitApp — Fitness & Nutrition Tracker
 
-## Project info
+Aplicativo mobile focado em treinos, nutrição e acompanhamento de progresso, com uma experiência moderna, rápida e otimizada para uso real no dia a dia.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+---
 
-## How can I edit this code?
+## 🚀 Visão Geral
 
-There are several ways of editing your application.
+O FitApp foi desenvolvido com foco em:
 
-**Use Lovable**
+- 📱 Experiência mobile fluida
+- ⚡ Performance leve e rápida
+- 🎯 Simplicidade de uso
+- 📊 Controle completo de treinos e nutrição
+- 🎨 Interface moderna e consistente
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## ✨ Funcionalidades
 
-**Use your preferred IDE**
+### 🏋️ Treinos
+- Criação e edição de rotinas
+- Adição de exercícios com filtros por grupo muscular
+- Registro de séries, reps e carga
+- Duplicação de rotinas
+- Interface otimizada para uso durante o treino
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🍽️ Nutrição
+- Registro manual de refeições
+- Base de dados com +200 alimentos
+- Cálculo automático de:
+  - Calorias
+  - Proteínas
+  - Carboidratos
+  - Gorduras
+- Acompanhamento de macros com gráficos visuais
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 🧬 Micronutrientes
+- Monitoramento de:
+  - Fibras
+  - Sódio
+  - Ferro
+  - Cálcio
+  - Vitaminas (C, D, etc.)
+- Progresso em relação às metas
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+### ⏱️ Jejum Intermitente
+- Início e término de jejum
+- Metas configuráveis (12h, 14h, 16h, etc.)
+- Timer em tempo real
+- Histórico de sessões
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+---
+
+### 📈 Progresso
+- Visualização de evolução
+- Métricas e consistência
+- Base para futuras melhorias como streaks e metas
+
+---
+
+## 🛠️ Tecnologias
+
+Este projeto foi construído com:
+
+- **React**
+- **TypeScript**
+- **Vite**
+- **Tailwind CSS**
+- **shadcn/ui**
+
+---
+
+## ⚙️ Como rodar o projeto
+
+### Pré-requisitos
+- Node.js
+- npm (ou yarn/pnpm)
+
+### Instalação
+
+```bash
+# Clone o repositório
+git clone <URL_DO_REPOSITORIO>
+
+# Entre na pasta
+cd <NOME_DO_PROJETO>
+
+# Instale as dependências
+npm install
+
+# Rode o projeto
 npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
