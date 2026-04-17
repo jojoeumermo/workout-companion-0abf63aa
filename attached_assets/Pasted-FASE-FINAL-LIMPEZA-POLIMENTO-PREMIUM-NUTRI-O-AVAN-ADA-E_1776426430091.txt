@@ -1,0 +1,398 @@
+FASE FINAL — LIMPEZA + POLIMENTO PREMIUM + NUTRIÇÃO AVANÇADA
+
+Este app será usado por pessoas reais.
+Quero execução completa, focada em qualidade, leveza e experiência premium.
+
+IMPORTANTE:
+REMOVER COMPLETAMENTE QUALQUER COISA RELACIONADA À IA.
+
+--------------------------------------------------
+
+🔥 1. REMOÇÃO TOTAL DA IA
+
+Remover completamente do projeto:
+
+- FitAI Coach
+- rotas /api/ai-coach
+- qualquer integração com Gemini ou IA
+- componentes, páginas e hooks relacionados
+- botões, menus ou referências à IA
+- dependências de IA
+- código morto relacionado
+
+Garantir:
+- app continua funcionando perfeitamente
+- nenhuma referência quebrada
+- nenhum import inválido
+
+Objetivo:
+app mais leve, simples e estável
+
+--------------------------------------------------
+
+🔥 2. INTERAÇÕES PREMIUM (SEM PESAR)
+
+Adicionar apenas interações leves e elegantes.
+
+2.1 TAP FEEDBACK
+- leve scale (0.97–0.98) ao tocar
+- ou leve opacity
+- retorno suave (150–200ms)
+
+2.2 ANIMAÇÃO DE CONFIRMAÇÃO
+- ao adicionar alimento → “pop” suave
+- ao concluir ação → micro animação
+
+2.3 CONTADORES ANIMADOS
+- calorias e macros atualizando com animação (count up)
+
+2.4 TRANSIÇÕES DE TELA
+- fade + slide leve entre telas
+- evitar mudanças bruscas
+
+2.5 HAPTIC FEEDBACK (se disponível)
+- adicionar alimento
+- iniciar/encerrar jejum
+- concluir ações importantes
+
+IMPORTANTE:
+não usar animações pesadas
+
+--------------------------------------------------
+
+🔥 3. SWIPE (IMPLEMENTAÇÃO LEVE)
+
+Aplicar swipe apenas onde faz sentido:
+
+- histórico de jejum → excluir
+- alimentos adicionados → remover
+- exercícios na rotina → remover
+
+Regras:
+- swipe para esquerda = excluir
+- fundo vermelho + ícone 🗑️
+- animação simples
+- não quebrar scroll vertical
+- se ficar instável → usar botão normal
+
+--------------------------------------------------
+
+🔥 4. CORES — SISTEMA CONSISTENTE
+
+Padronizar cores no app inteiro:
+
+- proteína → verde
+- carboidrato → azul
+- gordura → amarelo
+
+Aplicar em:
+- barras de progresso
+- gráficos
+- metas
+- calorias
+- indicadores
+
+Adicionar:
+- leves gradientes (opcional)
+- evitar cores chapadas sem vida
+
+--------------------------------------------------
+
+🔥 5. FUNDO E VISUAL
+
+Problema:
+fundo preto muito seco
+
+Corrigir:
+- usar #0f0f0f ou #121212
+- cards levemente mais claros
+- melhorar contraste
+
+Objetivo:
+visual mais premium e menos “cru”
+
+--------------------------------------------------
+
+🔥 6. NUTRIÇÃO — FORTALECER BASE DE DADOS
+
+Expandir base de alimentos:
+
+- aumentar para 150–300 alimentos
+- foco em alimentos comuns (principalmente brasileiros)
+- manter simplicidade
+
+Garantir:
+- busca rápida
+- dados consistentes
+
+--------------------------------------------------
+
+🔥 7. MACROS — POLIMENTO
+
+Melhorar o sistema atual:
+
+- manter cores consistentes
+- melhorar animação dos valores
+- melhorar leitura visual
+
+--------------------------------------------------
+
+🔥 8. MICROS (NOVA ÁREA IMPORTANTE)
+
+Adicionar sistema de micronutrientes:
+
+Exemplos:
+- fibras
+- sódio
+- açúcar
+- ferro
+- cálcio
+- vitamina C
+- vitamina D
+
+Criar visual simples:
+
+- barras horizontais
+- progresso vs meta
+
+Exemplo:
+Ferro     █████░░░░  60%
+Cálcio    ███░░░░░░  30%
+
+Permitir:
+- metas simples (ou padrão)
+
+IMPORTANTE:
+não complicar UX
+
+--------------------------------------------------
+
+🔥 9. EMPTY STATES (IMPORTANTE)
+
+Quando não houver dados:
+
+- mostrar ícone
+- texto leve
+- botão claro
+
+Evitar telas vazias “mortas”
+
+--------------------------------------------------
+
+🔥 10. LOADING STATES
+
+Adicionar:
+
+- skeleton loaders leves
+- shimmer simples (opcional)
+
+Evitar:
+- tela travada
+- loading sem feedback
+
+--------------------------------------------------
+
+🔥 11. ESPAÇAMENTO E CONSISTÊNCIA
+
+Padronizar:
+
+- padding: 16–20px
+- espaçamento vertical consistente
+- alinhamento correto
+- evitar elementos colados
+
+--------------------------------------------------
+
+🔥 12. POLIMENTO GERAL
+
+Melhorar:
+
+- responsividade mobile
+- áreas de toque (não pequenas)
+- consistência entre telas
+- hierarquia visual
+
+--------------------------------------------------
+
+🔥 13. PERFORMANCE
+
+Garantir:
+
+- sem travamentos
+- sem renders desnecessários
+- animações leves
+- app fluido
+
+--------------------------------------------------
+
+🔥 14. CHECKLIST FINAL (OBRIGATÓRIO)
+
+Validar:
+
+[ ] nenhuma referência à IA existe
+[ ] app não quebra após remoção da IA
+[ ] swipe funcionando (ou fallback ok)
+[ ] animações suaves e leves
+[ ] cores consistentes em todo app
+[ ] fundo não está “seco”
+[ ] macros bonitos e legíveis
+[ ] micros funcionando
+[ ] base de alimentos expandida
+[ ] nenhuma tela vazia sem feedback
+[ ] loading com feedback
+[ ] nada sobreposto
+[ ] mobile fluido
+
+--------------------------------------------------
+
+RESULTADO ESPERADO
+
+App:
+- leve
+- rápido
+- bonito
+- com sensação premium
+- consistente
+- pronto para beta real
+
+CORREÇÃO CRÍTICA — BUGS DE INTERAÇÃO MOBILE (SWIPE + LONG PRESS) + POLIMENTO DA NUTRIÇÃO
+
+Estamos na fase final antes do beta.
+Quero tratar os bugs de interação mobile como prioridade máxima.
+
+OBJETIVO:
+deixar a experiência de toque, swipe e navegação totalmente estável no celular, sem glitches, sem sobreposição estranha e sem sensação de app quebrado.
+
+--------------------------------------------------
+1. BUG CRÍTICO — LONG PRESS EM TEXTO / CALL OUT BRANCO
+
+O bug ainda existe:
+- ao pressionar texto dentro do app, aparece uma janela branca grande com ícone do app
+- isso parece vir da seleção/callout nativa do Android/WebView
+
+Quero diagnóstico real e correção definitiva.
+
+Investigar:
+- seleção de texto nativa
+- context menu do Android/WebView
+- long press em textos estáticos
+- user-select
+- -webkit-user-select
+- -webkit-touch-callout
+- -webkit-tap-highlight-color
+
+Corrigir:
+- aplicar user-select: none / -webkit-user-select: none / -webkit-touch-callout: none nos textos estáticos, labels, cards e conteúdos não editáveis
+- NÃO quebrar inputs, textarea ou campos que precisam aceitar texto
+- garantir que pressionar texto não abra mais janela branca nem menu estranho
+
+--------------------------------------------------
+2. BUG CRÍTICO — SWIPE QUEBRADO
+
+O swipe atual está visualmente ruim e funcionalmente errado.
+
+Problemas visíveis:
+- item fica deformado
+- layout fica esquisito
+- texto e ação de excluir ficam sobrepostos / mal alinhados
+- o swipe parece improvisado
+- a interação não está com cara de app premium
+
+Quero corrigir isso de forma definitiva.
+
+Regras do swipe:
+- swipe apenas para a esquerda
+- ação principal: excluir
+- fundo vermelho limpo
+- ícone de lixeira + texto “Excluir” bem alinhados
+- animação suave
+- item principal deve deslizar corretamente sem quebrar layout
+- sem sobreposição de texto
+- sem deformar o card
+- sem conflito com scroll vertical
+
+Objetivo:
+ficar próximo de interações de apps premium, sem exagero visual
+
+--------------------------------------------------
+3. ONDE O SWIPE DEVE EXISTIR
+
+Aplicar swipe somente onde faz sentido:
+
+- histórico de jejum
+- alimentos adicionados / itens de refeição
+- exercícios dentro da rotina (se já estiver estável)
+
+Se em algum lugar ficar instável:
+- remover o swipe daquele lugar
+- manter botão normal de excluir
+
+Prioridade máxima:
+1. histórico de jejum
+2. alimentos/refeições
+
+--------------------------------------------------
+4. UX DO ITEM EXCLUÍDO
+
+Ao excluir:
+- animação suave
+- remover do estado imediatamente
+- atualizar localStorage corretamente
+- item não pode reaparecer ao reabrir o app
+
+Se necessário:
+- permitir confirmação leve
+OU
+- excluir direto com feedback visual claro
+
+--------------------------------------------------
+5. NUTRIÇÃO — POLIMENTO VISUAL FINAL
+
+A base da nutrição melhorou, mas ainda quero mais refinamento visual.
+
+Melhorar:
+- alinhamento dos cards
+- espaçamento vertical
+- hierarquia dos títulos
+- consistência entre abas Resumo / Refeições / Macros / Jejum
+- uso de cor de forma mais elegante
+- aparência mais premium
+
+Objetivo:
+não parecer improvisado nem “quase pronto”
+
+--------------------------------------------------
+6. FUNDO / CONTRASTE
+
+Manter o ajuste do fundo menos seco, mas revisar se ainda existe contraste fraco demais em algumas áreas.
+
+Quero:
+- fundo premium escuro
+- cards legíveis
+- boa separação visual
+- sem perder elegância
+
+--------------------------------------------------
+7. VALIDAÇÃO FINAL OBRIGATÓRIA
+
+Testar no mobile real:
+
+- pressionar textos estáticos
+- tocar e segurar em cards
+- usar swipe no histórico de jejum
+- usar swipe em alimentos/refeições
+- garantir que não aparece janela branca
+- garantir que o swipe não quebra o layout
+- garantir que excluir funciona de verdade
+- garantir que nada reaparece depois
+
+--------------------------------------------------
+8. RELATÓRIO FINAL
+
+No final, me diga:
+- causa exata do bug de long press/texto
+- causa exata do swipe quebrado
+- o que foi corrigido
+- onde o swipe foi mantido
+- onde o swipe foi removido por instabilidade, se acontecer
+- se agora a interação mobile está estável e pronta para beta

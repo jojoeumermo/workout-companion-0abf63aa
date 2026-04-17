@@ -14,8 +14,6 @@ const History = lazy(() => import("./pages/History"));
 const WorkoutDetail = lazy(() => import("./pages/WorkoutDetail"));
 const Progress = lazy(() => import("./pages/Progress"));
 const ActiveWorkoutPage = lazy(() => import("./pages/ActiveWorkout"));
-const AICoach = lazy(() => import("./pages/AICoach"));
-const CameraAnalysis = lazy(() => import("./pages/CameraAnalysis"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Nutrition = lazy(() => import("./pages/Nutrition"));
@@ -34,7 +32,6 @@ function PageLoader() {
 }
 
 const App = () => {
-  // Restore light mode on load
   if (typeof window !== 'undefined') {
     const mode = localStorage.getItem('app-mode');
     if (mode === 'light') document.documentElement.classList.add('light');
@@ -55,8 +52,6 @@ const App = () => {
               <Route path="/historico/:id" element={<WorkoutDetail />} />
               <Route path="/progresso" element={<><Progress /><BottomNav /></>} />
               <Route path="/treino-ativo" element={<ActiveWorkoutPage />} />
-              <Route path="/ai-coach" element={<ErrorBoundary name="AICoach"><AICoach /></ErrorBoundary>} />
-              <Route path="/camera-ia" element={<ErrorBoundary name="CameraAnalysis"><CameraAnalysis /></ErrorBoundary>} />
               <Route path="/nutricao" element={<><Nutrition /><BottomNav /></>} />
               <Route path="/nutricao/camera" element={<NutritionCamera />} />
               <Route path="/configuracoes" element={<Settings />} />

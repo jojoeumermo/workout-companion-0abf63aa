@@ -241,7 +241,7 @@ export default function Nutrition() {
   // Macro donut segments
   const totalMacroKcal = dayTotals.protein * 4 + dayTotals.carbs * 4 + dayTotals.fat * 9;
   const macroSegments = [
-    { label: 'Proteína', value: dayTotals.protein * 4, color: '#f87171', pct: totalMacroKcal > 0 ? Math.round((dayTotals.protein * 4 / totalMacroKcal) * 100) : 0 },
+    { label: 'Proteína', value: dayTotals.protein * 4, color: '#34d399', pct: totalMacroKcal > 0 ? Math.round((dayTotals.protein * 4 / totalMacroKcal) * 100) : 0 },
     { label: 'Carbos', value: dayTotals.carbs * 4, color: '#60a5fa', pct: totalMacroKcal > 0 ? Math.round((dayTotals.carbs * 4 / totalMacroKcal) * 100) : 0 },
     { label: 'Gordura', value: dayTotals.fat * 9, color: '#facc15', pct: totalMacroKcal > 0 ? Math.round((dayTotals.fat * 9 / totalMacroKcal) * 100) : 0 },
   ];
@@ -313,12 +313,35 @@ export default function Nutrition() {
               </div>
             </div>
 
+            {/* Empty state nudge — Resumo tab */}
+            {dayMeals.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-4 bg-primary/5 border border-primary/15 rounded-2xl px-4 py-4"
+              >
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <UtensilsCrossed size={20} className="text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-sm leading-tight">Nenhuma refeição hoje</p>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">Registre o que comeu para acompanhar seus macros</p>
+                </div>
+                <button
+                  onClick={() => navigateToAddMeal()}
+                  className="shrink-0 bg-primary text-primary-foreground rounded-xl px-3 py-2 text-xs font-black active:scale-95 transition-transform"
+                >
+                  Adicionar
+                </button>
+              </motion.div>
+            )}
+
             {/* Macros mini summary */}
             <div className="card-premium rounded-2xl p-5 space-y-4">
               <h3 className="font-black text-base tracking-tight">Macros</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-red-400', accent: 'text-red-400' },
+                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-emerald-400', accent: 'text-emerald-400' },
                   { label: 'Carboidratos', current: Math.round(dayTotals.carbs), goal: goals.carbs, color: 'bg-blue-400', accent: 'text-blue-400' },
                   { label: 'Gordura', current: Math.round(dayTotals.fat), goal: goals.fat, color: 'bg-yellow-400', accent: 'text-yellow-400' },
                 ].map(m => (
@@ -410,6 +433,26 @@ export default function Nutrition() {
               Registrar Refeição
             </button>
 
+            {/* Empty state — no meals today */}
+            {dayMeals.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center py-8 space-y-3"
+              >
+                <div className="w-16 h-16 bg-secondary rounded-3xl flex items-center justify-center mx-auto">
+                  <UtensilsCrossed size={28} className="text-muted-foreground/30" />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-muted-foreground">Nenhuma refeição registrada</p>
+                  <p className="text-xs text-muted-foreground/60 font-body mt-1">
+                    {isToday ? 'Toque em "Registrar Refeição" para começar' : 'Sem registros neste dia'}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
             {MEAL_TYPES.map((type, idx) => {
               const typeMeals = mealsByType[type] || [];
               const isExpanded = expandedMealTypes.has(type);
@@ -464,7 +507,7 @@ export default function Nutrition() {
                                   <p className="text-xs text-muted-foreground mb-2 font-medium">{meal.time}</p>
                                   <div className="flex gap-3 text-xs font-bold">
                                     <span className="text-orange-400">{Math.round(meal.totals.calories)} kcal</span>
-                                    <span className="text-muted-foreground">P: <span className="text-red-400">{Math.round(meal.totals.protein)}g</span></span>
+                                    <span className="text-muted-foreground">P: <span className="text-emerald-400">{Math.round(meal.totals.protein)}g</span></span>
                                     <span className="text-muted-foreground">C: <span className="text-blue-400">{Math.round(meal.totals.carbs)}g</span></span>
                                     <span className="text-muted-foreground">G: <span className="text-yellow-400">{Math.round(meal.totals.fat)}g</span></span>
                                   </div>
@@ -502,7 +545,7 @@ export default function Nutrition() {
                   </div>
                   <div className="flex-1 space-y-3">
                     {[
-                      { label: 'Proteína', value: Math.round(dayTotals.protein), color: 'bg-red-400', textColor: 'text-red-400', pct: macroSegments[0].pct },
+                      { label: 'Proteína', value: Math.round(dayTotals.protein), color: 'bg-emerald-400', textColor: 'text-emerald-400', pct: macroSegments[0].pct },
                       { label: 'Carbos', value: Math.round(dayTotals.carbs), color: 'bg-blue-400', textColor: 'text-blue-400', pct: macroSegments[1].pct },
                       { label: 'Gordura', value: Math.round(dayTotals.fat), color: 'bg-yellow-400', textColor: 'text-yellow-400', pct: macroSegments[2].pct },
                     ].map(m => (
@@ -537,7 +580,7 @@ export default function Nutrition() {
               </div>
               <div className="space-y-3">
                 {[
-                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-red-400', unit: 'g' },
+                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-emerald-400', unit: 'g' },
                   { label: 'Carboidratos', current: Math.round(dayTotals.carbs), goal: goals.carbs, color: 'bg-blue-400', unit: 'g' },
                   { label: 'Gordura', current: Math.round(dayTotals.fat), goal: goals.fat, color: 'bg-yellow-400', unit: 'g' },
                 ].map(m => {
@@ -562,7 +605,7 @@ export default function Nutrition() {
                 {[
                   { label: 'Consumido', value: `${Math.round(dayTotals.calories)} kcal`, color: '' },
                   { label: 'Meta', value: `${goals.calories} kcal`, color: '' },
-                  { label: 'Proteína (kcal)', value: `${Math.round(dayTotals.protein * 4)} kcal`, color: 'text-red-400' },
+                  { label: 'Proteína (kcal)', value: `${Math.round(dayTotals.protein * 4)} kcal`, color: 'text-emerald-400' },
                   { label: 'Carbos (kcal)', value: `${Math.round(dayTotals.carbs * 4)} kcal`, color: 'text-blue-400' },
                   { label: 'Gordura (kcal)', value: `${Math.round(dayTotals.fat * 9)} kcal`, color: 'text-yellow-400' },
                   { label: 'Restante', value: `${Math.round(Math.abs(calorieBalance))} kcal ${calorieBalance < 0 ? 'acima' : ''}`, color: calorieBalance < 0 ? 'text-destructive' : 'text-primary' },

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, Bot, BookOpen, Settings, UtensilsCrossed, Camera, Scale, Droplets, Clock, Trophy, AlertTriangle, Star } from 'lucide-react';
+import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, BookOpen, Settings, UtensilsCrossed, Camera, Scale, Droplets, Clock, Trophy, AlertTriangle, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useBodyWeight, useWaterLog, useUserProfile, usePersonalRecords } from '@/hooks/useStorage';
@@ -327,9 +327,6 @@ export default function Dashboard() {
                 <span className="text-[10px] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">Estagnado</span>
               </div>
             ))}
-            <button onClick={() => navigate('/ai-coach')} className="text-xs text-primary font-bold flex items-center gap-1">
-              <Bot size={12} /> Pedir sugestões ao FitAI <ChevronRight size={12} />
-            </button>
           </motion.div>
         )}
 
@@ -396,29 +393,6 @@ export default function Dashboard() {
             </div>
           </motion.div>
         )}
-
-        {/* AI Coach */}
-        <motion.button
-          custom={8}
-          variants={stagger}
-          initial="hidden"
-          animate="show"
-          onClick={() => navigate('/ai-coach')}
-          className="w-full card-premium animate-pulse-glow rounded-2xl p-5 flex items-center justify-between active:scale-[0.97] transition-all hover:border-primary/20 group"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-              <Bot size={22} className="text-primary" />
-            </div>
-            <div className="text-left">
-              <span className="font-bold text-[15px] block">FitAI Coach</span>
-              <span className="text-[11px] text-muted-foreground font-body mt-0.5">
-                {stagnationAlerts.length > 0 ? `${stagnationAlerts.length} exercícios para analisar` : 'Pergunte sobre treino ou nutrição'}
-              </span>
-            </div>
-          </div>
-          <ChevronRight size={18} className="text-muted-foreground group-hover:text-primary transition-colors" />
-        </motion.button>
 
         {/* Recent */}
         {recentWorkouts.length > 0 && (

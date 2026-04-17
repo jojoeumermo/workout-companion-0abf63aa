@@ -317,33 +317,3 @@ export function predictProgress(history: CompletedWorkout[]): ProgressPrediction
   return predictions.sort((a, b) => b.weeklyGain - a.weeklyGain).slice(0, 5);
 }
 
-export function buildWorkoutContextForAI(history: CompletedWorkout[]): string {
-  const parts: string[] = [];
-
-  const overtraining = detectOvertraining(history);
-  if (overtraining.risk !== 'low') {
-    parts.push(`\n⚠️ Risco de overtraining: ${overtraining.risk === 'high' ? 'ALTO' : 'MÉDIO'}`);
-    overtraining.reasons.forEach(r => parts.push(`  - ${r}`));
-  }
-
-  const stagnation = detectStagnation(history, 3);
-  if (stagnation.length > 0) {
-    parts.push('\n📊 Exercícios em estagnação (sem progressão de carga):');
-    stagnation.slice(0, 5).forEach(s => {
-      parts.push(`  - ${s.exerciseName}: ${s.avgWeight}kg por ${s.workoutCount} treinos`);
-    });
-  }
-
-  const thisWeek = getWeeklyStats(history, 0);
-  if (thisWeek.totalWorkouts > 0) {
-    parts.push(`\n📅 Esta semana: ${thisWeek.totalWorkouts} treinos, ${Math.round(thisWeek.totalVolume / 1000 * 10) / 10}t volume`);
-    const topMuscles = Object.entries(thisWeek.muscleDistribution)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 3)
-      .map(([m]) => m)
-      .join(', ');
-    if (topMuscles) parts.push(`  Músculos mais treinados: ${topMuscles}`);
-  }
-
-  return parts.join('\n');
-}

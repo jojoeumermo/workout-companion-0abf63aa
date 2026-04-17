@@ -110,16 +110,20 @@
     scroll-behavior: smooth;
   }
 
-  /* Remove tap highlight glow on mobile — prevents white/gray overlay on touch hold */
+  /* Remove tap highlight + prevent long-press callout/context menu on mobile */
   * {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
-  /* Keep text selectable for inputs */
-  input, textarea, [contenteditable] {
+  /* Keep text selectable and callout available for inputs */
+  input, textarea, [contenteditable], select {
     -webkit-touch-callout: default;
     -webkit-user-select: text;
+    -ms-user-select: text;
     user-select: text;
   }
 }

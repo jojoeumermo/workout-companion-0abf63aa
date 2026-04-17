@@ -1,14 +1,13 @@
-# FitAI Coach
+# FitApp Coach
 
-A mobile-first fitness and nutrition tracking app with AI coaching, built with React + Vite + Express.
+A mobile-first fitness and nutrition tracking app, built with React + Vite + Express. AI functionality has been fully removed.
 
 ## Architecture
 
 - **Frontend**: React 18 + TypeScript + Vite, styled with Tailwind CSS and shadcn/ui
-- **Backend**: Express server (`server/index.ts`) running on port 5000
+- **Backend**: Express server (`server/index.ts`) running on port 5000 — serves `/api/health` only; no AI routes
 - **Dev proxy**: Vite proxies `/api` requests to the Express server in development
 - **Data storage**: localStorage (client-side) for all user data (workouts, meals, goals, body weight, water, measurements, custom exercises, programs, user profile)
-- **AI**: Google Gemini API (`gemini-2.5-flash`) via `GEMINI_API_KEY` secret — JSON response (no SSE), global Express JSON error handler, AbortController 55s timeout on frontend
 - **Android**: Capacitor (`com.fitai.coach`), build guide in `BUILD_ANDROID.md`
 
 ## Visual Design
@@ -23,20 +22,18 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 ## Key Features
 
 - Workout tracking with templates (duplicate/edit/delete), folders, history, personal records, and real-time volume tracking
-- AI Coach chat powered by Google Gemini (JSON response, mobile-safe — no SSE) with 8 data-aware quick action prompts; AbortController 55s timeout; text→JSON defensive parsing; global Express JSON error handler; full-screen mobile layout
-- AI meal analysis via photo or text description (vision model) — secondary tab in NutritionCamera
-- Brazilian food database (`src/data/foodDatabase.ts`) with 80 foods: macros per 100g, common portions, search/filter by category
-- NutritionCamera redesigned: food database primary (search → select → grams → auto macros), AI analysis secondary tab
+- Brazilian food database (`src/data/foodDatabase.ts`) with **223 foods** across 13 categories (Carnes e Aves, Peixes, Laticínios, Leguminosas, Cereais, Pães, Frutas, Verduras, Oleaginosas, Suplementos, Bebidas, Lanches e Fast Food, Outros): macros per 100g, optional micronutrients (sodium, calcium, iron, vitaminC), common portions, search/filter by category
+- NutritionCamera rewritten as manual food entry: search 223-item database → select → adjust grams (with common portion presets) → add to meal; manual custom entry form; edit/remove items; save as typed meal
 - Nutrition tracking: calorie circle (SVG stroke-dasharray), meals grouped by type (Café/Almoço/Jantar/Lanche/Outro) with per-type add button, macros bars, water tracking, intermittent fasting timer with live elapsed time and history
 - Intermittent fasting: `useFasting` hook in useStorage, start/stop/history, persists in localStorage (`fasting-data`)
 - Body weight tracking with chart, quick-adjust buttons, and history
 - Body composition: BMI, body fat % (US Navy method), BMR (Mifflin-St Jeor), TDEE, lean/fat mass
 - Custom exercises: create/delete with CUSTOM badge, image upload (base64, up to 2MB stored in localStorage), merged with built-in 175+ exercises; muscle-group color coding throughout (red=Peito, blue=Costas, purple=Ombros, green=Bíceps, etc.)
-- Training programs: create/activate/start with template linking, preset program library with hero image cards and detail dialogs; AI-generated programs can be saved directly from AICoach
-- Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, AI Insights panel (stagnation alerts, overtraining risk, progress predictions)
+- Training programs: create/activate/start with template linking, preset program library with hero image cards and detail dialogs
+- Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, stagnation alerts, overtraining risk indicators (local math — no AI)
 - Gamification system (`src/lib/gamification.ts`): XP per workout (base + volume + muscle diversity + duration + streak bonus), 10 levels (Iniciante → Mestre), 15 achievements, streak tracking (current + best)
 - Dashboard gamification card: Level badge, animated XP progress bar, streak display, weekly muscle volume distribution bars, stagnation/overtraining alerts surfaced directly
-- Post-workout summary redesign: gradient hero banner with "+N XP ganhos", per-exercise comparison vs last session (↑↓→ with volume diff), PRs highlighted, AI analysis button
+- Post-workout summary redesign: gradient hero banner with "+N XP ganhos", per-exercise comparison vs last session (↑↓→ with volume diff), PRs highlighted
 - Exercise Evolution Chart in ExerciseDetail: recharts LineChart showing max weight per session over time, with trend indicator (+X kg ↑ / Estável)
 - Achievements grid in Progress page: 15 unlockable achievements with earn/locked state, level/XP progress bar, current streak + best streak display
 - Settings: 9 color themes, user profile (height/age/sex/activity/body measurements), body measurements, complete backup/export (JSON + CSV for workouts & nutrition)
@@ -48,10 +45,7 @@ A mobile-first fitness and nutrition tracking app with AI coaching, built with R
 
 ## API Routes
 
-- `GET /api/health` — Health check / AI connectivity test
-- `POST /api/ai-coach` — AI fitness coach chat (JSON response, non-streaming — full mobile/WebView compatibility)
-- `POST /api/analyze-meal` — AI meal nutritional analysis (image or text)
-- `POST /api/analyze-workout` — Post-workout AI analysis comparing current vs previous workout (non-streaming)
+- `GET /api/health` — Health check (returns `{ status: 'ok' }`)
 
 ## Workflows
 

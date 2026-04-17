@@ -1,14 +1,12 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp, Sparkles, TrendingDown, Minus, Zap } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, ChevronRight, ChevronLeft, Timer, Copy, Plus, Trash2, MessageSquare, X, Search, Replace, Trophy, Dumbbell, Award, Clock, TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
 import { useActiveWorkout, useHistory, usePersonalRecords } from '@/hooks/useStorage';
 import { getExerciseById, getAllExercises, muscleGroups } from '@/data/exercises';
 import { CompletedWorkout, CompletedExercise, ActiveSet } from '@/types/workout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { haptic } from '@/lib/haptic';
-import { apiFetch } from '@/lib/api';
 import { suggestWeight } from '@/lib/workoutAnalysis';
 import { calculateXPForWorkout, computeStreak } from '@/lib/gamification';
 
@@ -34,9 +32,6 @@ export default function ActiveWorkoutPage() {
   const [showSummary, setShowSummary] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState<CompletedWorkout | null>(null);
   const [summaryPRs, setSummaryPRs] = useState<{ exerciseName: string; type: string; value: string }[]>([]);
-  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [summaryPreviousWorkout, setSummaryPreviousWorkout] = useState<CompletedWorkout | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const exerciseTimerRef = useRef<ReturnType<typeof setInterval>>();
   const exerciseStartRef = useRef(Date.now());
@@ -348,62 +343,11 @@ export default function ActiveWorkoutPage() {
       });
     });
 
-    // Find previous workout with similar exercises for AI comparison
-    const previousWorkout = history.length > 0 ? history[history.length - 1] : null;
-
     setHistory(prev => [...prev, completed]);
     setWorkoutSummary(completed);
     setSummaryPRs(prs);
-    setSummaryPreviousWorkout(previousWorkout);
-    setAiAnalysis(null);
     haptic('heavy');
     setShowSummary(true);
-  };
-
-  const analyzeWorkout = async () => {
-    if (!workoutSummary || isAnalyzing) return;
-    setIsAnalyzing(true);
-    try {
-      const workoutPayload = {
-        name: workoutSummary.name,
-        duration: workoutSummary.duration,
-        totalVolume: workoutSummary.totalVolume,
-        exercises: workoutSummary.exercises.map(ex => {
-          const exInfo = getExerciseById(ex.exerciseId);
-          return {
-            name: exInfo?.name || ex.exerciseId,
-            muscle: exInfo?.muscleGroup || '',
-            sets: ex.sets.filter(s => s.completed).map(s => ({ weight: s.weight, reps: s.reps })),
-          };
-        }),
-      };
-
-      const previousPayload = summaryPreviousWorkout ? {
-        name: summaryPreviousWorkout.name,
-        totalVolume: summaryPreviousWorkout.totalVolume,
-        exercises: summaryPreviousWorkout.exercises.map(ex => {
-          const exInfo = getExerciseById(ex.exerciseId);
-          return {
-            name: exInfo?.name || ex.exerciseId,
-            sets: ex.sets.filter(s => s.completed).map(s => ({ weight: s.weight, reps: s.reps })),
-          };
-        }),
-      } : undefined;
-
-      const resp = await apiFetch('/api/analyze-workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workout: workoutPayload, previousWorkout: previousPayload, prs: summaryPRs }),
-      });
-
-      if (!resp.ok) throw new Error(`Erro ${resp.status}`);
-      const data = await resp.json();
-      setAiAnalysis(data.analysis || 'Análise indisponível.');
-    } catch (e) {
-      setAiAnalysis('❌ Não foi possível gerar a análise agora. Tente mais tarde.');
-    } finally {
-      setIsAnalyzing(false);
-    }
   };
 
   const closeSummary = () => {
@@ -955,28 +899,6 @@ export default function ActiveWorkoutPage() {
                       );
                     })}
                   </div>
-
-                  {/* AI Analysis */}
-                  {aiAnalysis ? (
-                    <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Sparkles size={15} className="text-primary shrink-0" />
-                        <p className="text-sm font-bold text-primary">Análise do FitAI</p>
-                      </div>
-                      <div className="prose prose-sm prose-invert max-w-none text-xs text-foreground font-body leading-relaxed [&_strong]:text-foreground [&_ul]:pl-4 [&_li]:my-0.5">
-                        <ReactMarkdown>{aiAnalysis}</ReactMarkdown>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={analyzeWorkout}
-                      disabled={isAnalyzing}
-                      className="w-full bg-primary/10 border border-primary/20 text-primary rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-60"
-                    >
-                      <Sparkles size={16} />
-                      {isAnalyzing ? 'Analisando com IA...' : 'Analisar com FitAI'}
-                    </button>
-                  )}
 
                   <button
                     onClick={closeSummary}
