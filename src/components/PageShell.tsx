@@ -9,7 +9,7 @@ interface PageShellProps {
 
 export default function PageShell({ title, children, rightAction }: PageShellProps) {
   return (
-    <div className="min-h-screen min-h-dvh bg-background safe-bottom" style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' }}>
+    <div className="min-h-screen min-h-dvh bg-background" style={{ paddingBottom: 'calc(90px + env(safe-area-inset-bottom, 0px))' }}>
       {title && (
         <header className="sticky top-0 z-40 glass-strong border-b border-border/30 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-primary/10 after:to-transparent">
           <div

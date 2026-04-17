@@ -1,0 +1,243 @@
+FASE FINAL — CORREÇÃO COMPLETA + POLIMENTO PREMIUM
+
+Este app não é mais um protótipo. Ele será usado por pessoas reais.
+
+Quero execução completa, sem respostas superficiais.
+
+--------------------------------------------------
+
+OBJETIVO
+
+Transformar o app em:
+- visual premium
+- 100% funcional no mobile
+- sem bugs críticos
+- consistente
+- pronto para beta real
+
+--------------------------------------------------
+
+🔥 1. BUG CRÍTICO — IA 404 NO MOBILE
+
+Erro atual:
+"Servidor retornou resposta inesperada (HTTP 404)"
+
+Isso NÃO é problema de JSON.
+É rota inexistente no mobile.
+
+Tarefas:
+
+1. Logar no frontend:
+console.log("AI URL:", url)
+console.log("Status:", resp.status)
+
+2. Identificar diferença entre:
+- URL no desktop
+- URL no mobile
+
+3. Corrigir:
+- remover fetch relativo `/api/...`
+- usar URL absoluta no mobile
+
+Exemplo:
+const API_URL = "https://SEU_BACKEND.vercel.app";
+fetch(`${API_URL}/api/ai-coach`)
+
+4. Validar endpoint real:
+- acessar via navegador
+- confirmar JSON válido
+
+5. Melhorar erro:
+- 404 → "Servidor de IA não encontrado"
+
+6. Teste final:
+- enviar mensagem no celular
+- receber resposta
+- zero erros
+
+--------------------------------------------------
+
+🔥 2. BUG CRÍTICO — TOQUE/OVERLAY MOBILE
+
+Problema:
+- ao segurar toque aparece overlay branco/cinza gigante
+
+Corrigir investigando:
+- tap highlight do Android
+- ripple effect
+- :active / :focus
+- pseudo-elementos
+- overflow e z-index
+- elementos com background no pressed
+
+Aplicar:
+- -webkit-tap-highlight-color: transparent;
+- corrigir overflow hidden onde necessário
+- revisar todos elementos clicáveis
+
+Objetivo:
+nenhum glitch ao tocar/segurar
+
+--------------------------------------------------
+
+🔥 3. NUTRIÇÃO — REESTRUTURAÇÃO COMPLETA
+
+Problema:
+- tudo está jogado na mesma tela
+
+Criar sistema interno com abas:
+
+- Resumo
+- Refeições
+- Macros
+- Jejum
+
+IMPORTANTE:
+- remover peso corporal da nutrição
+- manter água e resumo visíveis
+
+--------------------------------------------------
+
+🔥 4. RESUMO DO DIA (REDESIGN TOTAL)
+
+Problemas:
+- feio
+- desorganizado
+- sem hierarquia
+
+Refazer:
+
+- usar MEIO-CÍRCULO (semi-circle) no resumo principal
+- NÃO usar círculo completo aqui
+
+Mostrar claramente:
+- Meta
+- Consumido
+- Exercício
+- RESTANTE (destaque máximo)
+
+Objetivo:
+entender em 1 segundo
+
+Detalhado:
+- ao expandir → usar círculo completo
+
+--------------------------------------------------
+
+🔥 5. FUNDO / VISUAL (IMPORTANTE)
+
+Problema:
+- preto muito seco
+
+Corrigir:
+- usar #0f0f0f ou #121212
+- adicionar leve gradiente ou elevação
+- melhorar contraste geral
+
+Objetivo:
+visual mais premium e menos “cru”
+
+--------------------------------------------------
+
+🔥 6. REFEIÇÕES (REFAZER UI)
+
+Problema:
+- aparência de placeholder
+
+Corrigir:
+
+- remover bordas pontilhadas
+- cards mais compactos
+- card inteiro clicável
+- botão "+" integrado
+- mostrar kcal mesmo vazio
+- melhorar espaçamento interno
+
+Estrutura:
+- Café da manhã
+- Almoço
+- Jantar
+- Lanche
+
+Objetivo:
+parecer feature pronta
+
+--------------------------------------------------
+
+🔥 7. MACROS (CRIAR ÁREA PREMIUM)
+
+Criar aba própria:
+
+- gráfico circular (pizza)
+- carbs / proteína / gordura
+- gramas + porcentagem
+- comparação com meta
+
+Referência:
+MyFitnessPal
+
+--------------------------------------------------
+
+🔥 8. JEJUM INTERMITENTE (FEATURE REAL)
+
+Transformar em sistema completo:
+
+Adicionar:
+- metas (12h, 14h, 16h, 18h)
+- progresso visual
+- tempo atual em destaque
+- botão iniciar / encerrar
+- histórico
+- indicador de meta atingida
+
+Objetivo:
+usar sem pensar
+
+--------------------------------------------------
+
+🔥 9. ESPAÇAMENTO E POLIMENTO
+
+Corrigir globalmente:
+
+- padding consistente (16–20px)
+- mais respiro vertical
+- evitar elementos colados
+- melhorar alinhamento
+- melhorar hierarquia de textos
+
+--------------------------------------------------
+
+🔥 10. NAVBAR
+
+Garantir definitivamente:
+
+padding-bottom: calc(90px + env(safe-area-inset-bottom));
+
+Nenhum conteúdo pode ficar escondido
+
+--------------------------------------------------
+
+🔥 11. VALIDAÇÃO FINAL
+
+Testar no mobile real:
+
+- IA funcionando
+- sem erro 404
+- sem bug de toque
+- nutrição organizada
+- layout bonito
+- nada sobreposto
+
+--------------------------------------------------
+
+🔥 12. RELATÓRIO FINAL
+
+Entregar:
+
+- causa do erro 404
+- como foi corrigido
+- causa do bug de toque
+- melhorias na nutrição
+- nova estrutura das abas
+- melhorias visuais
+- se está pronto para beta

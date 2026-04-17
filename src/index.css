@@ -6,10 +6,10 @@
 
 @layer base {
   :root {
-    --background: 0 0% 2%;
+    --background: 0 0% 6%;
     --foreground: 0 0% 97%;
 
-    --card: 225 15% 7%;
+    --card: 225 14% 9%;
     --card-foreground: 0 0% 97%;
 
     --popover: 225 15% 7%;
@@ -108,6 +108,19 @@
   /* Smoother scroll everywhere */
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Remove tap highlight glow on mobile — prevents white/gray overlay on touch hold */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  /* Keep text selectable for inputs */
+  input, textarea, [contenteditable] {
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
 
