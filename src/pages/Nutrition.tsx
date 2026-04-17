@@ -171,6 +171,20 @@ export default function Nutrition() {
     fat: dayMeals.reduce((s, m) => s + m.totals.fat, 0),
   }), [dayMeals]);
 
+  const dayMicros = useMemo(() => {
+    const sum = (k: 'fiber' | 'sodium' | 'sugar' | 'calcium' | 'iron' | 'vitaminC' | 'vitaminD') =>
+      dayMeals.reduce((s, m) => s + ((m.totals as any)[k] || 0), 0);
+    return {
+      fiber: sum('fiber'),
+      sodium: sum('sodium'),
+      sugar: sum('sugar'),
+      calcium: sum('calcium'),
+      iron: sum('iron'),
+      vitaminC: sum('vitaminC'),
+      vitaminD: sum('vitaminD'),
+    };
+  }, [dayMeals]);
+
   const mealsByType = useMemo(() => {
     const map: Record<string, typeof dayMeals> = {};
     MEAL_TYPES.forEach(t => { map[t] = []; });
