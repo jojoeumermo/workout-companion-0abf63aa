@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
+import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useMeals, useNutritionGoals, useWaterLog, useWaterGoal, useFasting } from '@/hooks/useStorage';
@@ -453,28 +454,23 @@ export default function Nutrition() {
                             </button>
                           ) : (
                             typeMeals.map(meal => (
-                              <div key={meal.id} className="bg-secondary/30 rounded-xl p-3.5">
-                                <div className="flex items-start justify-between gap-2 mb-2.5">
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex flex-wrap gap-1.5">
-                                      {meal.items.map((item, i) => (
-                                        <span key={i} className="text-xs bg-secondary px-2.5 py-1 rounded-lg font-bold">{item.name}</span>
-                                      ))}
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-1.5 font-medium">{meal.time}</p>
+                              <SwipeableRow key={meal.id} onDelete={() => setConfirmDelete(meal.id)}>
+                                <div className="bg-secondary/30 rounded-xl p-3.5">
+                                  <div className="flex flex-wrap gap-1.5 mb-2">
+                                    {meal.items.map((item, i) => (
+                                      <span key={i} className="text-xs bg-secondary px-2.5 py-1 rounded-lg font-bold">{item.name}</span>
+                                    ))}
                                   </div>
-                                  <button onClick={() => setConfirmDelete(meal.id)} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive active:scale-95 shrink-0">
-                                    <Trash2 size={14} />
-                                  </button>
+                                  <p className="text-xs text-muted-foreground mb-2 font-medium">{meal.time}</p>
+                                  <div className="flex gap-3 text-xs font-bold">
+                                    <span className="text-orange-400">{Math.round(meal.totals.calories)} kcal</span>
+                                    <span className="text-muted-foreground">P: <span className="text-red-400">{Math.round(meal.totals.protein)}g</span></span>
+                                    <span className="text-muted-foreground">C: <span className="text-blue-400">{Math.round(meal.totals.carbs)}g</span></span>
+                                    <span className="text-muted-foreground">G: <span className="text-yellow-400">{Math.round(meal.totals.fat)}g</span></span>
+                                  </div>
+                                  {meal.notes && <p className="text-xs text-muted-foreground italic mt-2">"{meal.notes}"</p>}
                                 </div>
-                                <div className="flex gap-3 text-xs font-bold">
-                                  <span className="text-orange-400">{Math.round(meal.totals.calories)} kcal</span>
-                                  <span className="text-muted-foreground">P: <span className="text-red-400">{Math.round(meal.totals.protein)}g</span></span>
-                                  <span className="text-muted-foreground">C: <span className="text-blue-400">{Math.round(meal.totals.carbs)}g</span></span>
-                                  <span className="text-muted-foreground">G: <span className="text-yellow-400">{Math.round(meal.totals.fat)}g</span></span>
-                                </div>
-                                {meal.notes && <p className="text-xs text-muted-foreground italic mt-2">"{meal.notes}"</p>}
-                              </div>
+                              </SwipeableRow>
                             ))
                           )}
                           {typeMeals.length > 0 && (
@@ -684,18 +680,20 @@ export default function Nutrition() {
               <div className="card-premium rounded-2xl p-5 space-y-3">
                 <h3 className="font-black text-base tracking-tight">Histórico Recente</h3>
                 {fastingData.history.slice(0, 5).map(session => (
-                  <div key={session.id} className="flex items-center justify-between bg-secondary/30 rounded-xl px-4 py-3">
-                    <div>
-                      <p className="text-sm font-bold">{new Date(session.startedAt).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}</p>
-                      <p className="text-xs text-muted-foreground font-medium">
-                        {new Date(session.startedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                        {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`}
-                      </p>
+                  <SwipeableRow key={session.id} onDelete={() => setDeleteTargetId(session.id)}>
+                    <div className="flex items-center justify-between bg-secondary/30 rounded-xl px-4 py-3">
+                      <div>
+                        <p className="text-sm font-bold">{new Date(session.startedAt).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}</p>
+                        <p className="text-xs text-muted-foreground font-medium">
+                          {new Date(session.startedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`}
+                        </p>
+                      </div>
+                      <span className={`text-lg font-black ${(session.durationMinutes || 0) >= 960 ? 'text-green-400' : 'text-orange-400'}`}>
+                        {session.durationMinutes !== undefined ? formatDuration(session.durationMinutes) : '—'}
+                      </span>
                     </div>
-                    <span className={`text-lg font-black ${(session.durationMinutes || 0) >= 960 ? 'text-green-400' : 'text-orange-400'}`}>
-                      {session.durationMinutes !== undefined ? formatDuration(session.durationMinutes) : '—'}
-                    </span>
-                  </div>
+                  </SwipeableRow>
                 ))}
                 {fastingData.history.length > 5 && (
                   <button onClick={() => setShowFastingHistory(true)} className="w-full text-center text-xs font-bold text-muted-foreground py-1 active:opacity-70">
@@ -801,25 +799,18 @@ export default function Nutrition() {
           <DialogHeader><DialogTitle>Histórico de Jejuns</DialogTitle></DialogHeader>
       <div className="space-y-2 mt-2 max-h-72 overflow-y-auto">
             {fastingData.history.slice(0, 20).map(session => (
-              <div key={session.id} className="flex items-center justify-between gap-3 bg-secondary/40 rounded-xl px-4 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold">{new Date(session.startedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    {new Date(session.startedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`}
-                  </p>
+              <SwipeableRow key={session.id} onDelete={() => setDeleteTargetId(session.id)}>
+                <div className="flex items-center justify-between gap-3 bg-secondary/40 rounded-xl px-4 py-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold">{new Date(session.startedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {new Date(session.startedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                      {session.endedAt && ` → ${new Date(session.endedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`}
+                    </p>
+                  </div>
+                  <span className="text-base font-black text-orange-400 shrink-0">{session.durationMinutes !== undefined ? formatDuration(session.durationMinutes) : '—'}</span>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-base font-black text-orange-400">{session.durationMinutes !== undefined ? formatDuration(session.durationMinutes) : '—'}</span>
-                  <button
-                    onClick={() => setDeleteTargetId(session.id)}
-                    className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 active:scale-95 transition-colors"
-                    aria-label="Excluir jejum"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
+              </SwipeableRow>
             ))}
           </div>
         </DialogContent>

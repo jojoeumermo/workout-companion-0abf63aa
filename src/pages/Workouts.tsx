@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Play, Trash2, Edit3, ChevronRight, ChevronDown, ChevronUp, FolderOpen, Zap, Minus, X, Copy } from 'lucide-react';
+import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useTemplates, useActiveWorkout, useFolders } from '@/hooks/useStorage';
@@ -331,7 +332,8 @@ export default function Workouts() {
                 const exercise = getExerciseById(ex.exerciseId);
                 const isExpanded = expandedExercise === i;
                 return (
-                  <div key={i} className="bg-secondary rounded-xl overflow-hidden">
+                  <SwipeableRow key={i} onDelete={() => removeExercise(i)} deleteLabel="Remover">
+                  <div className="bg-secondary rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-3">
                       <button onClick={() => setExpandedExercise(isExpanded ? null : i)} className="flex-1 text-left flex items-center gap-2">
                         <div>
@@ -348,9 +350,6 @@ export default function Workouts() {
                         </button>
                         <button onClick={() => setExpandedExercise(isExpanded ? null : i)} className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground">
                           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        </button>
-                        <button onClick={() => removeExercise(i)} className="w-7 h-7 rounded-lg flex items-center justify-center text-destructive">
-                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
@@ -417,6 +416,7 @@ export default function Workouts() {
                       )}
                     </AnimatePresence>
                   </div>
+                  </SwipeableRow>
                 );
               })}
             </div>
