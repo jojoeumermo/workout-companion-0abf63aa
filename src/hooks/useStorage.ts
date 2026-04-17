@@ -136,6 +136,12 @@ export function useNutritionGoals() {
   });
 }
 
+export function useMicroGoals() {
+  const [stored, setStored] = useLocalStorage<MicroGoals>('micro-goals', DEFAULT_MICRO_GOALS);
+  const goals: MicroGoals = { ...DEFAULT_MICRO_GOALS, ...stored };
+  return [goals, setStored] as const;
+}
+
 export function useBodyWeight() {
   const [entries, setEntries] = useLocalStorage<{ date: string; weight: number; note?: string }[]>('body-weight', []);
 
