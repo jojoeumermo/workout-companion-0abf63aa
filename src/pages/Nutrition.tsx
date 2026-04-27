@@ -647,13 +647,13 @@ export default function Nutrition() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => { setMicroEntry({ key: 'vitaminC', amount: '', label: '' }); setShowAddMicro(true); }}
-                    className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform"
+                    className="flex items-center gap-1.5 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-xs font-black active:scale-95 transition-transform shadow-glow"
                   >
-                    <Pill size={14} /> Manual
+                    <Pill size={14} /> Suplemento
                   </button>
                   <button
                     onClick={() => { setTempMicroGoals(microGoals); setShowMicroGoals(true); }}
-                    className="flex items-center gap-1.5 bg-secondary rounded-lg px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform"
+                    className="flex items-center gap-1.5 bg-secondary border border-border/40 rounded-lg px-3 py-2 text-xs font-black active:scale-95 transition-transform"
                   >
                     <Target size={14} /> Metas
                   </button>
@@ -686,9 +686,11 @@ export default function Nutrition() {
                         </span>
                       </div>
                       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-                          style={{ width: `${pct}%` }}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                          className={`h-full rounded-full ${barColor}`}
                         />
                       </div>
                     </div>
