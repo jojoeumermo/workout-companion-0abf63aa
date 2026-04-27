@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp, Sparkles, Pill } from 'lucide-react';
+import { Utensils, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp, Sparkles, Pill } from 'lucide-react';
 import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
@@ -210,7 +210,12 @@ export default function Nutrition() {
     const over = current > goal;
     return (
       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-500 ${over ? 'bg-destructive' : color}`} style={{ width: `${pct}%` }} />
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className={`h-full rounded-full ${over ? 'bg-destructive' : color}`}
+        />
       </div>
     );
   };
@@ -255,9 +260,9 @@ export default function Nutrition() {
   // Macro donut segments
   const totalMacroKcal = dayTotals.protein * 4 + dayTotals.carbs * 4 + dayTotals.fat * 9;
   const macroSegments = [
-    { label: 'Proteína', value: dayTotals.protein * 4, color: '#34d399', pct: totalMacroKcal > 0 ? Math.round((dayTotals.protein * 4 / totalMacroKcal) * 100) : 0 },
-    { label: 'Carbos', value: dayTotals.carbs * 4, color: '#60a5fa', pct: totalMacroKcal > 0 ? Math.round((dayTotals.carbs * 4 / totalMacroKcal) * 100) : 0 },
-    { label: 'Gordura', value: dayTotals.fat * 9, color: '#facc15', pct: totalMacroKcal > 0 ? Math.round((dayTotals.fat * 9 / totalMacroKcal) * 100) : 0 },
+    { label: 'Proteína', value: dayTotals.protein * 4, color: 'hsl(var(--macro-protein))', pct: totalMacroKcal > 0 ? Math.round((dayTotals.protein * 4 / totalMacroKcal) * 100) : 0 },
+    { label: 'Carbos', value: dayTotals.carbs * 4, color: 'hsl(var(--macro-carbs))', pct: totalMacroKcal > 0 ? Math.round((dayTotals.carbs * 4 / totalMacroKcal) * 100) : 0 },
+    { label: 'Gordura', value: dayTotals.fat * 9, color: 'hsl(var(--macro-fat))', pct: totalMacroKcal > 0 ? Math.round((dayTotals.fat * 9 / totalMacroKcal) * 100) : 0 },
   ];
 
   // Fasting progress
@@ -355,9 +360,9 @@ export default function Nutrition() {
               <h3 className="font-black text-base tracking-tight">Macros</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-emerald-400', accent: 'text-emerald-400' },
-                  { label: 'Carboidratos', current: Math.round(dayTotals.carbs), goal: goals.carbs, color: 'bg-blue-400', accent: 'text-blue-400' },
-                  { label: 'Gordura', current: Math.round(dayTotals.fat), goal: goals.fat, color: 'bg-yellow-400', accent: 'text-yellow-400' },
+                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-macro-protein', accent: 'text-macro-protein' },
+                  { label: 'Carboidratos', current: Math.round(dayTotals.carbs), goal: goals.carbs, color: 'bg-macro-carbs', accent: 'text-macro-carbs' },
+                  { label: 'Gordura', current: Math.round(dayTotals.fat), goal: goals.fat, color: 'bg-macro-fat', accent: 'text-macro-fat' },
                 ].map(m => (
                   <div key={m.label} className="space-y-1.5">
                     <div className="flex items-center justify-between">
@@ -395,7 +400,12 @@ export default function Nutrition() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-400 rounded-full transition-all duration-500" style={{ width: `${waterPct}%` }} />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${waterPct}%` }}
+                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      className="h-full bg-blue-400 rounded-full"
+                    />
                   </div>
                   <div className="flex justify-between text-xs font-bold text-muted-foreground">
                     <span>{waterGlasses} copos</span>
@@ -430,7 +440,7 @@ export default function Nutrition() {
               onClick={() => navigateToAddMeal()}
               className="w-full bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-2.5 font-black text-sm active:scale-[0.97] transition-transform shadow-glow"
             >
-              <Camera size={18} />
+              <Utensils size={18} />
               Registrar Refeição
             </button>
           </motion.div>
@@ -443,7 +453,7 @@ export default function Nutrition() {
               onClick={() => navigateToAddMeal()}
               className="w-full bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-2.5 font-black text-sm active:scale-[0.97] transition-transform shadow-glow"
             >
-              <Camera size={18} />
+              <Utensils size={18} />
               Registrar Refeição
             </button>
 
@@ -520,10 +530,10 @@ export default function Nutrition() {
                                   </div>
                                   <p className="text-xs text-muted-foreground mb-2 font-medium">{meal.time}</p>
                                   <div className="flex gap-3 text-xs font-bold">
-                                    <span className="text-orange-400">{Math.round(meal.totals.calories)} kcal</span>
-                                    <span className="text-muted-foreground">P: <span className="text-emerald-400">{Math.round(meal.totals.protein)}g</span></span>
-                                    <span className="text-muted-foreground">C: <span className="text-blue-400">{Math.round(meal.totals.carbs)}g</span></span>
-                                    <span className="text-muted-foreground">G: <span className="text-yellow-400">{Math.round(meal.totals.fat)}g</span></span>
+                                    <span className="text-macro-calories">{Math.round(meal.totals.calories)} kcal</span>
+                                    <span className="text-muted-foreground">P: <span className="text-macro-protein">{Math.round(meal.totals.protein)}g</span></span>
+                                    <span className="text-muted-foreground">C: <span className="text-macro-carbs">{Math.round(meal.totals.carbs)}g</span></span>
+                                    <span className="text-muted-foreground">G: <span className="text-macro-fat">{Math.round(meal.totals.fat)}g</span></span>
                                   </div>
                                   {meal.notes && <p className="text-xs text-muted-foreground italic mt-2">"{meal.notes}"</p>}
                                 </div>
@@ -559,9 +569,9 @@ export default function Nutrition() {
                   </div>
                   <div className="flex-1 space-y-3">
                     {[
-                      { label: 'Proteína', value: Math.round(dayTotals.protein), color: 'bg-emerald-400', textColor: 'text-emerald-400', pct: macroSegments[0].pct },
-                      { label: 'Carbos', value: Math.round(dayTotals.carbs), color: 'bg-blue-400', textColor: 'text-blue-400', pct: macroSegments[1].pct },
-                      { label: 'Gordura', value: Math.round(dayTotals.fat), color: 'bg-yellow-400', textColor: 'text-yellow-400', pct: macroSegments[2].pct },
+                      { label: 'Proteína', value: Math.round(dayTotals.protein), color: 'bg-macro-protein', textColor: 'text-macro-protein', pct: macroSegments[0].pct },
+                      { label: 'Carbos', value: Math.round(dayTotals.carbs), color: 'bg-macro-carbs', textColor: 'text-macro-carbs', pct: macroSegments[1].pct },
+                      { label: 'Gordura', value: Math.round(dayTotals.fat), color: 'bg-macro-fat', textColor: 'text-macro-fat', pct: macroSegments[2].pct },
                     ].map(m => (
                       <div key={m.label} className="flex items-center gap-2">
                         <div className={`w-2.5 h-2.5 rounded-full ${m.color} shrink-0`} />
@@ -594,9 +604,9 @@ export default function Nutrition() {
               </div>
               <div className="space-y-3">
                 {[
-                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-emerald-400', unit: 'g' },
-                  { label: 'Carboidratos', current: Math.round(dayTotals.carbs), goal: goals.carbs, color: 'bg-blue-400', unit: 'g' },
-                  { label: 'Gordura', current: Math.round(dayTotals.fat), goal: goals.fat, color: 'bg-yellow-400', unit: 'g' },
+                  { label: 'Proteína', current: Math.round(dayTotals.protein), goal: goals.protein, color: 'bg-macro-protein', unit: 'g' },
+                  { label: 'Carboidratos', current: Math.round(dayTotals.carbs), goal: goals.carbs, color: 'bg-macro-carbs', unit: 'g' },
+                  { label: 'Gordura', current: Math.round(dayTotals.fat), goal: goals.fat, color: 'bg-macro-fat', unit: 'g' },
                 ].map(m => {
                   const pct = Math.round((m.current / Math.max(m.goal, 1)) * 100);
                   return (
@@ -619,9 +629,9 @@ export default function Nutrition() {
                 {[
                   { label: 'Consumido', value: `${Math.round(dayTotals.calories)} kcal`, color: '' },
                   { label: 'Meta', value: `${goals.calories} kcal`, color: '' },
-                  { label: 'Proteína (kcal)', value: `${Math.round(dayTotals.protein * 4)} kcal`, color: 'text-emerald-400' },
-                  { label: 'Carbos (kcal)', value: `${Math.round(dayTotals.carbs * 4)} kcal`, color: 'text-blue-400' },
-                  { label: 'Gordura (kcal)', value: `${Math.round(dayTotals.fat * 9)} kcal`, color: 'text-yellow-400' },
+                  { label: 'Proteína (kcal)', value: `${Math.round(dayTotals.protein * 4)} kcal`, color: 'text-macro-protein' },
+                  { label: 'Carbos (kcal)', value: `${Math.round(dayTotals.carbs * 4)} kcal`, color: 'text-macro-carbs' },
+                  { label: 'Gordura (kcal)', value: `${Math.round(dayTotals.fat * 9)} kcal`, color: 'text-macro-fat' },
                   { label: 'Restante', value: `${Math.round(Math.abs(calorieBalance))} kcal ${calorieBalance < 0 ? 'acima' : ''}`, color: calorieBalance < 0 ? 'text-destructive' : 'text-primary' },
                 ].map(item => (
                   <div key={item.label} className="bg-secondary/40 rounded-xl p-3">
@@ -642,13 +652,13 @@ export default function Nutrition() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => { setMicroEntry({ key: 'vitaminC', amount: '', label: '' }); setShowAddMicro(true); }}
-                    className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform"
+                    className="flex items-center gap-1.5 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-xs font-black active:scale-95 transition-transform shadow-glow"
                   >
-                    <Pill size={14} /> Manual
+                    <Pill size={14} /> Suplemento
                   </button>
                   <button
                     onClick={() => { setTempMicroGoals(microGoals); setShowMicroGoals(true); }}
-                    className="flex items-center gap-1.5 bg-secondary rounded-lg px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform"
+                    className="flex items-center gap-1.5 bg-secondary border border-border/40 rounded-lg px-3 py-2 text-xs font-black active:scale-95 transition-transform"
                   >
                     <Target size={14} /> Metas
                   </button>
@@ -681,9 +691,11 @@ export default function Nutrition() {
                         </span>
                       </div>
                       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-                          style={{ width: `${pct}%` }}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                          className={`h-full rounded-full ${barColor}`}
                         />
                       </div>
                     </div>

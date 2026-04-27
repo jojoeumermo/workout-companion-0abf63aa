@@ -439,8 +439,8 @@ export default function Programs() {
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1">
-            <h1 className="text-3xl font-black tracking-tight">Programas de Treino</h1>
-            <p className="text-sm text-muted-foreground font-body mt-0.5">Planos prontos para resultados</p>
+            <h1 className="text-3xl font-black tracking-tight">Programas</h1>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">Biblioteca de planos prontos</p>
           </div>
           <button onClick={() => setShowCreate(true)} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
             <Plus size={22} />
@@ -560,46 +560,49 @@ export default function Programs() {
           </div>
         )}
 
-        {/* Preset Programs */}
+        {/* Preset Programs — Library */}
         <div className="space-y-3">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">Programas Populares</h2>
-            <p className="text-sm text-muted-foreground font-body mt-0.5">Toque para ver detalhes, exercícios e ativar</p>
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="text-xl font-black tracking-tight">Biblioteca de Programas</h2>
+              <p className="text-xs text-muted-foreground font-body mt-0.5">{PRESET_PROGRAMS.length} planos prontos para usar</p>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-secondary px-2 py-1 rounded-md">{PRESET_PROGRAMS.length}</span>
           </div>
 
-          <div className="-mx-5 sm:-mx-6 px-5 sm:px-6">
-            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none" style={{ scrollSnapType: 'x mandatory' }}>
-              {PRESET_PROGRAMS.map(prog => (
-                <div
-                  key={prog.id}
-                  className="hero-section shrink-0 rounded-2xl overflow-hidden card-interactive"
-                  style={{ width: '280px', height: '170px', scrollSnapAlign: 'start' }}
-                  onClick={() => setSelectedPreset(prog)}
-                  role="button"
-                >
-                  <img src="/images/hero-programs.png" alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ filter: 'brightness(0.45)' }} />
-                  <div className="hero-img-overlay" />
-                  <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                    <div className="flex gap-2 flex-wrap">
-                      <span className="text-[10px] font-bold tracking-wider uppercase bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded-full backdrop-blur-sm">{prog.goal}</span>
-                      <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full backdrop-blur-sm border ${
-                        prog.level === 'Iniciante' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
-                        prog.level === 'Intermediário' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-                        'bg-red-500/20 text-red-300 border-red-500/30'
-                      }`}>{prog.level}</span>
-                    </div>
-                    <div>
-                      <p className="text-white font-black text-lg leading-tight mb-1.5 line-clamp-2">{prog.name}</p>
-                      <div className="flex items-center gap-3 text-white/70 font-body text-xs font-medium flex-wrap">
-                        <span className="flex items-center gap-1"><Clock size={12} /> {prog.weeks} sem</span>
-                        <span className="flex items-center gap-1"><Calendar size={12} /> {prog.daysPerWeek}x/sem</span>
-                        <span className="flex items-center gap-1"><ListChecks size={12} /> {prog.workouts.length} treinos</span>
-                      </div>
-                    </div>
+          <div className="grid grid-cols-2 gap-3">
+            {PRESET_PROGRAMS.map((prog, i) => (
+              <motion.button
+                key={prog.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.025, 0.25) }}
+                onClick={() => { haptic('light'); setSelectedPreset(prog); }}
+                className="card-premium rounded-2xl p-4 flex flex-col gap-3 text-left active:scale-[0.97] transition-transform hover:border-primary/30"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Dumbbell size={18} className="text-primary" />
                   </div>
+                  <span className={`text-[9px] font-black tracking-wider uppercase px-2 py-1 rounded-md border ${LEVEL_COLOR[prog.level] || 'bg-secondary text-muted-foreground border-border/30'}`}>
+                    {prog.level}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-black text-sm leading-tight tracking-tight line-clamp-2">{prog.name}</p>
+                  <p className="text-[11px] text-muted-foreground font-body mt-1 truncate">{prog.goal}</p>
+                </div>
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/40">
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold">
+                    <span className="flex items-center gap-1"><Calendar size={10} />{prog.daysPerWeek}x</span>
+                    <span className="flex items-center gap-1"><Clock size={10} />{prog.weeks}sem</span>
+                  </div>
+                  <span className="text-[10px] font-black text-primary flex items-center gap-0.5">
+                    Usar <ChevronRight size={11} />
+                  </span>
+                </div>
+              </motion.button>
+            ))}
           </div>
         </div>
 
@@ -707,13 +710,13 @@ export default function Programs() {
                     onClick={() => handleActivatePreset(selectedPreset, true)}
                     className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-base shadow-glow"
                   >
-                    <Copy size={18} /> Copiar para minhas rotinas e ativar
+                    <Play size={18} fill="currentColor" /> Usar programa
                   </button>
                   <button
                     onClick={() => handleActivatePreset(selectedPreset, false)}
                     className="w-full bg-secondary rounded-xl py-3 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm"
                   >
-                    <CheckCircle size={18} className="text-primary" /> Apenas ativar (sem copiar rotinas)
+                    <CheckCircle size={18} className="text-primary" /> Ativar sem copiar rotinas
                   </button>
                 </div>
               </div>

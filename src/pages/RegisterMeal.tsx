@@ -37,10 +37,10 @@ function recalcTotals(items: NutritionItem[]) {
 }
 
 const MACRO_DISPLAY = [
-  { key: 'calories', label: 'Calorias', unit: 'kcal', color: 'text-orange-400', bg: 'bg-orange-400/10' },
-  { key: 'protein',  label: 'Proteína', unit: 'g',    color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  { key: 'carbs',    label: 'Carbos',   unit: 'g',    color: 'text-blue-400',    bg: 'bg-blue-400/10' },
-  { key: 'fat',      label: 'Gordura',  unit: 'g',    color: 'text-yellow-400',  bg: 'bg-yellow-400/10' },
+  { key: 'calories', label: 'Calorias', unit: 'kcal', color: 'text-macro-calories', bg: 'bg-macro-calories/10' },
+  { key: 'protein',  label: 'Proteína', unit: 'g',    color: 'text-macro-protein',  bg: 'bg-macro-protein/10' },
+  { key: 'carbs',    label: 'Carbos',   unit: 'g',    color: 'text-macro-carbs',    bg: 'bg-macro-carbs/10' },
+  { key: 'fat',      label: 'Gordura',  unit: 'g',    color: 'text-macro-fat',      bg: 'bg-macro-fat/10' },
 ] as const;
 
 export default function RegisterMeal() {
@@ -217,7 +217,7 @@ export default function RegisterMeal() {
                   <div className="min-w-0">
                     <p className="font-medium text-sm truncate">{food.name}</p>
                     <p className="text-xs text-muted-foreground font-body">
-                      {food.per100g.calories} kcal · P <span className="text-emerald-400">{food.per100g.protein}g</span> · C <span className="text-blue-400">{food.per100g.carbs}g</span> · G <span className="text-yellow-400">{food.per100g.fat}g</span>
+                      {food.per100g.calories} kcal · P <span className="text-macro-protein">{food.per100g.protein}g</span> · C <span className="text-macro-carbs">{food.per100g.carbs}g</span> · G <span className="text-macro-fat">{food.per100g.fat}g</span>
                       <span className="opacity-50"> /100g</span>
                     </p>
                   </div>
@@ -252,25 +252,25 @@ export default function RegisterMeal() {
                     className="w-full bg-secondary rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-orange-400">Calorias (kcal) *</label>
+                  <label className="text-xs text-macro-calories">Calorias (kcal) *</label>
                   <input type="number" inputMode="decimal" value={customItem.calories} onChange={e => setCustomItem(p => ({ ...p, calories: e.target.value }))}
                     placeholder="0"
                     className="w-full bg-secondary rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-emerald-400">Proteína (g)</label>
+                  <label className="text-xs text-macro-protein">Proteína (g)</label>
                   <input type="number" inputMode="decimal" value={customItem.protein} onChange={e => setCustomItem(p => ({ ...p, protein: e.target.value }))}
                     placeholder="0"
                     className="w-full bg-secondary rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-blue-400">Carboidratos (g)</label>
+                  <label className="text-xs text-macro-carbs">Carboidratos (g)</label>
                   <input type="number" inputMode="decimal" value={customItem.carbs} onChange={e => setCustomItem(p => ({ ...p, carbs: e.target.value }))}
                     placeholder="0"
                     className="w-full bg-secondary rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-yellow-400">Gordura (g)</label>
+                  <label className="text-xs text-macro-fat">Gordura (g)</label>
                   <input type="number" inputMode="decimal" value={customItem.fat} onChange={e => setCustomItem(p => ({ ...p, fat: e.target.value }))}
                     placeholder="0"
                     className="w-full bg-secondary rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
@@ -381,10 +381,10 @@ export default function RegisterMeal() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{item.name}</p>
                         <p className="text-xs text-muted-foreground font-body">
-                          {item.portion} · <span className="text-orange-400">{item.calories} kcal</span> ·{' '}
-                          P <span className="text-emerald-400">{item.protein}g</span> ·{' '}
-                          C <span className="text-blue-400">{item.carbs}g</span> ·{' '}
-                          G <span className="text-yellow-400">{item.fat}g</span>
+                          {item.portion} · <span className="text-macro-calories">{item.calories} kcal</span> ·{' '}
+                          P <span className="text-macro-protein">{item.protein}g</span> ·{' '}
+                          C <span className="text-macro-carbs">{item.carbs}g</span> ·{' '}
+                          G <span className="text-macro-fat">{item.fat}g</span>
                         </p>
                       </div>
                       <div className="flex gap-1 shrink-0">

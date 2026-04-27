@@ -41,6 +41,12 @@
 
     --glow-primary: 0 0 20px hsl(var(--primary) / 0.12);
     --glow-primary-strong: 0 0 30px hsl(var(--primary) / 0.2);
+
+    /* Macro semantic tokens (HSL) */
+    --macro-protein: 152 65% 55%;   /* emerald */
+    --macro-carbs: 213 90% 63%;     /* blue */
+    --macro-fat: 45 95% 60%;        /* yellow/amber */
+    --macro-calories: 25 92% 58%;   /* orange */
   }
 
   .light {
@@ -77,6 +83,12 @@
 
     --glow-primary: 0 0 20px hsl(var(--primary) / 0.08);
     --glow-primary-strong: 0 0 30px hsl(var(--primary) / 0.15);
+
+    /* Macros (light) — slightly deeper tints for contrast on white */
+    --macro-protein: 152 60% 42%;
+    --macro-carbs: 213 80% 50%;
+    --macro-fat: 38 92% 48%;
+    --macro-calories: 22 88% 50%;
   }
 }
 
