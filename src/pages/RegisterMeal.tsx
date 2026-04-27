@@ -37,10 +37,10 @@ function recalcTotals(items: NutritionItem[]) {
 }
 
 const MACRO_DISPLAY = [
-  { key: 'calories', label: 'Calorias', unit: 'kcal', color: 'text-orange-400', bg: 'bg-orange-400/10' },
-  { key: 'protein',  label: 'Proteína', unit: 'g',    color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  { key: 'carbs',    label: 'Carbos',   unit: 'g',    color: 'text-blue-400',    bg: 'bg-blue-400/10' },
-  { key: 'fat',      label: 'Gordura',  unit: 'g',    color: 'text-yellow-400',  bg: 'bg-yellow-400/10' },
+  { key: 'calories', label: 'Calorias', unit: 'kcal', color: 'text-macro-calories', bg: 'bg-macro-calories/10' },
+  { key: 'protein',  label: 'Proteína', unit: 'g',    color: 'text-macro-protein',  bg: 'bg-macro-protein/10' },
+  { key: 'carbs',    label: 'Carbos',   unit: 'g',    color: 'text-macro-carbs',    bg: 'bg-macro-carbs/10' },
+  { key: 'fat',      label: 'Gordura',  unit: 'g',    color: 'text-macro-fat',      bg: 'bg-macro-fat/10' },
 ] as const;
 
 export default function RegisterMeal() {
