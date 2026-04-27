@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp, Sparkles, Pill } from 'lucide-react';
+import { Utensils, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp, Sparkles, Pill } from 'lucide-react';
 import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
@@ -210,7 +210,12 @@ export default function Nutrition() {
     const over = current > goal;
     return (
       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-500 ${over ? 'bg-destructive' : color}`} style={{ width: `${pct}%` }} />
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className={`h-full rounded-full ${over ? 'bg-destructive' : color}`}
+        />
       </div>
     );
   };
