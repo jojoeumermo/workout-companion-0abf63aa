@@ -439,8 +439,8 @@ export default function Programs() {
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1">
-            <h1 className="text-3xl font-black tracking-tight">Programas de Treino</h1>
-            <p className="text-sm text-muted-foreground font-body mt-0.5">Planos prontos para resultados</p>
+            <h1 className="text-3xl font-black tracking-tight">Programas</h1>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">Biblioteca de planos prontos</p>
           </div>
           <button onClick={() => setShowCreate(true)} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
             <Plus size={22} />
@@ -710,13 +710,13 @@ export default function Programs() {
                     onClick={() => handleActivatePreset(selectedPreset, true)}
                     className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-base shadow-glow"
                   >
-                    <Copy size={18} /> Copiar para minhas rotinas e ativar
+                    <Play size={18} fill="currentColor" /> Usar programa
                   </button>
                   <button
                     onClick={() => handleActivatePreset(selectedPreset, false)}
                     className="w-full bg-secondary rounded-xl py-3 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm"
                   >
-                    <CheckCircle size={18} className="text-primary" /> Apenas ativar (sem copiar rotinas)
+                    <CheckCircle size={18} className="text-primary" /> Ativar sem copiar rotinas
                   </button>
                 </div>
               </div>
