@@ -530,10 +530,10 @@ export default function Nutrition() {
                                   </div>
                                   <p className="text-xs text-muted-foreground mb-2 font-medium">{meal.time}</p>
                                   <div className="flex gap-3 text-xs font-bold">
-                                    <span className="text-orange-400">{Math.round(meal.totals.calories)} kcal</span>
-                                    <span className="text-muted-foreground">P: <span className="text-emerald-400">{Math.round(meal.totals.protein)}g</span></span>
-                                    <span className="text-muted-foreground">C: <span className="text-blue-400">{Math.round(meal.totals.carbs)}g</span></span>
-                                    <span className="text-muted-foreground">G: <span className="text-yellow-400">{Math.round(meal.totals.fat)}g</span></span>
+                                    <span className="text-macro-calories">{Math.round(meal.totals.calories)} kcal</span>
+                                    <span className="text-muted-foreground">P: <span className="text-macro-protein">{Math.round(meal.totals.protein)}g</span></span>
+                                    <span className="text-muted-foreground">C: <span className="text-macro-carbs">{Math.round(meal.totals.carbs)}g</span></span>
+                                    <span className="text-muted-foreground">G: <span className="text-macro-fat">{Math.round(meal.totals.fat)}g</span></span>
                                   </div>
                                   {meal.notes && <p className="text-xs text-muted-foreground italic mt-2">"{meal.notes}"</p>}
                                 </div>
