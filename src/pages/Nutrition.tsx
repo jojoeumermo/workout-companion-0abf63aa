@@ -435,7 +435,7 @@ export default function Nutrition() {
               onClick={() => navigateToAddMeal()}
               className="w-full bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-2.5 font-black text-sm active:scale-[0.97] transition-transform shadow-glow"
             >
-              <Camera size={18} />
+              <Utensils size={18} />
               Registrar Refeição
             </button>
           </motion.div>
@@ -448,7 +448,7 @@ export default function Nutrition() {
               onClick={() => navigateToAddMeal()}
               className="w-full bg-primary text-primary-foreground rounded-2xl p-4 flex items-center justify-center gap-2.5 font-black text-sm active:scale-[0.97] transition-transform shadow-glow"
             >
-              <Camera size={18} />
+              <Utensils size={18} />
               Registrar Refeição
             </button>
 
