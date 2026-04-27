@@ -52,6 +52,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         "surface-elevated": "hsl(var(--surface-elevated))",
+        "macro-protein": "hsl(var(--macro-protein))",
+        "macro-carbs": "hsl(var(--macro-carbs))",
+        "macro-fat": "hsl(var(--macro-fat))",
+        "macro-calories": "hsl(var(--macro-calories))",
       },
       borderRadius: {
         lg: "var(--radius)",
