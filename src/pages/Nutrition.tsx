@@ -400,7 +400,12 @@ export default function Nutrition() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-400 rounded-full transition-all duration-500" style={{ width: `${waterPct}%` }} />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${waterPct}%` }}
+                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      className="h-full bg-blue-400 rounded-full"
+                    />
                   </div>
                   <div className="flex justify-between text-xs font-bold text-muted-foreground">
                     <span>{waterGlasses} copos</span>
