@@ -8,12 +8,20 @@ export interface FoodItem {
     carbs: number;
     fat: number;
     fiber: number;
-    sodium?: number;   // mg
-    sugar?: number;    // g
-    calcium?: number;  // mg
-    iron?: number;     // mg
-    vitaminC?: number; // mg
-    vitaminD?: number; // mcg
+    sugar?: number;       // g
+    sodium?: number;      // mg
+    potassium?: number;   // mg
+    calcium?: number;     // mg
+    iron?: number;        // mg
+    magnesium?: number;   // mg
+    zinc?: number;        // mg
+    vitaminA?: number;    // mcg
+    vitaminB12?: number;  // mcg
+    vitaminC?: number;    // mg
+    vitaminD?: number;    // mcg
+    vitaminE?: number;    // mg
+    vitaminK?: number;    // mcg
+    omega3?: number;      // g
   };
   commonPortions: { label: string; grams: number }[];
 }

@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, Trash2, UtensilsCrossed, Target, Droplets, Plus, Minus, Settings2, GlassWater, Timer, StopCircle, History, ChevronDown, ChevronUp, TrendingUp, Sparkles, Pill } from 'lucide-react';
 import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useMeals, useNutritionGoals, useWaterLog, useWaterGoal, useFasting, useMicroGoals } from '@/hooks/useStorage';
-import { MICRO_LIMITS, MicroGoals } from '@/types/nutrition';
+import { MICRO_LIMITS, MicroGoals, MICRO_DEFS, DEFAULT_MICRO_GOALS, MicroKey } from '@/types/nutrition';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { haptic } from '@/lib/haptic';
@@ -133,12 +133,16 @@ function useFastingElapsed(startedAt: string | null): number {
 export default function Nutrition() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { meals, deleteMeal } = useMeals();
+  const { meals, deleteMeal, addMeal } = useMeals();
   const [goals, setGoals] = useNutritionGoals();
   const { getTodayWater, addWater, getWaterForDate } = useWaterLog();
   const [waterGoal, setWaterGoal] = useWaterGoal();
   const { data: fastingData, start: startFast, stop: stopFast, deleteFasting } = useFasting();
-  const [microGoals] = useMicroGoals();
+  const [microGoals, setMicroGoals] = useMicroGoals();
+  const [showMicroGoals, setShowMicroGoals] = useState(false);
+  const [tempMicroGoals, setTempMicroGoals] = useState<MicroGoals>(microGoals);
+  const [showAddMicro, setShowAddMicro] = useState(false);
+  const [microEntry, setMicroEntry] = useState<{ key: MicroKey; amount: string; label: string }>({ key: 'vitaminC', amount: '', label: '' });
 
   const [activeTab, setActiveTab] = useState<Tab>('Resumo');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -172,17 +176,11 @@ export default function Nutrition() {
   }), [dayMeals]);
 
   const dayMicros = useMemo(() => {
-    const sum = (k: 'fiber' | 'sodium' | 'sugar' | 'calcium' | 'iron' | 'vitaminC' | 'vitaminD') =>
-      dayMeals.reduce((s, m) => s + ((m.totals as any)[k] || 0), 0);
-    return {
-      fiber: sum('fiber'),
-      sodium: sum('sodium'),
-      sugar: sum('sugar'),
-      calcium: sum('calcium'),
-      iron: sum('iron'),
-      vitaminC: sum('vitaminC'),
-      vitaminD: sum('vitaminD'),
-    };
+    const totals = {} as Record<MicroKey, number>;
+    MICRO_DEFS.forEach(d => {
+      totals[d.key] = dayMeals.reduce((s, m) => s + ((m.totals as any)[d.key] || 0), 0);
+    });
+    return totals;
   }, [dayMeals]);
 
   const mealsByType = useMemo(() => {
@@ -636,27 +634,36 @@ export default function Nutrition() {
 
             {/* ─── MICRONUTRIENTES ─── */}
             <div className="card-premium rounded-2xl p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-black text-base tracking-tight">Micronutrientes</h3>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Hoje</span>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="font-black text-base tracking-tight">Micronutrientes</h3>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">15 micros monitorados</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setMicroEntry({ key: 'vitaminC', amount: '', label: '' }); setShowAddMicro(true); }}
+                    className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform"
+                  >
+                    <Pill size={14} /> Manual
+                  </button>
+                  <button
+                    onClick={() => { setTempMicroGoals(microGoals); setShowMicroGoals(true); }}
+                    className="flex items-center gap-1.5 bg-secondary rounded-lg px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform"
+                  >
+                    <Target size={14} /> Metas
+                  </button>
+                </div>
               </div>
               <div className="space-y-3.5">
-                {([
-                  { key: 'fiber',     label: 'Fibras',     unit: 'g',   color: 'bg-emerald-400', text: 'text-emerald-400' },
-                  { key: 'sodium',    label: 'Sódio',      unit: 'mg',  color: 'bg-rose-400',    text: 'text-rose-400' },
-                  { key: 'sugar',     label: 'Açúcar',     unit: 'g',   color: 'bg-pink-400',    text: 'text-pink-400' },
-                  { key: 'iron',      label: 'Ferro',      unit: 'mg',  color: 'bg-orange-400',  text: 'text-orange-400' },
-                  { key: 'calcium',   label: 'Cálcio',     unit: 'mg',  color: 'bg-sky-400',     text: 'text-sky-400' },
-                  { key: 'vitaminC',  label: 'Vitamina C', unit: 'mg',  color: 'bg-yellow-400',  text: 'text-yellow-400' },
-                  { key: 'vitaminD',  label: 'Vitamina D', unit: 'mcg', color: 'bg-amber-400',   text: 'text-amber-400' },
-                ] as const).map(m => {
-                  const current = (dayMicros as any)[m.key] as number;
+                {MICRO_DEFS.map(m => {
+                  const current = dayMicros[m.key] || 0;
                   const goal = (microGoals as any)[m.key] as number;
-                  const isLimit = MICRO_LIMITS.has(m.key as keyof MicroGoals);
+                  const isLimit = MICRO_LIMITS.has(m.key);
                   const pct = Math.min((current / Math.max(goal, 1)) * 100, 100);
                   const over = current > goal;
                   const barColor = isLimit && over ? 'bg-destructive' : m.color;
                   const displayCurrent = (m.unit === 'g' || m.unit === 'mcg') ? Math.round(current * 10) / 10 : Math.round(current);
+                  const displayGoal = (m.unit === 'g' || m.unit === 'mcg') ? Math.round(goal * 10) / 10 : goal;
                   return (
                     <div key={m.key} className="space-y-1.5">
                       <div className="flex items-center justify-between">
@@ -670,7 +677,7 @@ export default function Nutrition() {
                           <span className={isLimit && over ? 'text-destructive' : m.text}>
                             {displayCurrent}{m.unit}
                           </span>
-                          <span className="text-muted-foreground font-medium"> / {goal}{m.unit}</span>
+                          <span className="text-muted-foreground font-medium"> / {displayGoal}{m.unit}</span>
                         </span>
                       </div>
                       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
@@ -684,7 +691,7 @@ export default function Nutrition() {
                 })}
               </div>
               <p className="text-[11px] text-muted-foreground font-medium leading-relaxed pt-1">
-                Metas baseadas em valores diários de referência para adultos. Sódio e açúcar são <span className="font-bold">limites máximos</span>.
+                Metas baseadas em valores diários de referência para adultos. Sódio e açúcar são <span className="font-bold">limites máximos</span>. Use <span className="font-bold">Manual</span> para registrar suplementos diretamente nos totais.
               </p>
             </div>
           </motion.div>
@@ -925,6 +932,166 @@ export default function Nutrition() {
                 </div>
               </SwipeableRow>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit micronutrient goals */}
+      <Dialog open={showMicroGoals} onOpenChange={setShowMicroGoals}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Metas de Micronutrientes</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <p className="text-xs text-muted-foreground font-body leading-relaxed">
+              Ajuste suas metas diárias. Os valores ficam salvos no aparelho.
+            </p>
+            <div className="space-y-2.5">
+              {MICRO_DEFS.map(m => {
+                const isLimit = MICRO_LIMITS.has(m.key);
+                return (
+                  <div key={m.key} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${m.color}`} />
+                        {m.label}
+                        <span className="text-[10px] text-muted-foreground font-medium">({m.unit})</span>
+                        {isLimit && (
+                          <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider bg-secondary px-1.5 py-0.5 rounded">limite</span>
+                        )}
+                      </label>
+                    </div>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      step="any"
+                      value={tempMicroGoals[m.key]}
+                      onChange={e => setTempMicroGoals(prev => ({ ...prev, [m.key]: parseFloat(e.target.value) || 0 }))}
+                      className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                onClick={() => setTempMicroGoals(DEFAULT_MICRO_GOALS)}
+                className="bg-secondary rounded-xl py-2.5 font-semibold text-sm flex items-center justify-center gap-2"
+              >
+                <Sparkles size={14} /> Restaurar Padrão
+              </button>
+              <button
+                onClick={() => {
+                  setMicroGoals(tempMicroGoals);
+                  setShowMicroGoals(false);
+                  haptic('success');
+                  toast({ title: 'Metas de micros atualizadas!' });
+                }}
+                className="bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm"
+              >
+                Salvar Metas
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual micronutrient entry */}
+      <Dialog open={showAddMicro} onOpenChange={setShowAddMicro}>
+        <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Adicionar Micro Manualmente</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <p className="text-xs text-muted-foreground font-body leading-relaxed">
+              Use para registrar suplementos (ex: vitamina D, ômega 3) ou alimentos sem cadastro. O valor é somado nos totais do dia.
+            </p>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Micronutriente</label>
+              <div className="grid grid-cols-3 gap-1.5 max-h-44 overflow-y-auto pr-1">
+                {MICRO_DEFS.map(m => (
+                  <button
+                    key={m.key}
+                    onClick={() => setMicroEntry(prev => ({ ...prev, key: m.key }))}
+                    className={`px-2 py-2 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                      microEntry.key === m.key ? 'bg-primary/15 text-primary border border-primary/30' : 'bg-secondary text-muted-foreground border border-transparent'
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${m.color} shrink-0`} />
+                    <span className="truncate text-left">{m.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Quantidade ({MICRO_DEFS.find(d => d.key === microEntry.key)?.unit})
+              </label>
+              <input
+                type="number"
+                inputMode="decimal"
+                step="any"
+                placeholder="Ex: 1000"
+                value={microEntry.amount}
+                onChange={e => setMicroEntry(prev => ({ ...prev, amount: e.target.value }))}
+                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-base outline-none focus:ring-2 focus:ring-ring"
+                autoFocus
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Descrição (opcional)</label>
+              <input
+                type="text"
+                placeholder="Ex: Suplemento Vitamina C 1g"
+                value={microEntry.label}
+                onChange={e => setMicroEntry(prev => ({ ...prev, label: e.target.value }))}
+                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            <button
+              onClick={() => {
+                const value = parseFloat(microEntry.amount);
+                if (!value || value <= 0) {
+                  toast({ title: 'Informe uma quantidade válida' });
+                  return;
+                }
+                const def = MICRO_DEFS.find(d => d.key === microEntry.key)!;
+                const itemName = microEntry.label.trim() || `${def.label} (manual)`;
+                addMeal({
+                  date: selectedDate,
+                  time: new Date().toTimeString().slice(0, 5),
+                  type: 'outro',
+                  isMicroSupplement: true,
+                  confidence: 'manual',
+                  items: [{
+                    name: itemName,
+                    portion: `${value} ${def.unit}`,
+                    calories: 0,
+                    protein: 0,
+                    carbs: 0,
+                    fat: 0,
+                    [microEntry.key]: value,
+                  }],
+                  totals: {
+                    calories: 0,
+                    protein: 0,
+                    carbs: 0,
+                    fat: 0,
+                    [microEntry.key]: value,
+                  },
+                });
+                setShowAddMicro(false);
+                haptic('success');
+                toast({ title: `${def.label} +${value}${def.unit} registrado!` });
+              }}
+              className="w-full bg-primary text-primary-foreground rounded-xl py-3 font-semibold text-sm flex items-center justify-center gap-2"
+            >
+              <Plus size={16} /> Adicionar ao dia
+            </button>
           </div>
         </DialogContent>
       </Dialog>

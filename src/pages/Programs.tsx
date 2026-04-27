@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Bot, ChevronRight, Plus, Play, Clock, Target, Trash2, ArrowLeft, Calendar, Dumbbell, X, CheckCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, Plus, Play, Clock, Target, Trash2, ArrowLeft, Calendar, Dumbbell, X, CheckCircle, Copy, ListChecks } from 'lucide-react';
+import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useTemplates, useActiveWorkout } from '@/hooks/useStorage';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { WorkoutTemplate, ActiveWorkout } from '@/types/workout';
+import { WorkoutTemplate, ActiveWorkout, WorkoutExercise } from '@/types/workout';
+import { getAllExercises } from '@/data/exercises';
 import { haptic } from '@/lib/haptic';
 import { toast } from 'sonner';
 
@@ -23,46 +24,262 @@ interface TrainingProgram {
   status: 'available' | 'active' | 'completed';
 }
 
-const presetPrograms = [
+interface PresetWorkout {
+  name: string;
+  exercises: string[];           // exercise names (looked up at runtime)
+  notes?: string;
+}
+
+interface PresetProgram {
+  id: string;
+  name: string;
+  weeks: number;
+  goal: string;
+  level: 'Iniciante' | 'Intermediário' | 'Avançado';
+  daysPerWeek: number;
+  description: string;
+  workouts: PresetWorkout[];
+  highlights: string[];
+}
+
+const PRESET_PROGRAMS: PresetProgram[] = [
   {
-    name: 'Push/Pull/Legs - Hipertrofia',
+    id: 'ppl-classic',
+    name: 'PPL — Push / Pull / Legs',
     weeks: 8,
     goal: 'Hipertrofia',
     level: 'Intermediário',
     daysPerWeek: 6,
-    description: 'Divida treinos em empurrar (peito, ombros, tríceps), puxar (costas, bíceps) e pernas. 6 dias por semana com 1 dia de descanso. Excelente para volume e definição muscular.',
+    description: 'Divisão clássica em três tipos de treino: empurrar (peito, ombros, tríceps), puxar (costas, bíceps) e pernas. Roda duas vezes na semana com 1 dia de descanso.',
+    highlights: ['6 treinos por semana', 'Volume alto e equilibrado', 'Roda Push/Pull/Legs 2x'],
+    workouts: [
+      { name: 'Push (Peito, Ombros, Tríceps)', exercises: ['Supino Reto com Barra', 'Supino Inclinado com Halteres', 'Desenvolvimento com Halteres', 'Elevação Lateral', 'Tríceps Corda', 'Tríceps Francês'] },
+      { name: 'Pull (Costas e Bíceps)', exercises: ['Barra Fixa (Pull-up)', 'Remada Curvada com Barra', 'Puxada Frontal', 'Face Pull', 'Rosca Direta com Barra', 'Rosca Martelo'] },
+      { name: 'Legs (Pernas e Glúteos)', exercises: ['Agachamento Livre', 'Leg Press', 'Cadeira Extensora', 'Cadeira Flexora', 'Stiff', 'Panturrilha em Pé'] },
+    ],
   },
   {
-    name: 'Upper/Lower - Força',
+    id: 'arnold-split',
+    name: 'Arnold Split',
+    weeks: 8,
+    goal: 'Hipertrofia',
+    level: 'Avançado',
+    daysPerWeek: 6,
+    description: 'Divisão usada por Arnold: Peito+Costas, Ombros+Braços, Pernas — cada par treinado duas vezes na semana. Foco em volume e variedade de ângulos.',
+    highlights: ['6 treinos / 3 dias diferentes', 'Combina antagonistas (peito+costas)', 'Volume alto por grupo'],
+    workouts: [
+      { name: 'Peito + Costas', exercises: ['Supino Reto com Barra', 'Crucifixo com Halteres', 'Barra Fixa (Pull-up)', 'Remada Curvada com Barra', 'Pullover com Halter', 'Crossover'] },
+      { name: 'Ombros + Braços', exercises: ['Desenvolvimento com Barra', 'Elevação Lateral', 'Crucifixo Inverso', 'Rosca Direta com Barra', 'Rosca Concentrada', 'Tríceps Testa', 'Tríceps Corda'] },
+      { name: 'Pernas', exercises: ['Agachamento Livre', 'Leg Press', 'Cadeira Extensora', 'Cadeira Flexora', 'Stiff', 'Panturrilha Sentado', 'Panturrilha em Pé'] },
+    ],
+  },
+  {
+    id: 'heavy-duty',
+    name: 'Heavy Duty (HIT)',
     weeks: 6,
-    goal: 'Força',
-    level: 'Intermediário',
-    daysPerWeek: 4,
-    description: 'Alterne entre treinos de parte superior e inferior. 4 dias por semana com foco em movimentos compostos e progressão de carga. Ideal para ganhos de força.',
+    goal: 'Hipertrofia',
+    level: 'Avançado',
+    daysPerWeek: 3,
+    description: 'Estilo Mike Mentzer: pouquíssimas séries, intensidade máxima e descanso longo. Uma série até a falha por exercício, treinando 3x por semana.',
+    highlights: ['1 série até a falha por exercício', 'Recuperação extra entre treinos', 'Foco em intensidade total'],
+    workouts: [
+      { name: 'Treino A (Peito, Costas, Ombros)', exercises: ['Supino Inclinado com Halteres', 'Crucifixo na Máquina', 'Puxada Frontal', 'Remada na Máquina', 'Desenvolvimento na Máquina'] },
+      { name: 'Treino B (Pernas)', exercises: ['Leg Press 45°', 'Cadeira Extensora', 'Cadeira Flexora', 'Panturrilha em Pé'] },
+      { name: 'Treino C (Braços)', exercises: ['Rosca Scott', 'Rosca Concentrada', 'Tríceps Pulley', 'Tríceps Francês'] },
+    ],
   },
   {
-    name: 'Full Body - Iniciante',
+    id: 'full-body',
+    name: 'Full Body — Iniciante',
     weeks: 4,
     goal: 'Adaptação',
     level: 'Iniciante',
     daysPerWeek: 3,
-    description: 'Treino de corpo inteiro 3 vezes por semana. Ideal para começar: ensina padrões de movimento, cria base de força e desenvolve hábito de treinar.',
+    description: 'Treino de corpo inteiro 3x na semana. Ideal para começar: aprende padrões de movimento, cria base de força e estabelece o hábito.',
+    highlights: ['3 treinos / corpo todo', 'Movimentos compostos básicos', 'Recuperação entre os dias'],
+    workouts: [
+      { name: 'Full Body A', exercises: ['Agachamento Livre', 'Supino Reto com Halteres', 'Remada Unilateral com Halter', 'Desenvolvimento com Halteres', 'Prancha'] },
+      { name: 'Full Body B', exercises: ['Leg Press', 'Puxada Frontal', 'Supino Inclinado com Halteres', 'Elevação Lateral', 'Rosca Alternada com Halteres', 'Crunch'] },
+      { name: 'Full Body C', exercises: ['Stiff', 'Remada Baixa (Sentado)', 'Flexão de Braço', 'Cadeira Extensora', 'Tríceps Corda', 'Panturrilha em Pé'] },
+    ],
   },
   {
-    name: 'ABC - Volume',
+    id: 'abc',
+    name: 'ABC — Volume',
     weeks: 8,
     goal: 'Hipertrofia',
-    level: 'Avançado',
+    level: 'Intermediário',
     daysPerWeek: 5,
-    description: 'Divisão em 3 dias (A=Peito+Tríceps, B=Costas+Bíceps, C=Pernas+Ombros) com alto volume. 5-6 dias por semana para máxima hipertrofia.',
+    description: 'Divisão em 3 dias (A=Peito+Tríceps, B=Costas+Bíceps, C=Pernas+Ombros). 5 dias por semana com volume alto por músculo.',
+    highlights: ['3 treinos diferentes', 'Trabalha agonistas/sinergistas', 'Bom para hipertrofia geral'],
+    workouts: [
+      { name: 'A — Peito + Tríceps', exercises: ['Supino Reto com Barra', 'Supino Inclinado com Halteres', 'Crucifixo com Halteres', 'Crossover', 'Tríceps Testa', 'Tríceps Corda'] },
+      { name: 'B — Costas + Bíceps', exercises: ['Barra Fixa (Pull-up)', 'Remada Curvada com Barra', 'Puxada Aberta', 'Remada Baixa (Sentado)', 'Rosca Direta com Barra', 'Rosca Scott'] },
+      { name: 'C — Pernas + Ombros', exercises: ['Agachamento Livre', 'Leg Press', 'Cadeira Flexora', 'Stiff', 'Desenvolvimento com Barra', 'Elevação Lateral', 'Panturrilha em Pé'] },
+    ],
   },
   {
-    name: 'ABCDE - Avançado',
+    id: 'upper-lower',
+    name: 'Upper / Lower — Força',
+    weeks: 6,
+    goal: 'Força',
+    level: 'Intermediário',
+    daysPerWeek: 4,
+    description: 'Alterna treinos de parte superior e inferior. 4 dias por semana com foco em movimentos compostos e progressão de carga.',
+    highlights: ['4 dias / 2 treinos repetidos', 'Foco em compostos pesados', 'Bom para força e hipertrofia'],
+    workouts: [
+      { name: 'Upper A', exercises: ['Supino Reto com Barra', 'Remada Curvada com Barra', 'Desenvolvimento com Barra', 'Puxada Frontal', 'Rosca Direta com Barra', 'Tríceps Testa'] },
+      { name: 'Lower A', exercises: ['Agachamento Livre', 'Stiff', 'Leg Press', 'Cadeira Flexora', 'Panturrilha em Pé', 'Crunch'] },
+      { name: 'Upper B', exercises: ['Supino Inclinado com Halteres', 'Barra Fixa (Pull-up)', 'Desenvolvimento com Halteres', 'Remada Baixa (Sentado)', 'Rosca Martelo', 'Tríceps Corda'] },
+      { name: 'Lower B', exercises: ['Levantamento Terra', 'Agachamento Frontal', 'Cadeira Extensora', 'Hip Thrust', 'Panturrilha Sentado', 'Prancha'] },
+    ],
+  },
+  {
+    id: 'ppl-6x',
+    name: 'PPL 6x — Alto Volume',
     weeks: 10,
     goal: 'Hipertrofia',
     level: 'Avançado',
+    daysPerWeek: 6,
+    description: 'Versão expandida do PPL com 2 variações de cada treino. Pesado em compostos no início da semana, hipertrofia no final.',
+    highlights: ['6 treinos sem repetir', 'Pesado + Hipertrofia', 'Ótimo para platô'],
+    workouts: [
+      { name: 'Push pesado', exercises: ['Supino Reto com Barra', 'Desenvolvimento com Barra', 'Supino Inclinado com Halteres', 'Tríceps Testa'] },
+      { name: 'Pull pesado', exercises: ['Levantamento Terra', 'Barra Fixa (Pull-up)', 'Remada Curvada com Barra', 'Rosca Direta com Barra'] },
+      { name: 'Legs pesado', exercises: ['Agachamento Livre', 'Leg Press', 'Stiff', 'Panturrilha em Pé'] },
+      { name: 'Push hipertrofia', exercises: ['Supino Inclinado com Halteres', 'Crossover', 'Elevação Lateral', 'Tríceps Corda', 'Tríceps Francês'] },
+      { name: 'Pull hipertrofia', exercises: ['Puxada Aberta', 'Remada Baixa (Sentado)', 'Face Pull', 'Rosca Scott', 'Rosca Martelo'] },
+      { name: 'Legs hipertrofia', exercises: ['Agachamento Búlgaro', 'Cadeira Extensora', 'Cadeira Flexora', 'Hip Thrust', 'Panturrilha Sentado'] },
+    ],
+  },
+  {
+    id: 'hipertrofia-base',
+    name: 'Hipertrofia — Iniciante / Intermediário',
+    weeks: 8,
+    goal: 'Hipertrofia',
+    level: 'Intermediário',
+    daysPerWeek: 4,
+    description: 'Divisão simples em 4 dias para quem está saindo da fase iniciante. Foca volume moderado em todos os grupos com exercícios chave.',
+    highlights: ['4 treinos / sem complicação', 'Volume e técnica equilibrados', 'Boa transição para intermediários'],
+    workouts: [
+      { name: 'Peito + Tríceps', exercises: ['Supino Reto com Barra', 'Supino Inclinado com Halteres', 'Crucifixo com Halteres', 'Tríceps Corda', 'Tríceps Francês'] },
+      { name: 'Costas + Bíceps', exercises: ['Puxada Frontal', 'Remada Unilateral com Halter', 'Remada Baixa (Sentado)', 'Rosca Direta com Barra', 'Rosca Alternada com Halteres'] },
+      { name: 'Pernas', exercises: ['Agachamento Livre', 'Leg Press', 'Cadeira Extensora', 'Stiff', 'Panturrilha em Pé'] },
+      { name: 'Ombros + Abdômen', exercises: ['Desenvolvimento com Halteres', 'Elevação Lateral', 'Elevação Frontal', 'Crucifixo Inverso', 'Crunch', 'Prancha'] },
+    ],
+  },
+  {
+    id: 'forca-basico',
+    name: 'Força — Básico',
+    weeks: 6,
+    goal: 'Força',
+    level: 'Intermediário',
+    daysPerWeek: 3,
+    description: 'Inspirado em programas de força tipo Starting Strength: foco em agachamento, supino, terra e desenvolvimento. Cargas progressivas semana a semana.',
+    highlights: ['3 treinos / semana', 'Compostos básicos', 'Progressão linear de carga'],
+    workouts: [
+      { name: 'Treino A', exercises: ['Agachamento Livre', 'Supino Reto com Barra', 'Remada Curvada com Barra'] },
+      { name: 'Treino B', exercises: ['Agachamento Livre', 'Desenvolvimento com Barra', 'Levantamento Terra'] },
+      { name: 'Treino C', exercises: ['Agachamento Livre', 'Supino Inclinado com Barra', 'Barra Fixa (Pull-up)'] },
+    ],
+  },
+  {
+    id: 'cutting',
+    name: 'Cutting — Definição',
+    weeks: 8,
+    goal: 'Emagrecimento',
+    level: 'Intermediário',
     daysPerWeek: 5,
-    description: 'Um grupo muscular por dia durante 5 dias consecutivos. Máximo foco e volume por músculo. Para atletas experientes com boa recuperação.',
+    description: 'Treino para fase de cutting: mantém estímulo muscular, eleva gasto calórico com circuitos e cardio. Combine com déficit calórico moderado.',
+    highlights: ['Volume alto / repetições maiores', 'Cardio integrado', 'Preserva massa magra'],
+    workouts: [
+      { name: 'Upper Body', exercises: ['Supino Reto com Halteres', 'Remada Unilateral com Halter', 'Desenvolvimento com Halteres', 'Crucifixo com Halteres', 'Rosca Alternada com Halteres', 'Tríceps Corda'] },
+      { name: 'Lower Body', exercises: ['Agachamento Livre', 'Afundo (Lunge)', 'Stiff', 'Cadeira Extensora', 'Cadeira Flexora', 'Panturrilha em Pé'] },
+      { name: 'Full Body Metabólico', exercises: ['Agachamento Goblet', 'Flexão de Braço', 'Remada Baixa (Sentado)', 'Mountain Climber', 'Burpee', 'Prancha'] },
+      { name: 'Costas + Glúteos', exercises: ['Puxada Frontal', 'Remada Curvada com Barra', 'Hip Thrust', 'Coice no Cabo', 'Abdução na Máquina'] },
+      { name: 'Cardio HIIT', exercises: ['Corrida na Esteira', 'Bicicleta Ergométrica', 'Burpee', 'Pular Corda', 'Mountain Climber'] },
+    ],
+  },
+  {
+    id: 'bulking',
+    name: 'Bulking — Massa Muscular',
+    weeks: 10,
+    goal: 'Hipertrofia',
+    level: 'Intermediário',
+    daysPerWeek: 5,
+    description: 'Programa para fase de bulking: alto volume e cargas pesadas em compostos. Combine com superávit calórico para ganho de massa.',
+    highlights: ['5 treinos / volume alto', 'Compostos pesados primeiro', 'Bom para superávit calórico'],
+    workouts: [
+      { name: 'Peito + Tríceps', exercises: ['Supino Reto com Barra', 'Supino Inclinado com Barra', 'Crucifixo com Halteres', 'Crossover', 'Tríceps Testa', 'Mergulho nas Paralelas'] },
+      { name: 'Costas + Bíceps', exercises: ['Levantamento Terra', 'Barra Fixa (Pull-up)', 'Remada Curvada com Barra', 'Puxada Frontal', 'Rosca Direta com Barra', 'Rosca Scott'] },
+      { name: 'Pernas', exercises: ['Agachamento Livre', 'Leg Press', 'Stiff', 'Cadeira Extensora', 'Cadeira Flexora', 'Panturrilha em Pé'] },
+      { name: 'Ombros + Abdômen', exercises: ['Desenvolvimento com Barra', 'Arnold Press', 'Elevação Lateral', 'Crucifixo Inverso', 'Encolhimento com Halteres', 'Russian Twist'] },
+      { name: 'Braços + Acessórios', exercises: ['Rosca Alternada com Halteres', 'Rosca Martelo', 'Tríceps Corda', 'Tríceps Francês', 'Face Pull'] },
+    ],
+  },
+  {
+    id: 'home-workout',
+    name: 'Treino em Casa',
+    weeks: 6,
+    goal: 'Resistência',
+    level: 'Iniciante',
+    daysPerWeek: 4,
+    description: 'Sem equipamentos: use o próprio peso corporal. Ótimo para manter forma em casa, viagens ou começar do zero.',
+    highlights: ['Sem equipamentos', '4 treinos curtos', 'Pode treinar em qualquer lugar'],
+    workouts: [
+      { name: 'Empurrar (Peito + Ombros + Tríceps)', exercises: ['Flexão de Braço', 'Flexão Diamante', 'Flexão Inclinada', 'Tríceps Banco', 'Prancha com Elevação de Braço'] },
+      { name: 'Pernas + Glúteos', exercises: ['Agachamento Goblet', 'Afundo (Lunge)', 'Glute Bridge', 'Step Up', 'Panturrilha no Step'] },
+      { name: 'Core', exercises: ['Prancha', 'Abdominal Bicicleta', 'Mountain Climber', 'Russian Twist', 'Hollow Body Hold'] },
+      { name: 'Cardio Funcional', exercises: ['Burpee', 'Jumping Jack', 'Mountain Climber', 'Pular Corda', 'Bear Crawl'] },
+    ],
+  },
+  {
+    id: 'dumbbell-only',
+    name: 'Treino com Halteres',
+    weeks: 6,
+    goal: 'Hipertrofia',
+    level: 'Intermediário',
+    daysPerWeek: 4,
+    description: 'Programa completo usando apenas halteres e um banco. Perfeito para academia caseira ou home gym minimalista.',
+    highlights: ['Apenas halteres + banco', '4 treinos full upper/lower', 'Trabalha o corpo todo'],
+    workouts: [
+      { name: 'Upper A — Empurrar', exercises: ['Supino Reto com Halteres', 'Supino Inclinado com Halteres', 'Desenvolvimento com Halteres', 'Elevação Lateral', 'Tríceps Francês'] },
+      { name: 'Lower A — Pernas', exercises: ['Agachamento Goblet', 'Afundo (Lunge)', 'Stiff', 'Agachamento Búlgaro', 'Panturrilha Unilateral'] },
+      { name: 'Upper B — Puxar', exercises: ['Remada Unilateral com Halter', 'Pullover com Halter', 'Crucifixo Inverso', 'Rosca Alternada com Halteres', 'Rosca Martelo'] },
+      { name: 'Lower B — Glúteos + Core', exercises: ['Hip Thrust com Halter', 'Step Up', 'Glute Bridge', 'Russian Twist', 'Prancha'] },
+    ],
+  },
+  {
+    id: 'feminino-gluteos',
+    name: 'Treino Feminino — Glúteos & Pernas',
+    weeks: 8,
+    goal: 'Hipertrofia',
+    level: 'Intermediário',
+    daysPerWeek: 4,
+    description: 'Foco em glúteos, posterior e quadríceps. Inclui hip thrust pesado, abduções e exercícios unilaterais para simetria.',
+    highlights: ['Foco glúteos + pernas', 'Inclui upper de manutenção', 'Trabalho unilateral'],
+    workouts: [
+      { name: 'Glúteos pesado', exercises: ['Hip Thrust', 'Agachamento Sumô', 'Coice no Cabo', 'Abdução na Máquina', 'Glute Bridge'] },
+      { name: 'Quadríceps + posterior', exercises: ['Agachamento Livre', 'Leg Press 45°', 'Cadeira Extensora', 'Cadeira Flexora', 'Stiff'] },
+      { name: 'Glúteos volume', exercises: ['Hip Thrust com Halter', 'Agachamento Búlgaro', 'Elevação Pélvica', 'Abdução com Elástico', 'Adução na Máquina'] },
+      { name: 'Upper + Core', exercises: ['Puxada Frontal', 'Desenvolvimento com Halteres', 'Elevação Lateral', 'Rosca Alternada com Halteres', 'Prancha', 'Russian Twist'] },
+    ],
+  },
+  {
+    id: 'express-30min',
+    name: 'Treino Express 30 min',
+    weeks: 4,
+    goal: 'Resistência',
+    level: 'Iniciante',
+    daysPerWeek: 4,
+    description: 'Treinos rápidos de até 30 minutos com 4–5 exercícios bem escolhidos. Ideal para rotinas corridas e dias sem tempo.',
+    highlights: ['Até 30 min por treino', '4–5 exercícios chave', 'Mantém o ritmo na rotina'],
+    workouts: [
+      { name: 'Express Empurrar', exercises: ['Supino Reto com Halteres', 'Desenvolvimento com Halteres', 'Tríceps Corda', 'Flexão de Braço'] },
+      { name: 'Express Puxar', exercises: ['Puxada Frontal', 'Remada Baixa (Sentado)', 'Rosca Alternada com Halteres', 'Face Pull'] },
+      { name: 'Express Pernas', exercises: ['Agachamento Livre', 'Leg Press', 'Stiff', 'Panturrilha em Pé'] },
+      { name: 'Express Full Body', exercises: ['Agachamento Goblet', 'Flexão de Braço', 'Remada Unilateral com Halter', 'Prancha', 'Burpee'] },
+    ],
   },
 ];
 
@@ -70,6 +287,7 @@ const LEVEL_COLOR: Record<string, string> = {
   'Iniciante': 'text-green-400 bg-green-500/10 border-green-500/20',
   'Intermediário': 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
   'Avançado': 'text-red-400 bg-red-500/10 border-red-500/20',
+  'Personalizado': 'text-primary bg-primary/10 border-primary/20',
 };
 
 function usePrograms() {
@@ -100,13 +318,35 @@ function usePrograms() {
   return { programs, addProgram, removeProgram, activateProgram };
 }
 
+function buildTemplatesFromPreset(preset: PresetProgram): WorkoutTemplate[] {
+  const all = getAllExercises();
+  const now = Date.now();
+  return preset.workouts.map((w, idx) => {
+    const exercises: WorkoutExercise[] = w.exercises
+      .map(name => all.find(e => e.name === name))
+      .filter((e): e is NonNullable<typeof e> => !!e)
+      .map(e => ({
+        exerciseId: e.id,
+        restTime: 90,
+        sets: Array.from({ length: 3 }, () => ({ targetReps: 10, weight: 0 })),
+      }));
+    return {
+      id: `tmpl-${now}-${idx}`,
+      name: `${preset.name} • ${w.name}`,
+      exercises,
+      createdAt: new Date().toISOString(),
+      folder: preset.name,
+    };
+  });
+}
+
 export default function Programs() {
   const navigate = useNavigate();
-  const [templates] = useTemplates();
+  const [templates, setTemplates] = useTemplates();
   const [, setActiveWorkout] = useActiveWorkout();
   const { programs, addProgram, removeProgram, activateProgram } = usePrograms();
   const [showCreate, setShowCreate] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<typeof presetPrograms[0] | null>(null);
+  const [selectedPreset, setSelectedPreset] = useState<PresetProgram | null>(null);
   const [newProgram, setNewProgram] = useState({
     name: '',
     weeks: 4,
@@ -139,7 +379,15 @@ export default function Programs() {
     toast.success('Programa criado!');
   };
 
-  const handleActivatePreset = (preset: typeof presetPrograms[0]) => {
+  const handleActivatePreset = (preset: PresetProgram, copyRoutines: boolean) => {
+    let schedule: { day: number; templateId: string }[] = [];
+
+    if (copyRoutines) {
+      const newTemplates = buildTemplatesFromPreset(preset);
+      setTemplates(prev => [...prev, ...newTemplates]);
+      schedule = newTemplates.map((t, i) => ({ day: i + 1, templateId: t.id }));
+    }
+
     addProgram({
       name: preset.name,
       weeks: preset.weeks,
@@ -147,14 +395,18 @@ export default function Programs() {
       level: preset.level,
       daysPerWeek: preset.daysPerWeek,
       description: preset.description,
-      schedule: [],
+      schedule,
       currentWeek: 1,
       status: 'active',
       startedAt: new Date().toISOString(),
     });
     setSelectedPreset(null);
     haptic('success');
-    toast.success(`"${preset.name}" ativado!`);
+    if (copyRoutines) {
+      toast.success(`"${preset.name}" ativado e ${preset.workouts.length} rotinas adicionadas!`);
+    } else {
+      toast.success(`"${preset.name}" ativado!`);
+    }
   };
 
   const startTemplateWorkout = (template: WorkoutTemplate) => {
@@ -188,7 +440,7 @@ export default function Programs() {
           </button>
           <div className="flex-1">
             <h1 className="text-3xl font-black tracking-tight">Programas de Treino</h1>
-            <p className="text-sm text-muted-foreground font-body mt-0.5">Planos estruturados para resultados</p>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">Planos prontos para resultados</p>
           </div>
           <button onClick={() => setShowCreate(true)} className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center text-primary active:scale-95 transition-transform hover:bg-primary/25">
             <Plus size={22} />
@@ -266,24 +518,6 @@ export default function Programs() {
           </motion.div>
         )}
 
-        {/* AI Generator */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.02 }}
-          onClick={() => navigate('/ai-coach')}
-          className="w-full card-premium animate-pulse-glow rounded-2xl p-5 flex items-center gap-4 active:scale-[0.98] transition-transform group"
-        >
-          <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
-            <Bot size={24} className="text-primary" />
-          </div>
-          <div className="text-left flex-1">
-            <p className="font-black text-lg">Gerar Programa com IA</p>
-            <p className="text-sm text-muted-foreground font-body mt-0.5">FitAI cria um programa personalizado para você</p>
-          </div>
-          <ChevronRight size={20} className="text-primary group-hover:translate-x-1 transition-transform" />
-        </motion.button>
-
         {/* User programs */}
         {programs.filter(p => p.status !== 'active').length > 0 && (
           <div className="space-y-3">
@@ -330,23 +564,23 @@ export default function Programs() {
         <div className="space-y-3">
           <div>
             <h2 className="text-xl font-bold tracking-tight">Programas Populares</h2>
-            <p className="text-sm text-muted-foreground font-body mt-0.5">Toque para ver detalhes e ativar</p>
+            <p className="text-sm text-muted-foreground font-body mt-0.5">Toque para ver detalhes, exercícios e ativar</p>
           </div>
 
           <div className="-mx-5 sm:-mx-6 px-5 sm:px-6">
             <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none" style={{ scrollSnapType: 'x mandatory' }}>
-              {presetPrograms.map((prog, i) => (
+              {PRESET_PROGRAMS.map(prog => (
                 <div
-                  key={i}
+                  key={prog.id}
                   className="hero-section shrink-0 rounded-2xl overflow-hidden card-interactive"
-                  style={{ width: '280px', height: '160px', scrollSnapAlign: 'start' }}
+                  style={{ width: '280px', height: '170px', scrollSnapAlign: 'start' }}
                   onClick={() => setSelectedPreset(prog)}
                   role="button"
                 >
                   <img src="/images/hero-programs.png" alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ filter: 'brightness(0.45)' }} />
                   <div className="hero-img-overlay" />
                   <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       <span className="text-[10px] font-bold tracking-wider uppercase bg-primary/20 text-primary border border-primary/30 px-2 py-0.5 rounded-full backdrop-blur-sm">{prog.goal}</span>
                       <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full backdrop-blur-sm border ${
                         prog.level === 'Iniciante' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
@@ -355,11 +589,11 @@ export default function Programs() {
                       }`}>{prog.level}</span>
                     </div>
                     <div>
-                      <p className="text-white font-black text-lg leading-tight mb-1.5">{prog.name}</p>
-                      <div className="flex items-center gap-3 text-white/70 font-body text-xs font-medium">
+                      <p className="text-white font-black text-lg leading-tight mb-1.5 line-clamp-2">{prog.name}</p>
+                      <div className="flex items-center gap-3 text-white/70 font-body text-xs font-medium flex-wrap">
                         <span className="flex items-center gap-1"><Clock size={12} /> {prog.weeks} sem</span>
-                        <span className="flex items-center gap-1"><Target size={12} /> {prog.daysPerWeek}x/sem</span>
-                        <span className="text-white/50">Toque para detalhes →</span>
+                        <span className="flex items-center gap-1"><Calendar size={12} /> {prog.daysPerWeek}x/sem</span>
+                        <span className="flex items-center gap-1"><ListChecks size={12} /> {prog.workouts.length} treinos</span>
                       </div>
                     </div>
                   </div>
@@ -429,30 +663,57 @@ export default function Programs() {
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">Dias/sem</p>
                   </div>
                   <div className="bg-secondary/80 rounded-xl p-3 text-center border border-border/30">
-                    <p className="text-xl font-black text-primary">{selectedPreset.weeks * selectedPreset.daysPerWeek}</p>
+                    <p className="text-xl font-black text-primary">{selectedPreset.workouts.length}</p>
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-1">Treinos</p>
                   </div>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-1">
-                  <p className="text-sm font-bold text-primary">Como funciona</p>
-                  <p className="text-xs text-muted-foreground font-body leading-relaxed">
-                    O programa será adicionado à sua lista e marcado como ativo. Você pode vincular suas rotinas existentes ou gerar rotinas específicas com a IA.
-                  </p>
+                {/* Highlights */}
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-2">
+                  <p className="text-sm font-bold text-primary">Destaques</p>
+                  <ul className="space-y-1">
+                    {selectedPreset.highlights.map((h, i) => (
+                      <li key={i} className="text-xs text-muted-foreground font-body flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Workouts breakdown */}
+                <div className="space-y-3">
+                  <p className="text-sm font-bold">Treinos sugeridos</p>
+                  {selectedPreset.workouts.map((w, i) => (
+                    <div key={i} className="bg-secondary/40 rounded-xl p-4 space-y-2 border border-border/30">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-primary/15 text-primary text-[11px] font-black flex items-center justify-center shrink-0">{i + 1}</span>
+                        <p className="text-sm font-bold leading-tight">{w.name}</p>
+                      </div>
+                      <ul className="space-y-1 pl-8">
+                        {w.exercises.map((ex, j) => (
+                          <li key={j} className="text-xs text-muted-foreground font-body flex items-start gap-1.5">
+                            <span className="text-primary/60">→</span>
+                            <span>{ex}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="space-y-3 pt-1">
                   <button
-                    onClick={() => handleActivatePreset(selectedPreset)}
+                    onClick={() => handleActivatePreset(selectedPreset, true)}
                     className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-base shadow-glow"
                   >
-                    <CheckCircle size={20} /> Ativar Este Programa
+                    <Copy size={18} /> Copiar para minhas rotinas e ativar
                   </button>
                   <button
-                    onClick={() => { setSelectedPreset(null); navigate('/ai-coach'); }}
-                    className="w-full bg-secondary rounded-xl py-3 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm text-muted-foreground"
+                    onClick={() => handleActivatePreset(selectedPreset, false)}
+                    className="w-full bg-secondary rounded-xl py-3 font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-sm"
                   >
-                    <Bot size={18} className="text-primary" /> Gerar Rotinas com IA
+                    <CheckCircle size={18} className="text-primary" /> Apenas ativar (sem copiar rotinas)
                   </button>
                 </div>
               </div>

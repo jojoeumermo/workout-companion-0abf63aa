@@ -1,0 +1,124 @@
+FASE FINAL — CORREÇÃO DE INCONSISTÊNCIAS + VARREDURA COMPLETA
+
+Quero uma revisão completa do app, com foco em remover inconsistências, bugs e dependências antigas de IA.
+
+1. PROGRAMAS DE TREINO SEM IA
+
+Problema:
+Na tela inicial / área de “Meus Programas”, ainda existem fluxos vinculados à IA.
+
+Quero remover completamente qualquer dependência de IA nessa área.
+
+Substituir por programas livres e prontos, independentes de IA:
+
+- PPL
+- Arnold Split
+- Heavy Duty
+- Full Body
+- ABC
+- Upper/Lower
+- Push Pull Legs 6x
+- Hipertrofia iniciante
+- Hipertrofia intermediário
+- Força básico
+- Cutting
+- Bulking
+- Treino em casa
+- Treino com halteres
+- Treino feminino foco glúteos/pernas
+- Treino express 30min
+
+Cada programa deve ter:
+- nome
+- descrição curta
+- objetivo
+- nível
+- dias por semana
+- lista de treinos
+- exercícios sugeridos
+- opção de usar/copiar para minhas rotinas
+
+Não citar IA em nenhum lugar.
+
+2. MICRONUTRIENTES COMPLETOS
+
+A aba de Macros recebeu micros, mas está incompleta.
+
+Adicionar mais micronutrientes:
+
+- fibra
+- açúcar
+- sódio
+- potássio
+- cálcio
+- ferro
+- magnésio
+- zinco
+- vitamina A
+- vitamina B12
+- vitamina C
+- vitamina D
+- vitamina E
+- vitamina K
+- ômega 3
+
+3. EDIÇÃO DE METAS DE MICROS
+
+Criar forma clara de editar metas de micronutrientes.
+
+Requisitos:
+- botão “Editar metas”
+- modal ou tela simples
+- campos por micronutriente
+- salvar no localStorage
+- valores padrão se o usuário não editar
+
+4. ADICIONAR MICROS MANUALMENTE
+
+Criar opção para adicionar micronutrientes manualmente.
+
+Exemplo:
+“tomei suplemento de vitamina D”
+
+O usuário deve conseguir:
+- escolher micronutriente
+- informar quantidade
+- escolher unidade
+- salvar no dia atual
+
+Esses micros manuais devem somar ao total diário.
+
+5. VARREDURA COMPLETA DO APP
+
+Auditar o app inteiro:
+
+- bugs visuais
+- bugs funcionais
+- layout mobile
+- textos cortados
+- elementos sobrepostos
+- imports mortos
+- código morto
+- referências antigas à IA
+- inconsistências de navegação
+- erros de console
+- warnings
+- performance
+- localStorage
+- responsividade
+- swipe
+- long press
+- formulários
+- estados vazios
+
+Corrigir tudo que for seguro.
+
+6. RELATÓRIO FINAL
+
+Entregar:
+- o que foi corrigido
+- o que foi removido
+- o que foi adicionado
+- inconsistências encontradas
+- riscos restantes
+- se está pronto para beta

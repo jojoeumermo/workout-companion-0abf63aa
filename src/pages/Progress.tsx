@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity, Scale, AlertTriangle, Zap, Bot } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar, Target, Plus, Trash2, Flame, Award, Settings, Clock, Activity, Scale, AlertTriangle, Zap } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip, ReferenceLine } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import PageShell from '@/components/PageShell';
@@ -338,17 +338,17 @@ export default function Progress() {
           </motion.div>
         )}
 
-        {/* AI Insights Panel */}
+        {/* Insights Panel (análise local sobre seu histórico) */}
         {history.length >= 3 && (overttrainingAlert.risk !== 'low' || stagnationAlerts.length > 0 || progressPredictions.length > 0) && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.025 }} className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Bot size={20} className="text-primary" />
+                  <TrendingUp size={20} className="text-primary" />
                 </div>
-                <h3 className="font-black text-xl tracking-tight">Insights de IA</h3>
+                <h3 className="font-black text-xl tracking-tight">Insights do Treino</h3>
               </div>
-              <button onClick={() => navigate('/ai-coach')} className="text-sm text-primary font-bold">Ver FitAI →</button>
+              <span className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase bg-secondary px-2.5 py-1 rounded-md">análise local</span>
             </div>
 
             {/* Overtraining Alert */}

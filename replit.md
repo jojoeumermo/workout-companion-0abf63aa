@@ -1,13 +1,13 @@
 # FitApp Coach
 
-A mobile-first fitness and nutrition tracking app, built with React + Vite + Express. AI functionality has been fully removed.
+A mobile-first fitness and nutrition tracking app, built with React + Vite + Express. AI functionality has been fully removed; all analysis now runs locally on the user's data.
 
 ## Architecture
 
 - **Frontend**: React 18 + TypeScript + Vite, styled with Tailwind CSS and shadcn/ui
 - **Backend**: Express server (`server/index.ts`) running on port 5000 — serves `/api/health` only; no AI routes
 - **Dev proxy**: Vite proxies `/api` requests to the Express server in development
-- **Data storage**: localStorage (client-side) for all user data (workouts, meals, goals, body weight, water, measurements, custom exercises, programs, user profile)
+- **Data storage**: localStorage (client-side) for all user data (workouts, meals, goals, body weight, water, measurements, custom exercises, programs, micronutrient goals, user profile)
 - **Android**: Capacitor (`com.fitai.coach`), build guide in `BUILD_ANDROID.md`
 
 ## Visual Design
@@ -22,21 +22,21 @@ A mobile-first fitness and nutrition tracking app, built with React + Vite + Exp
 ## Key Features
 
 - Workout tracking with templates (duplicate/edit/delete), folders, history, personal records, and real-time volume tracking
-- Brazilian food database (`src/data/foodDatabase.ts`) with **223 foods** across 13 categories (Carnes e Aves, Peixes, Laticínios, Leguminosas, Cereais, Pães, Frutas, Verduras, Oleaginosas, Suplementos, Bebidas, Lanches e Fast Food, Outros): macros per 100g, optional micronutrients (sodium, calcium, iron, vitaminC), common portions, search/filter by category
-- NutritionCamera rewritten as manual food entry: search 223-item database → select → adjust grams (with common portion presets) → add to meal; manual custom entry form; edit/remove items; save as typed meal
+- Brazilian food database (`src/data/foodDatabase.ts`) with 223 foods across 13 categories: macros per 100g, optional micronutrients (15 micros supported), common portions, search/filter by category
+- Manual food entry: search 223-item database → select → adjust grams (with common portion presets) → add to meal; manual custom entry form; edit/remove items; save as typed meal
 - Nutrition tracking: calorie circle (SVG stroke-dasharray), meals grouped by type (Café/Almoço/Jantar/Lanche/Outro) with per-type add button, macros bars, water tracking, intermittent fasting timer with live elapsed time and history
+- **Full micronutrient tracking (15 micros)** in the Macros tab: fibras, açúcar, sódio, potássio, cálcio, ferro, magnésio, zinco, vitaminas A/B12/C/D/E/K, ômega 3 — with custom goals per micro and "limit" badges for sódio/açúcar
+- **Editable micro goals dialog** (saves to localStorage `micro-goals`) and **manual micro entry** (registers a `MealEntry` flagged with `isMicroSupplement: true` whose totals sum into the daily micros — useful for supplements like vitamina D, ômega 3, etc.)
 - Intermittent fasting: `useFasting` hook in useStorage, start/stop/history, persists in localStorage (`fasting-data`)
 - Body weight tracking with chart, quick-adjust buttons, and history
 - Body composition: BMI, body fat % (US Navy method), BMR (Mifflin-St Jeor), TDEE, lean/fat mass
-- Custom exercises: create/delete with CUSTOM badge, image upload (base64, up to 2MB stored in localStorage), merged with built-in 175+ exercises; muscle-group color coding throughout (red=Peito, blue=Costas, purple=Ombros, green=Bíceps, etc.)
-- Training programs: create/activate/start with template linking, preset program library with hero image cards and detail dialogs
-- Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, stagnation alerts, overtraining risk indicators (local math — no AI)
-- Gamification system (`src/lib/gamification.ts`): XP per workout (base + volume + muscle diversity + duration + streak bonus), 10 levels (Iniciante → Mestre), 15 achievements, streak tracking (current + best)
+- Custom exercises: create/delete with CUSTOM badge, image upload (base64, up to 2MB stored in localStorage), merged with built-in 175+ exercises; muscle-group color coding throughout
+- **Training programs library — 16 preset programs** (PPL, Arnold Split, Heavy Duty, Full Body, ABC, Upper/Lower, PPL 6x, Hipertrofia Iniciante/Intermediário, Força Básico, Cutting, Bulking, Treino em Casa, Treino com Halteres, Treino Feminino Glúteos & Pernas, Treino Express 30min) — each with name, description, level, duration, days/week, and a list of suggested workouts with named exercises. The detail dialog supports **"Copiar para minhas rotinas e ativar"**, which materialises every preset workout into a `WorkoutTemplate` with looked-up exercises (3×10 default) and links them to the program schedule.
+- Progress tracking with rich charts: volume, frequency, consistency heatmap, PRs, stagnation alerts, overtraining risk indicators (local math — labelled "análise local")
+- Gamification system (`src/lib/gamification.ts`): XP per workout, 10 levels, 15 achievements, streak tracking
 - Dashboard gamification card: Level badge, animated XP progress bar, streak display, weekly muscle volume distribution bars, stagnation/overtraining alerts surfaced directly
-- Post-workout summary redesign: gradient hero banner with "+N XP ganhos", per-exercise comparison vs last session (↑↓→ with volume diff), PRs highlighted
-- Exercise Evolution Chart in ExerciseDetail: recharts LineChart showing max weight per session over time, with trend indicator (+X kg ↑ / Estável)
-- Achievements grid in Progress page: 15 unlockable achievements with earn/locked state, level/XP progress bar, current streak + best streak display
-- Settings: 9 color themes, user profile (height/age/sex/activity/body measurements), body measurements, complete backup/export (JSON + CSV for workouts & nutrition)
+- Post-workout summary: gradient hero banner with XP gained, per-exercise comparison vs last session, PRs highlighted
+- Settings: 9 color themes, user profile (height/age/sex/activity/body measurements), body measurements, complete backup/export (JSON + CSV)
 - iOS safe-area support for Capacitor apps
 - Haptic feedback via Vibration API (mobile/Android)
 - Offline-first with localStorage; no internet needed for core features
@@ -53,14 +53,12 @@ A mobile-first fitness and nutrition tracking app, built with React + Vite + Exp
 
 ## Environment Variables / Secrets
 
-- `GEMINI_API_KEY` — Google Gemini API key (required for AI coach, meal analysis, and workout analysis)
-- `DATABASE_URL` — Replit PostgreSQL connection string (auto-configured)
+- `DATABASE_URL` — Replit PostgreSQL connection string (auto-configured; not actively used — all data lives in localStorage)
 
 ## Notes on Migration
 
-- Supabase has been removed; the app was not using any Supabase database tables
+- All AI references and the `/ai-coach` route have been removed from the UI; the app no longer depends on Gemini or OpenAI
 - All user data is stored in localStorage (offline-first)
-- AI features use Google Gemini directly via the Express server on port 5000
 
 ## localStorage Keys
 
@@ -72,11 +70,13 @@ A mobile-first fitness and nutrition tracking app, built with React + Vite + Exp
 | `workout-goals` | Goal[] | Active goals |
 | `favorite-exercises` | string[] | Favorited exercise IDs |
 | `active-workout` | ActiveWorkout | Current in-progress workout |
-| `meal-history` | Meal[] | Logged meals |
-| `nutrition-goals` | NutritionGoals | Calorie/macro targets |
+| `meal-history` | MealEntry[] | Logged meals (incl. micro-only supplement entries) |
+| `nutrition-goals` | DailyNutritionGoal | Calorie/macro targets |
+| `micro-goals` | MicroGoals | Per-micronutrient daily targets (15 micros) |
 | `body-weight` | WeightEntry[] | Weight log entries |
 | `water-log` | Record<string, number> | Daily water intake (ml) |
 | `water-goal` | number | Daily water target (default 2500ml) |
+| `fasting-data` | { active, history } | Intermittent fasting state and history |
 | `body-measurements` | Record<string, string> | Body measurements (cm) |
 | `workout-folders` | Folder[] | Workout routine folders |
 | `app-theme` | string | Color theme ID |
@@ -86,19 +86,30 @@ A mobile-first fitness and nutrition tracking app, built with React + Vite + Exp
 
 ## Storage Hooks (src/hooks/useStorage.ts)
 
-- `useMeals()` → `{ meals, addMeal, removeMeal, updateMeal }`
-- `useNutritionGoals()` → `{ goals, updateGoals }`
+- `useMeals()` → `{ meals, addMeal, updateMeal, deleteMeal, getMealsForDate }`
+- `useNutritionGoals()` → `[goals, setGoals]`
+- `useMicroGoals()` → `[microGoals, setMicroGoals]` — backfills new micros from `DEFAULT_MICRO_GOALS`
 - `useBodyWeight()` → `{ entries, addWeight, removeWeight, latest }`
 - `useWaterLog()` → `{ water, getTodayWater, addWater, setDayWater, getWaterForDate }`
 - `useWaterGoal()` → `[goal, setGoal]` (default 2500ml)
-- `useUserProfile()` → `[profile, setProfile]` (UserProfile interface)
+- `useFasting()` → `{ data, start, stop, deleteFasting }`
+- `useUserProfile()` → `[profile, setProfile]`
 - `useCustomExercises()` → `{ exercises, addExercise, removeExercise }`
 - `useFolders()` → folder management for workout routines
 - `useTheme()` → color theme management (9 preset themes)
+- `useTemplates()` → `[templates, setTemplates]` — used by Programs to materialise preset workouts into routines
+
+## Micronutrient Model (`src/types/nutrition.ts`)
+
+- `MicroGoals` interface holds 15 keys: `fiber`, `sugar`, `sodium`, `potassium`, `calcium`, `iron`, `magnesium`, `zinc`, `vitaminA`, `vitaminB12`, `vitaminC`, `vitaminD`, `vitaminE`, `vitaminK`, `omega3`
+- `DEFAULT_MICRO_GOALS` ships sensible adult RDIs
+- `MICRO_LIMITS = new Set(['sodium', 'sugar'])` — these render with a "limite" badge and turn the bar red when exceeded
+- `MICRO_DEFS[]` drives the UI (label, unit, colour) so adding a new micro = one entry
+- `MealEntry.isMicroSupplement?: boolean` flags entries created by the manual-micro dialog (kcal/macros = 0; only the chosen micro is non-zero)
 
 ## Key Data Functions (src/data/exercises.ts)
 
-- `exercises` — Built-in 175 exercise list
+- `exercises` — Built-in exercise list (~175)
 - `getAllExercises()` — Built-in + custom exercises merged
 - `getExerciseById(id)` — Finds in all exercises (built-in + custom)
 - `getCustomExercises()` — Reads custom exercises from localStorage
@@ -123,27 +134,29 @@ A mobile-first fitness and nutrition tracking app, built with React + Vite + Exp
 ## Project Structure
 
 ```
-server/index.ts              — Express backend (AI routes via OpenAI)
-server/replit_integrations/  — Replit AI integration scaffolding
+server/index.ts              — Express backend (health-check only)
 src/
-  App.tsx                    — Routes with React.lazy + Suspense
+  App.tsx                    — Routes with React.lazy + Suspense (no /ai-coach route)
   pages/
-    Dashboard.tsx            — Home with stats strip (calories, water, weight)
-    Nutrition.tsx            — Nutrition page with water tracking, calorie balance, macro toggle
-    NutritionCamera.tsx      — Camera/gallery meal analysis with AI
-    AICoach.tsx              — AI fitness coach chat with quick actions
-    WeightLog.tsx            — Body weight + body composition (BMI, BF%, BMR, TDEE)
-    Progress.tsx             — Progress tracking with charts
-    Settings.tsx             — Settings: 9 themes, user profile, measurements, backup (v3)
-    Workouts.tsx             — Workout routines management (uses getAllExercises)
+    Dashboard.tsx            — Home with stats strip, gamification, alerts
+    Nutrition.tsx            — Resumo / Refeições / Macros / Jejum tabs (15 micros + edit goals + manual micro entry)
+    NutritionCamera.tsx      — Manual food entry (search, portions, custom items)
+    WeightLog.tsx            — Body weight + body composition
+    Progress.tsx             — Progress tracking with charts (local insights, no AI)
+    Settings.tsx             — Settings: 9 themes, user profile, measurements, backup
+    Workouts.tsx             — Workout routines management
     Exercises.tsx            — Exercise library + custom exercise creation
-    Programs.tsx             — Training programs (create/activate/preset library)
-    ActiveWorkoutPage.tsx    — Live workout tracking (uses getAllExercises)
+    Programs.tsx             — Training programs (16 presets, copy-to-routines)
+    ActiveWorkoutPage.tsx    — Live workout tracking
   hooks/
     useStorage.ts            — All localStorage data hooks
     useNetwork.ts            — Online/offline detection
   data/
-    exercises.ts             — 175 built-in exercises + custom exercise functions
+    exercises.ts             — Built-in exercises + custom exercise functions
+    foodDatabase.ts          — 223 BR foods, 13 categories, 15-micro support
+  types/
+    nutrition.ts             — MicroGoals, MICRO_DEFS, MICRO_LIMITS, MealEntry
+    workout.ts               — WorkoutTemplate, ActiveWorkout, Exercise
   lib/
     haptic.ts                — Vibration API haptic feedback
     api.ts                   — apiFetch with VITE_API_BASE_URL support
@@ -167,3 +180,4 @@ BUILD_ANDROID.md             — Android APK build guide
 - Custom exercise IDs start with `custom-` prefix
 - Backup version is 3 (includes userProfile, customExercises, waterGoal)
 - Training programs stored locally with `usePrograms()` hook in Programs.tsx
+- "Copiar para minhas rotinas" in Programs uses exercise NAME lookup against `getAllExercises()` and pushes new templates with `tmpl-<ts>-<idx>` IDs into `workout-templates`
