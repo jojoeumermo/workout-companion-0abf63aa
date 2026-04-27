@@ -236,7 +236,7 @@ export default function Dashboard() {
         {/* Today strip */}
         <motion.div custom={3} variants={stagger} initial="hidden" animate="show" className="grid grid-cols-3 gap-2.5">
           {[
-            { icon: UtensilsCrossed, value: Math.round(todayCalories).toString(), sub: 'kcal hoje', color: 'text-orange-400', bg: 'bg-orange-500/10', route: '/nutricao' },
+            { icon: UtensilsCrossed, value: Math.round(todayCalories).toString(), sub: 'kcal hoje', color: 'text-macro-calories', bg: 'bg-macro-calories/10', route: '/nutricao' },
             { icon: Droplets, value: `${((getTodayWater()) / 1000).toFixed(1).replace('.', ',')}L`, sub: 'água hoje', color: 'text-blue-400', bg: 'bg-blue-500/10', route: '/nutricao' },
             { icon: Scale, value: latestWeight ? `${latestWeight.weight}` : '--', sub: latestWeight ? 'kg peso' : 'registrar', color: 'text-primary', bg: 'bg-primary/10', route: '/peso' },
           ].map(({ icon: Icon, value, sub, color, bg, route }) => (
