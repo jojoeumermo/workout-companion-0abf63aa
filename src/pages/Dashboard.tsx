@@ -135,13 +135,6 @@ export default function Dashboard() {
                   Olá, {userProfile?.name || 'Atleta'}
                 </h1>
               </div>
-              {/* Streak badge on hero */}
-              {gam.currentStreak > 0 && (
-                <div className="flex flex-col items-center bg-black/50 backdrop-blur-sm border border-white/15 rounded-2xl px-3 py-2">
-                  <span className="text-2xl font-black text-orange-400 leading-none">{gam.currentStreak}</span>
-                  <span className="text-[10px] font-bold text-white/60 mt-0.5">🔥 streak</span>
-                </div>
-              )}
             </div>
           </div>
         </motion.div>
@@ -164,16 +157,27 @@ export default function Dashboard() {
                   <span className="text-[10px] text-muted-foreground font-body">{gam.totalXP.toLocaleString()} XP no total</span>
                 </div>
               </div>
-              <div className="text-right">
-                {gam.nextLevel ? (
-                  <>
-                    <p className="text-xs font-bold text-primary">{gam.xpInCurrentLevel}<span className="text-muted-foreground font-body">/{gam.xpToNextLevel} XP</span></p>
-                    <p className="text-[10px] text-muted-foreground font-body">até {gam.nextLevel.name}</p>
-                  </>
-                ) : (
-                  <p className="text-xs font-bold text-primary">Nível máximo 🏆</p>
-                )}
-              </div>
+              {/* Streak inline — premium pill */}
+              {gam.currentStreak > 0 ? (
+                <div className="flex items-center gap-2 pl-3 pr-3.5 py-1.5 rounded-xl border border-orange-500/25 bg-gradient-to-br from-orange-500/15 via-orange-500/8 to-transparent">
+                  <Flame size={15} className="text-orange-400 animate-flame-pulse" fill="currentColor" />
+                  <div className="flex items-baseline gap-1 leading-none">
+                    <span className="text-base font-black text-orange-400 tabular-nums">{gam.currentStreak}</span>
+                    <span className="text-[10px] font-bold text-orange-300/70 uppercase tracking-wider">dias</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-right">
+                  {gam.nextLevel ? (
+                    <>
+                      <p className="text-xs font-bold text-primary">{gam.xpInCurrentLevel}<span className="text-muted-foreground font-body">/{gam.xpToNextLevel} XP</span></p>
+                      <p className="text-[10px] text-muted-foreground font-body">até {gam.nextLevel.name}</p>
+                    </>
+                  ) : (
+                    <p className="text-xs font-bold text-primary">Nível máximo 🏆</p>
+                  )}
+                </div>
+              )}
             </div>
             <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
               <motion.div
@@ -184,10 +188,21 @@ export default function Dashboard() {
                 style={{ background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))' }}
               />
             </div>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
-              <span className="flex items-center gap-1"><Flame size={12} className="text-orange-400" /> {gam.currentStreak} dias seguidos</span>
-              <span className="flex items-center gap-1"><Trophy size={12} className="text-primary" /> {records.length} recordes pessoais</span>
-              <span className="flex items-center gap-1"><Dumbbell size={12} /> {history.length} treinos</span>
+            <div className="flex items-center justify-between text-xs font-body">
+              {gam.currentStreak > 0 && gam.nextLevel ? (
+                <span className="text-muted-foreground">
+                  <span className="text-primary font-bold tabular-nums">{gam.xpInCurrentLevel}</span>
+                  <span className="text-muted-foreground/70"> / {gam.xpToNextLevel} XP</span>
+                  <span className="text-muted-foreground/50"> · até {gam.nextLevel.name}</span>
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Continue treinando para subir de nível</span>
+              )}
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <Trophy size={11} className="text-primary" />
+                <span className="font-bold text-foreground/80 tabular-nums">{records.length}</span>
+                <span className="text-muted-foreground/60">PRs</span>
+              </span>
             </div>
           </motion.div>
         )}
