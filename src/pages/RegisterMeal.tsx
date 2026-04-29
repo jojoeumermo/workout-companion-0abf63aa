@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { haptic } from '@/lib/haptic';
 import { useMeals } from '@/hooks/useStorage';
+import { localDateKey } from '@/lib/dateUtils';
 import { useToast } from '@/hooks/use-toast';
 import { NutritionItem, MealEntry } from '@/types/nutrition';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -115,7 +116,7 @@ export default function RegisterMeal() {
     }
     const now = new Date();
     addMeal({
-      date: now.toISOString().split('T')[0],
+      date: localDateKey(now),
       time: now.toTimeString().slice(0, 5),
       type: mealType,
       items,

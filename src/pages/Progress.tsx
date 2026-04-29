@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tool
 import { useNavigate } from 'react-router-dom';
 import PageShell from '@/components/PageShell';
 import { useHistory, useGoals, usePersonalRecords, useBodyWeight } from '@/hooks/useStorage';
+import { localDateKey } from '@/lib/dateUtils';
 import { getExerciseById } from '@/data/exercises';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { detectStagnation, detectOvertraining, predictProgress } from '@/lib/workoutAnalysis';
@@ -62,8 +63,8 @@ export default function Progress() {
       const week: { date: Date; count: number }[] = [];
       for (let d = 0; d < 7; d++) {
         const date = new Date(today.getTime() - (w * 7 + (6 - d)) * 24 * 60 * 60 * 1000);
-        const dateStr = date.toISOString().split('T')[0];
-        const count = history.filter(h => h.completedAt.startsWith(dateStr)).length;
+        const dateStr = localDateKey(date);
+        const count = history.filter(h => localDateKey(new Date(h.completedAt)) === dateStr).length;
         week.push({ date, count });
       }
       weeks.push(week);
@@ -77,20 +78,20 @@ export default function Progress() {
     
     const trainedDays = new Set<string>();
     history.forEach(w => {
-      trainedDays.add(new Date(w.completedAt).toISOString().split('T')[0]);
+      trainedDays.add(localDateKey(new Date(w.completedAt)));
     });
     
     const sortedDays = Array.from(trainedDays).sort().reverse();
     let current = 0;
     let best = 0;
     
-    // Check current streak from today
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    // Check current streak from today (local time)
+    const today = localDateKey();
+    const yesterday = localDateKey(new Date(Date.now() - 86400000));
     
     if (trainedDays.has(today) || trainedDays.has(yesterday)) {
       let checkDate = trainedDays.has(today) ? new Date() : new Date(Date.now() - 86400000);
-      while (trainedDays.has(checkDate.toISOString().split('T')[0])) {
+      while (trainedDays.has(localDateKey(checkDate))) {
         current++;
         checkDate = new Date(checkDate.getTime() - 86400000);
       }
@@ -185,7 +186,7 @@ export default function Progress() {
   const weightChartData = useMemo(() => {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 60);
-    const cutoffStr = cutoff.toISOString().split('T')[0];
+    const cutoffStr = localDateKey(cutoff);
     return weightEntries
       .filter(e => e.date >= cutoffStr)
       .map(e => ({

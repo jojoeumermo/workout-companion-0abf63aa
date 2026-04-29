@@ -5,6 +5,7 @@ import SwipeableRow from '@/components/SwipeableRow';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useMeals, useNutritionGoals, useWaterLog, useWaterGoal, useFasting, useMicroGoals } from '@/hooks/useStorage';
+import { localDateKey, parseLocalDate, addDaysKey } from '@/lib/dateUtils';
 import { MICRO_LIMITS, MicroGoals, MICRO_DEFS, DEFAULT_MICRO_GOALS, MicroKey } from '@/types/nutrition';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -145,7 +146,7 @@ export default function Nutrition() {
   const [microEntry, setMicroEntry] = useState<{ key: MicroKey; amount: string; label: string }>({ key: 'vitaminC', amount: '', label: '' });
 
   const [activeTab, setActiveTab] = useState<Tab>('Resumo');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(localDateKey());
   const [showGoals, setShowGoals] = useState(false);
   const [tempGoals, setTempGoals] = useState(goals);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -159,7 +160,7 @@ export default function Nutrition() {
   const [fastingGoalHours, setFastingGoalHours] = useState(16);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
-  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+  const isToday = selectedDate === localDateKey();
   const todayWater = isToday ? getTodayWater() : getWaterForDate(selectedDate);
   const fastingElapsedMinutes = useFastingElapsed(fastingData.active?.startedAt ?? null);
 
@@ -196,14 +197,12 @@ export default function Nutrition() {
   const calorieBalance = goals.calories - dayTotals.calories;
 
   const changeDate = (days: number) => {
-    const d = new Date(selectedDate);
-    d.setDate(d.getDate() + days);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(addDaysKey(selectedDate, days));
   };
 
   const dateLabel = isToday
     ? 'Hoje'
-    : new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
+    : parseLocalDate(selectedDate).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
 
   const macroBar = (current: number, goal: number, color: string) => {
     const pct = Math.min((current / Math.max(goal, 1)) * 100, 100);

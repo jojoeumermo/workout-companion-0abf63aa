@@ -1,5 +1,6 @@
 import { CompletedWorkout } from '@/types/workout';
 import { getExerciseById } from '@/data/exercises';
+import { localDateKey } from '@/lib/dateUtils';
 
 export interface LevelInfo {
   level: number;
@@ -76,15 +77,15 @@ export function calculateXPForWorkout(workout: CompletedWorkout, streak: number)
 
 export function computeStreak(history: CompletedWorkout[]): { current: number; best: number } {
   const trainedDays = new Set<string>();
-  history.forEach(w => trainedDays.add(new Date(w.completedAt).toISOString().split('T')[0]));
+  history.forEach(w => trainedDays.add(localDateKey(new Date(w.completedAt))));
 
   let current = 0;
-  const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const today = localDateKey();
+  const yesterday = localDateKey(new Date(Date.now() - 86400000));
 
   if (trainedDays.has(today) || trainedDays.has(yesterday)) {
     let checkDate = trainedDays.has(today) ? new Date() : new Date(Date.now() - 86400000);
-    while (trainedDays.has(checkDate.toISOString().split('T')[0])) {
+    while (trainedDays.has(localDateKey(checkDate))) {
       current++;
       checkDate = new Date(checkDate.getTime() - 86400000);
     }

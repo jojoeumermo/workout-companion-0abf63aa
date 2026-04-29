@@ -4,6 +4,7 @@ import { Play, Dumbbell, TrendingUp, Flame, Zap, Target, ChevronRight, BookOpen,
 import { motion } from 'framer-motion';
 import PageShell from '@/components/PageShell';
 import { useHistory, useTemplates, useActiveWorkout, useGoals, useTheme, useMeals, useBodyWeight, useWaterLog, useUserProfile, usePersonalRecords } from '@/hooks/useStorage';
+import { localDateKey } from '@/lib/dateUtils';
 import { getExerciseById } from '@/data/exercises';
 import { ActiveWorkout } from '@/types/workout';
 import { computeGamification } from '@/lib/gamification';
@@ -62,7 +63,7 @@ export default function Dashboard() {
   const weekVolume = thisWeek.reduce((sum, w) => sum + w.totalVolume, 0);
   const weekCount = thisWeek.length;
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = localDateKey();
   const todayMeals = meals.filter(m => m.date === today);
   const todayCalories = todayMeals.reduce((s, m) => s + m.totals.calories, 0);
 

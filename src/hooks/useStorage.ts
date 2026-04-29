@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WorkoutTemplate, CompletedWorkout, ActiveWorkout, PersonalRecord, Goal } from '@/types/workout';
 import { MealEntry, DailyNutritionGoal, MicroGoals, DEFAULT_MICRO_GOALS } from '@/types/nutrition';
+import { localDateKey } from '@/lib/dateUtils';
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -33,7 +34,24 @@ export function useTemplates() {
 }
 
 export function useHistory() {
-  return useLocalStorage<CompletedWorkout[]>('workout-history', []);
+  const [history, setHistory] = useLocalStorage<CompletedWorkout[]>('workout-history', []);
+
+  const deleteWorkout = useCallback((id: string) => {
+    setHistory(prev => prev.filter(w => w.id !== id));
+  }, [setHistory]);
+
+  const updateWorkout = useCallback(
+    (id: string, updater: (w: CompletedWorkout) => CompletedWorkout) => {
+      setHistory(prev => prev.map(w => (w.id === id ? updater(w) : w)));
+    },
+    [setHistory]
+  );
+
+  return [history, setHistory, { deleteWorkout, updateWorkout }] as [
+    CompletedWorkout[],
+    typeof setHistory,
+    { deleteWorkout: typeof deleteWorkout; updateWorkout: typeof updateWorkout }
+  ];
 }
 
 export function useActiveWorkout() {
@@ -146,7 +164,7 @@ export function useBodyWeight() {
   const [entries, setEntries] = useLocalStorage<{ date: string; weight: number; note?: string }[]>('body-weight', []);
 
   const addWeight = useCallback((weight: number, note?: string) => {
-    const date = new Date().toISOString().split('T')[0];
+    const date = localDateKey();
     setEntries(prev => {
       const filtered = prev.filter(e => e.date !== date);
       return [...filtered, { date, weight, note }].sort((a, b) => a.date.localeCompare(b.date));
@@ -166,12 +184,12 @@ export function useWaterLog() {
   const [water, setWater] = useLocalStorage<Record<string, number>>('water-log', {});
 
   const getTodayWater = useCallback(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateKey();
     return water[today] || 0;
   }, [water]);
 
   const addWater = useCallback((ml: number) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateKey();
     setWater(prev => ({ ...prev, [today]: Math.max(0, (prev[today] || 0) + ml) }));
   }, [setWater]);
 

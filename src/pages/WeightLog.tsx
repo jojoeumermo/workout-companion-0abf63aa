@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine } from 'recharts';
 import PageShell from '@/components/PageShell';
 import { useBodyWeight, useUserProfile, UserProfile } from '@/hooks/useStorage';
+import { localDateKey } from '@/lib/dateUtils';
 import { haptic } from '@/lib/haptic';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -78,13 +79,13 @@ export default function WeightLog() {
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [tempProfile, setTempProfile] = useState<UserProfile>(profile);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = localDateKey();
   const todayEntry = entries.find(e => e.date === today);
 
   const filteredEntries = useMemo(() => {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - period);
-    const cutoffStr = cutoff.toISOString().split('T')[0];
+    const cutoffStr = localDateKey(cutoff);
     return entries.filter(e => e.date >= cutoffStr);
   }, [entries, period]);
 
@@ -102,7 +103,7 @@ export default function WeightLog() {
     const last30 = entries.filter(e => {
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 30);
-      return e.date >= cutoff.toISOString().split('T')[0];
+      return e.date >= localDateKey(cutoff);
     });
     const change30 = last30.length >= 2
       ? last30[last30.length - 1].weight - last30[0].weight

@@ -1,0 +1,91 @@
+AUDITORIA CRÍTICA FINAL — BUGS REAIS MOBILE + DADOS + ESTADO
+
+Ainda existem bugs importantes no app. Quero uma varredura real, não superficial.
+
+1. BUG DE LONG PRESS EM CAMPOS EDITÁVEIS
+
+O bug da janela branca enorme foi resolvido em textos normais, mas continua em campos editáveis/modais/inputs.
+
+Exemplo:
+- abrir edição de meta de proteína ou medidas corporais
+- pressionar/segurar dentro do campo
+- aparece uma janela branca enorme com ícone do app
+
+Corrigir sem quebrar inputs.
+
+Investigar:
+- input selection handles
+- Android WebView text selection toolbar
+- -webkit-user-select
+- touch-callout
+- inputs dentro de modais
+- Dialog/Sheet overlay
+- focus/selection behavior
+
+Objetivo:
+inputs continuam editáveis, mas sem abrir janela branca gigante.
+
+2. TELAS ABRINDO NO MEIO
+
+Quando clico em ações como “Adicionar refeição”, algumas telas abrem já no meio/scroll errado.
+
+Corrigir:
+- resetar scroll para top ao navegar
+- garantir que páginas/modal forms abram no topo
+- revisar rotas, sheets, dialogs e containers scrolláveis
+
+3. PROGRESSO / MÚSCULOS TREINADOS EDITÁVEL
+
+Hoje, ao concluir treino, os músculos aparecem no progresso automaticamente, mas não consigo remover/ajustar manualmente.
+
+Adicionar opção simples:
+- editar treino registrado
+- remover exercício/músculo do histórico
+- recalcular progresso semanal
+- atualizar localStorage corretamente
+
+Objetivo:
+se registrei algo errado, consigo corrigir depois.
+
+4. BUG DE DATA NA NUTRIÇÃO
+
+Ocorreu um bug onde aparecia:
+- “Dia 27”
+- e também “Hoje”
+como se a data estivesse inconsistente.
+
+Auditar:
+- timezone
+- comparação de datas
+- formatação “Hoje”
+- navegação dia anterior/próximo
+- armazenamento por data
+
+Usar datas locais de forma consistente.
+
+5. VARREDURA COMPLETA
+
+Revisar:
+- Home
+- Nutrição
+- Progresso
+- Treinos
+- Programas
+- Modais
+- Inputs
+- LocalStorage
+- Swipe
+- Long press
+- Scroll
+- Datas
+
+Corrigir tudo que for seguro.
+
+6. RELATÓRIO FINAL
+
+Entregar:
+- causa de cada bug
+- arquivos alterados
+- o que foi corrigido
+- riscos restantes
+- se está pronto para beta real

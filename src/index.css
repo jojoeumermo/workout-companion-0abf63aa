@@ -131,9 +131,11 @@
     user-select: none;
   }
 
-  /* Keep text selectable and callout available for inputs */
+  /* Inputs stay editable & text-selectable, but we still suppress the
+     Android/iOS long-press context menu (which renders the giant white
+     "share via app" sheet on mobile WebViews). */
   input, textarea, [contenteditable], select {
-    -webkit-touch-callout: default;
+    -webkit-touch-callout: none;
     -webkit-user-select: text;
     -ms-user-select: text;
     user-select: text;
