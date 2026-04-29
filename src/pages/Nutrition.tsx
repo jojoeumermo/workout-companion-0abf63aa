@@ -272,7 +272,7 @@ export default function Nutrition() {
 
   return (
     <PageShell title="Nutrição">
-      <div className="max-w-lg mx-auto pt-2 space-y-4">
+      <div className="max-w-lg mx-auto pt-4 pb-4 space-y-4">
 
         {/* Date selector */}
         <div className="flex items-center justify-between card-premium p-3 rounded-2xl">
