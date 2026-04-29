@@ -1041,16 +1041,21 @@ export default function Nutrition() {
               <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Quantidade ({MICRO_DEFS.find(d => d.key === microEntry.key)?.unit})
               </label>
-              <input
-                type="number"
-                inputMode="decimal"
-                step="any"
-                placeholder="Ex: 1000"
-                value={microEntry.amount}
-                onChange={e => setMicroEntry(prev => ({ ...prev, amount: e.target.value }))}
-                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-base outline-none focus:ring-2 focus:ring-ring"
-                autoFocus
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="any"
+                  placeholder="Ex: 1000"
+                  value={microEntry.amount}
+                  onChange={e => setMicroEntry(prev => ({ ...prev, amount: e.target.value }))}
+                  className="w-full bg-secondary rounded-xl px-3.5 py-3.5 pr-14 text-lg font-bold outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
+                  autoFocus
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground pointer-events-none">
+                  {MICRO_DEFS.find(d => d.key === microEntry.key)?.unit}
+                </span>
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -1060,7 +1065,7 @@ export default function Nutrition() {
                 placeholder="Ex: Suplemento Vitamina C 1g"
                 value={microEntry.label}
                 onChange={e => setMicroEntry(prev => ({ ...prev, label: e.target.value }))}
-                className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+                className="w-full bg-secondary rounded-xl px-3.5 py-3 text-sm outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
               />
             </div>
 
@@ -1100,7 +1105,7 @@ export default function Nutrition() {
                 haptic('success');
                 toast({ title: `${def.label} +${value}${def.unit} registrado!` });
               }}
-              className="w-full bg-primary text-primary-foreground rounded-xl py-3 font-semibold text-sm flex items-center justify-center gap-2"
+              className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-black text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-glow"
             >
               <Plus size={16} /> Adicionar ao dia
             </button>
