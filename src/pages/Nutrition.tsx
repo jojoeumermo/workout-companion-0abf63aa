@@ -954,44 +954,38 @@ export default function Nutrition() {
           <DialogHeader>
             <DialogTitle>Editar Metas de Micronutrientes</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 mt-2">
+          <div className="space-y-4 mt-2">
             <p className="text-xs text-muted-foreground font-body leading-relaxed">
               Ajuste suas metas diárias. Os valores ficam salvos no aparelho.
             </p>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {MICRO_DEFS.map(m => {
                 const isLimit = MICRO_LIMITS.has(m.key);
                 return (
-                  <div key={m.key} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${m.color}`} />
-                        {m.label}
-                        <span className="text-[10px] text-muted-foreground font-medium">({m.unit})</span>
-                        {isLimit && (
-                          <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wider bg-secondary px-1.5 py-0.5 rounded">limite</span>
-                        )}
-                      </label>
+                  <div key={m.key} className="space-y-1.5">
+                    <label className="text-xs font-bold flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${m.color}`} />
+                      <span className="flex-1">{m.label}</span>
+                      {isLimit && (
+                        <span className="text-[9px] font-black text-orange-300 uppercase tracking-wider bg-orange-500/10 border border-orange-500/20 px-1.5 py-0.5 rounded">limite</span>
+                      )}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        step="any"
+                        value={tempMicroGoals[m.key]}
+                        onChange={e => setTempMicroGoals(prev => ({ ...prev, [m.key]: parseFloat(e.target.value) || 0 }))}
+                        className="w-full bg-secondary rounded-xl px-3.5 py-3 pr-12 text-base font-bold outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground pointer-events-none">{m.unit}</span>
                     </div>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="any"
-                      value={tempMicroGoals[m.key]}
-                      onChange={e => setTempMicroGoals(prev => ({ ...prev, [m.key]: parseFloat(e.target.value) || 0 }))}
-                      className="w-full bg-secondary rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                    />
                   </div>
                 );
               })}
             </div>
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <button
-                onClick={() => setTempMicroGoals(DEFAULT_MICRO_GOALS)}
-                className="bg-secondary rounded-xl py-2.5 font-semibold text-sm flex items-center justify-center gap-2"
-              >
-                <Sparkles size={14} /> Restaurar Padrão
-              </button>
+            <div className="sticky bottom-0 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-gradient-to-t from-card via-card to-card/80 space-y-2 border-t border-border/30">
               <button
                 onClick={() => {
                   setMicroGoals(tempMicroGoals);
@@ -999,9 +993,15 @@ export default function Nutrition() {
                   haptic('success');
                   toast({ title: 'Metas de micros atualizadas!' });
                 }}
-                className="bg-primary text-primary-foreground rounded-xl py-2.5 font-semibold text-sm"
+                className="w-full bg-primary text-primary-foreground rounded-xl py-3.5 font-black text-sm active:scale-[0.98] transition-transform shadow-glow"
               >
                 Salvar Metas
+              </button>
+              <button
+                onClick={() => setTempMicroGoals(DEFAULT_MICRO_GOALS)}
+                className="w-full bg-secondary rounded-xl py-2.5 font-bold text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              >
+                <Sparkles size={13} /> Restaurar valores padrão
               </button>
             </div>
           </div>
