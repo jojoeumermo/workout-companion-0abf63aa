@@ -120,6 +120,13 @@
   /* Smoother scroll everywhere */
   html {
     scroll-behavior: smooth;
+    /* Paint full-screen background so portals/overscroll never reveal white */
+    background-color: hsl(var(--background));
+    color-scheme: dark;
+  }
+
+  html.light {
+    color-scheme: light;
   }
 
   /* Remove tap highlight + prevent long-press callout/context menu on mobile */
@@ -131,14 +138,29 @@
     user-select: none;
   }
 
-  /* Inputs stay editable & text-selectable, but we still suppress the
-     Android/iOS long-press context menu (which renders the giant white
-     "share via app" sheet on mobile WebViews). */
-  input, textarea, [contenteditable], select {
-    -webkit-touch-callout: none;
-    -webkit-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+  /* DEFINITIVE FIX for the Android WebView "white window with app icon"
+     long-press bug: that sheet is the native ActionMode/Share toolbar,
+     which is triggered by the input becoming text-selectable. Setting
+     user-select: none on inputs DISABLES the native selection toolbar
+     while still allowing the user to TYPE normally (typing inserts
+     characters, it doesn't require selection).
+     IMPORTANT: !important is required because Radix/Tailwind utilities
+     try to re-enable selection on inputs inside Dialogs. */
+  input, textarea, select, [contenteditable] {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /* Escape hatch: add class="allow-paste" to any input/textarea that
+     genuinely needs the user to paste long text. Most workout/nutrition
+     fields are short numeric values where this trade-off is invisible. */
+  input.allow-paste, textarea.allow-paste {
+    -webkit-user-select: text !important;
+    user-select: text !important;
   }
 }
 
